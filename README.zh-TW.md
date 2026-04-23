@@ -4,7 +4,7 @@
 
 **語言**：[English](./README.md) · [简体中文](./README.zh-CN.md) · **繁體中文**
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 [![Status: early development](https://img.shields.io/badge/status-early--development-orange.svg)](#藍圖)
 
 ---
@@ -87,6 +87,12 @@ OpenClaw Gateway（多通道）
 2. 新增的使用者可見文案必須在同一個 PR 裡同步三個 locale。
 3. 遵守 `policy/pmgo.policy.yaml` 中的白名單策略，不要隨意放開 shell 或刪除權限。
 
+## 社群
+
+- [行為準則](./CODE_OF_CONDUCT.md)
+- [貢獻指南](./CONTRIBUTING.md)
+- [安全策略](./SECURITY.md)
+
 ## 授權條款
 
-[MIT](./LICENSE)
+採用 [Apache License, Version 2.0](./LICENSE) 授權條款。關於署名與再散佈要求，請參閱 [NOTICE](./NOTICE)。

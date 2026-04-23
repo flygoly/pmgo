@@ -4,7 +4,7 @@
 
 **Languages**: **English** · [简体中文](./README.zh-CN.md) · [繁體中文](./README.zh-TW.md)
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 [![Status: early development](https://img.shields.io/badge/status-early--development-orange.svg)](#roadmap)
 
 ---
@@ -87,6 +87,12 @@ Contributions are welcome. A few ground rules:
 2. New user-facing strings must be added to all three locale files in the same PR.
 3. Follow the allow-list policy in `policy/pmgo.policy.yaml` — never expand shell or delete permissions casually.
 
+## Community
+
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Security Policy](./SECURITY.md)
+
 ## License
 
-[MIT](./LICENSE)
+Licensed under the [Apache License, Version 2.0](./LICENSE). See [NOTICE](./NOTICE) for attribution requirements.

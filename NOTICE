@@ -1,0 +1,30 @@
+pmgo NOTICE
+===========
+
+Copyright 2026 pmgo. All rights reserved.
+
+This product includes software developed by:
+- pmgo maintainers and contributors
+
+pmgo is built on top of OpenClaw (https://github.com/openclaw/openclaw)
+and uses the Model Context Protocol (MCP) for skill integrations. Those
+projects are distributed under their own licenses; see their upstream
+repositories for details.
+
+## Attribution Requirements
+
+When distributing this software, you must include:
+1. A copy of the Apache License 2.0 (LICENSE file)
+2. This NOTICE file
+3. Any additional attribution notices from third-party components
+
+For commercial use or distribution, please refer to the LICENSE file
+for terms and conditions.
+
+## Contact
+
+For questions about licensing, contributing, or the project in general,
+open an issue on GitHub or contact the maintainer at:
+flygoly@gmail.com
+
+Last updated: April 23, 2026
