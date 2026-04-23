@@ -1,0 +1,8 @@
+{
+  "agent.greeting": "你好，我是 pmgo。今天我們推進哪個專案？",
+  "standup.header": "每日站會",
+  "standup.yesterday": "昨天",
+  "standup.today": "今天",
+  "standup.blockers": "阻塞",
+  "risk.none": "目前沒有發現活躍阻塞。"
+}

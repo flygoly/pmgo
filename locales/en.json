@@ -1,0 +1,8 @@
+{
+  "agent.greeting": "Hello, I am pmgo. What project are we driving today?",
+  "standup.header": "Daily Standup",
+  "standup.yesterday": "Yesterday",
+  "standup.today": "Today",
+  "standup.blockers": "Blockers",
+  "risk.none": "No active blockers detected."
+}

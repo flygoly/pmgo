@@ -1,0 +1,22 @@
+tools:
+  shell.exec:
+    allow: false
+
+  fs.write:
+    allow_paths:
+      - "./memory/**"
+      - "./reports/**"
+
+  github.close_pr:
+    allow: true
+    require_confirm: true
+
+  jira.transition_issue:
+    allow: true
+    require_confirm: true
+
+quiet_hours:
+  timezone: "Asia/Shanghai"
+  ranges:
+    - "22:00-08:00"
+  weekends: mute_non_critical

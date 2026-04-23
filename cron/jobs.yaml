@@ -1,0 +1,15 @@
+- name: morning-briefing
+  cron: "0 9 * * 1-5"
+  agent: pmgo-reporter
+  action: summarize_today_and_blockers
+
+- name: blocker-scan
+  heartbeat: 30m
+  agent: pmgo-risker
+  action: detect_blocked_tasks
+  escalate_if: "blocked_hours > 24"
+
+- name: weekly-report
+  cron: "0 17 * * 5"
+  agent: pmgo-reporter
+  action: generate_weekly_report

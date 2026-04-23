@@ -43,8 +43,19 @@ npm i -g openclaw
 openclaw onboard
 
 # Add pmgo as an agent (planned)
-openclaw agent add pmgo
+openclaw agent add ./agent
 ```
+
+## OpenClaw Standard Layout
+
+This repository now includes an importable OpenClaw agent package:
+
+- `agent/` - canonical agent package (`SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `AGENTS.md`)
+- `skills/` - MCP skill definitions and implementations
+- `locales/` - runtime i18n dictionaries (`en`, `zh-CN`, `zh-TW`)
+- `policy/pmgo.policy.yaml` - allow-list and confirmation policy
+- `cron/jobs.yaml` - proactive heartbeat and scheduled jobs
+- `memory/templates/` - locale-aware reporting templates
 
 ## Architecture at a glance
 
