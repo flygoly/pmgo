@@ -56,6 +56,24 @@ This repository now includes an importable OpenClaw agent package:
 - `policy/pmgo.policy.yaml` - allow-list and confirmation policy
 - `cron/jobs.yaml` - proactive heartbeat and scheduled jobs
 - `memory/templates/` - locale-aware reporting templates
+- `memory/schema.sql` - canonical SQLite schema snapshot
+- `memory/migrations/` - append-only schema migration history
+
+## Long-term memory storage
+
+pmgo uses a hybrid memory model:
+
+- **SQLite DB** (`memory/pmgo.db`) stores structured long-term entities.
+- **Schema SQL** (`memory/schema.sql`) defines canonical database structure.
+- **Markdown** (`memory/projects/<slug>/`) stores human-readable project notes.
+
+Initialize and verify local memory DB:
+
+```bash
+npm run memory:init
+npm run memory:migrate
+npm run memory:verify
+```
 
 ## Architecture at a glance
 

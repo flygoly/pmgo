@@ -9,6 +9,9 @@
     "check:agent-i18n": "node scripts/validate-agent-i18n.js",
     "check:agent-i18n:strict": "node scripts/validate-agent-i18n.js --strict",
     "check:agent-i18n:strict:json": "node scripts/validate-agent-i18n.js --strict --json",
+    "memory:init": "python3 scripts/init-memory-db.py",
+    "memory:migrate": "python3 scripts/migrate-memory-db.py",
+    "memory:verify": "python3 scripts/verify-memory-db.py",
     "test": "echo \"No tests configured yet\""
   }
 }
