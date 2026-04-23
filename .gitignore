@@ -1,0 +1,44 @@
+# Local planning / draft docs (not tracked)
+docs/
+
+# Node / TypeScript
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.npm
+.pnpm-debug.log
+.yarn/
+.pnp.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# OpenClaw / pmgo runtime artifacts
+memory/*.sqlite
+memory/*.db
+memory/audit.log
+reports/
+.openclaw/
+.pmgo/
+
+# Environment and secrets (never commit)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# IDE / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
