@@ -5,7 +5,10 @@
   "description": "pmgo - OpenClaw-based AI project manager agent and skills pack.",
   "license": "Apache-2.0",
   "scripts": {
-    "check": "echo \"No checks configured yet\"",
+    "check": "node scripts/validate-agent-i18n.js",
+    "check:agent-i18n": "node scripts/validate-agent-i18n.js",
+    "check:agent-i18n:strict": "node scripts/validate-agent-i18n.js --strict",
+    "check:agent-i18n:strict:json": "node scripts/validate-agent-i18n.js --strict --json",
     "test": "echo \"No tests configured yet\""
   }
 }
