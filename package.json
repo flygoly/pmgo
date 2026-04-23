@@ -1,0 +1,11 @@
+{
+  "name": "pmgo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "pmgo - OpenClaw-based AI project manager agent and skills pack.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "check": "echo \"No checks configured yet\"",
+    "test": "echo \"No tests configured yet\""
+  }
+}

@@ -1,0 +1,11 @@
+[project]
+name = "pmgo"
+version = "0.1.0"
+description = "Python components for pmgo risk analysis and reporting."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
