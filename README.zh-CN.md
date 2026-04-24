@@ -46,6 +46,45 @@ openclaw onboard
 openclaw agent add pmgo
 ```
 
+## 长期记忆存储
+
+pmgo 使用混合记忆模型：
+
+- **SQLite 数据库**（`memory/pmgo.db`）存储结构化长期实体。
+- **Schema SQL**（`memory/schema.sql`）定义标准数据库结构。
+- **Markdown**（`memory/projects/<slug>/`）存储可读的项目笔记。
+
+初始化并校验本地 memory 数据库：
+
+```bash
+npm run memory:init
+npm run memory:migrate
+npm run memory:verify
+```
+
+也可以一条命令跑完整个引导流程：
+
+```bash
+npm run memory:scaffold
+```
+
+如果要同时初始化项目 Markdown 目录：
+
+```bash
+npm run memory:scaffold -- --project-name "PMGO MVP" --locale zh-CN
+```
+
+单独初始化项目级 Markdown 目录：
+
+```bash
+npm run memory:init:project -- --name "PMGO MVP" --locale zh-CN
+```
+
+可选参数：
+
+- `--slug`：指定 `memory/projects/` 下的目录名。
+- `--locale`：支持 `en`、`zh-CN`、`zh-TW`（默认 `en`）。
+
 ## 架构速览
 
 ```
