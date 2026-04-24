@@ -75,6 +75,17 @@ npm run memory:migrate
 npm run memory:verify
 ```
 
+Initialize project-scoped markdown memory directory:
+
+```bash
+npm run memory:init:project -- --name "PMGO MVP" --locale en
+```
+
+Optional arguments:
+
+- `--slug` to force a custom directory name under `memory/projects/`.
+- `--locale` supports `en`, `zh-CN`, and `zh-TW` (default: `en`).
+
 ## Architecture at a glance
 
 ```
