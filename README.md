@@ -75,6 +75,18 @@ npm run memory:migrate
 npm run memory:verify
 ```
 
+Or run the full bootstrap pipeline in one command:
+
+```bash
+npm run memory:scaffold
+```
+
+And with project markdown scaffolding:
+
+```bash
+npm run memory:scaffold -- --project-name "PMGO MVP" --locale zh-CN
+```
+
 Initialize project-scoped markdown memory directory:
 
 ```bash

@@ -12,6 +12,7 @@
     "memory:init": "python3 scripts/init-memory-db.py",
     "memory:init:project": "python3 scripts/init-memory-project.py",
     "memory:migrate": "python3 scripts/migrate-memory-db.py",
+    "memory:scaffold": "python3 scripts/scaffold-memory.py",
     "memory:verify": "python3 scripts/verify-memory-db.py",
     "test": "echo \"No tests configured yet\""
   }
