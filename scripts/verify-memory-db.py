@@ -15,6 +15,7 @@ REQUIRED_TABLES = {
   "risks",
   "decisions",
   "retrospectives",
+  "audit_logs",
   "schema_migrations",
 }
 
