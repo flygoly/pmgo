@@ -70,6 +70,7 @@ pmgo uses a hybrid memory model:
 Initialize and verify local memory DB:
 
 ```bash
+npm run memory:check
 npm run memory:init
 npm run memory:migrate
 npm run memory:verify
