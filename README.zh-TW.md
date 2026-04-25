@@ -57,6 +57,7 @@ pmgo 使用混合記憶模型：
 初始化並驗證本地 memory 資料庫：
 
 ```bash
+npm run memory:check
 npm run memory:init
 npm run memory:migrate
 npm run memory:verify
