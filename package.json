@@ -9,6 +9,8 @@
     "check:agent-i18n": "node scripts/validate-agent-i18n.js",
     "check:agent-i18n:strict": "node scripts/validate-agent-i18n.js --strict",
     "check:agent-i18n:strict:json": "node scripts/validate-agent-i18n.js --strict --json",
+    "validate:memory": "npm run memory:check && npm run memory:init && npm run memory:migrate && npm run memory:verify",
+    "validate": "npm run check && npm run validate:memory",
     "memory:init": "python3 scripts/init-memory-db.py",
     "memory:init:project": "python3 scripts/init-memory-project.py",
     "memory:migrate": "python3 scripts/migrate-memory-db.py",

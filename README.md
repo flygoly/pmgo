@@ -140,6 +140,14 @@ Contributions are welcome. A few ground rules:
 2. New user-facing strings must be added to all three locale files in the same PR.
 3. Follow the allow-list policy in `policy/pmgo.policy.yaml` — never expand shell or delete permissions casually.
 
+Before opening a PR, run the repository checks (agent i18n validation plus memory asset and database verification):
+
+```bash
+npm run validate
+```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full workflow.
+
 ## Community
 
 - [Code of Conduct](./CODE_OF_CONDUCT.md)

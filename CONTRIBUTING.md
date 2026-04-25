@@ -96,11 +96,19 @@ pmgo targets the official OpenClaw runtime. Skills are written in
 3. **Verify locally**
 
    ```bash
+   npm run validate
+   ```
+
+   This runs agent i18n checks (`npm run check`) and the full memory
+   pipeline (`memory:check`, `memory:init`, `memory:migrate`,
+   `memory:verify`). When TypeScript/Python tooling is wired up, also
+   run:
+
+   ```bash
    npm run lint
    npm test
    ruff check .
    pytest
-   node scripts/check-i18n.mjs   # when the script exists (M1)
    ```
 
 4. **Commit**
