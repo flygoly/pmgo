@@ -2,9 +2,12 @@
 
 The `skills/` directory hosts MCP-compatible capabilities for `pmgo`.
 
+Shipped in tree (code or docs):
+
+- `project-core` — Python store + `scripts/project-core.py` CLI against `memory/pmgo.db` (OpenClaw/MCP wiring later)
+
 Planned modules include:
 
-- `project-core`
 - `daily-standup`
 - `risk-radar`
 - `weekly-report`

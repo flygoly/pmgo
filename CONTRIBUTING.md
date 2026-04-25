@@ -102,9 +102,11 @@ pmgo targets the official OpenClaw runtime. Skills are written in
    The same command runs in **GitHub Actions** on every push and pull
    request to `master` (see `.github/workflows/ci.yml`).
 
-   This runs agent i18n checks (`npm run check`) and the full memory
+   This runs agent i18n checks (`npm run check`), the full memory
    pipeline (`memory:check`, `memory:init`, `memory:migrate`,
-   `memory:verify`). When TypeScript/Python tooling is wired up, also
+   `memory:verify`), and a read-only `project-core` smoke test
+   (`project-core:smoke` against the initialized SQLite file). When
+   TypeScript/Python tooling is wired up, also
    run:
 
    ```bash

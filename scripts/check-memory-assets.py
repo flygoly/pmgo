@@ -24,6 +24,7 @@ REQUIRED_SCRIPT_FILES = {
   "verify-memory-db.py",
   "init-memory-project.py",
   "scaffold-memory.py",
+  "project-core.py",
 }
 
 
@@ -56,7 +57,7 @@ def check_scripts() -> None:
   assert_exists(SCRIPTS_DIR, "scripts directory")
   missing = [name for name in sorted(REQUIRED_SCRIPT_FILES) if not (SCRIPTS_DIR / name).exists()]
   if missing:
-    raise RuntimeError(f"Missing memory scripts: {', '.join(missing)}")
+    raise RuntimeError(f"Missing required script files: {', '.join(missing)}")
 
 
 def main() -> None:
