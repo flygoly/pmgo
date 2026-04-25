@@ -4,5 +4,6 @@
   "standup.yesterday": "昨天",
   "standup.today": "今天",
   "standup.blockers": "阻塞",
+  "standup.empty": "—",
   "risk.none": "当前没有发现活跃阻塞。"
 }

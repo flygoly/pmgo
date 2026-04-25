@@ -127,7 +127,7 @@ OpenClaw Gateway（多渠道）
 2. 新增的用户可见文案必须在同一个 PR 里同步三个 locale。
 3. 遵守 `policy/pmgo.policy.yaml` 中的白名单策略，不要随意放开 shell 或删除权限。
 
-提交 PR 前请运行仓库检查（Agent i18n 校验、memory 资源与数据库校验，以及对 `project-core` 的只读冒烟测试）：
+提交 PR 前请运行仓库检查（Agent i18n 校验、memory 资源与数据库校验、`project-core` 列表冒烟，以及在有项目时执行 `daily-standup` / `weekly-report` 渲染冒烟）：
 
 ```bash
 npm run validate

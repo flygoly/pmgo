@@ -4,5 +4,6 @@
   "standup.yesterday": "Yesterday",
   "standup.today": "Today",
   "standup.blockers": "Blockers",
+  "standup.empty": "—",
   "risk.none": "No active blockers detected."
 }

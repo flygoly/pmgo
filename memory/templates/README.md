@@ -8,6 +8,7 @@ This directory contains locale-aware long-term memory templates used by pmgo.
 - `meeting-notes.*.md`: structured meeting records and action items.
 - `decision-log.*.md`: ADR-like decision history with rationale and evidence.
 - `weekly-report.*.md`: periodic project status, risks, and next actions.
+- `daily-standup.*.md`: daily task snapshot (done in 24h, in progress, up next, blocked).
 
 ## Locales
 

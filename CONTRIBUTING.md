@@ -104,9 +104,10 @@ pmgo targets the official OpenClaw runtime. Skills are written in
 
    This runs agent i18n checks (`npm run check`), the full memory
    pipeline (`memory:check`, `memory:init`, `memory:migrate`,
-   `memory:verify`), and a read-only `project-core` smoke test
-   (`project-core:smoke` against the initialized SQLite file). When
-   TypeScript/Python tooling is wired up, also
+   `memory:verify`), a read-only `project-core` list smoke test, and
+   `daily-standup` / `weekly-report` render smoke tests (no-op when the
+   database has no projects). When TypeScript/Python tooling is wired
+   up, also
    run:
 
    ```bash

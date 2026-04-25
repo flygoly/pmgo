@@ -16,6 +16,7 @@ REQUIRED_TEMPLATE_BASENAMES = {
   "meeting-notes",
   "decision-log",
   "weekly-report",
+  "daily-standup",
 }
 REQUIRED_LOCALES = {"en", "zh-CN", "zh-TW"}
 REQUIRED_SCRIPT_FILES = {
@@ -25,6 +26,9 @@ REQUIRED_SCRIPT_FILES = {
   "init-memory-project.py",
   "scaffold-memory.py",
   "project-core.py",
+  "pmgo_common.py",
+  "daily-standup.py",
+  "weekly-report.py",
 }
 
 
