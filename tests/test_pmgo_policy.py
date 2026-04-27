@@ -32,6 +32,7 @@ class TestPmgoPolicyGate(unittest.TestCase):
     self.assertIsNone(gate("project_core.read", confirmed=False))
     self.assertIsNone(gate("github.issue.read", confirmed=False))
     self.assertIsNone(gate("pmgo.report.daily", confirmed=False))
+    self.assertIsNone(gate("pmgo.risk.scan", confirmed=False))
 
   def test_write_requires_confirm(self) -> None:
     self.assertIsNotNone(gate("github.issue.create", confirmed=False))

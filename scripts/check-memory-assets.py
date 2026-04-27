@@ -30,6 +30,7 @@ REQUIRED_SCRIPT_FILES = {
   "daily-standup.py",
   "weekly-report.py",
   "github-issues.py",
+  "risk-radar.py",
   "pmgo_mcp_server.py",
   "pmgo_policy.py",
   "pmgo_mcp_preflight.py",

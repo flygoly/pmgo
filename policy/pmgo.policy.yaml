@@ -43,6 +43,9 @@ tools:
   pmgo.report.weekly:
     allow: true
 
+  pmgo.risk.scan:
+    allow: true
+
   jira.transition_issue:
     allow: true
     require_confirm: true

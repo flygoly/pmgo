@@ -27,6 +27,7 @@ for _d in (
   _ROOT / "skills" / "daily-standup",
   _ROOT / "skills" / "weekly-report",
   _ROOT / "skills" / "integration-github",
+  _ROOT / "skills" / "risk-radar",
 ):
   p = str(_d)
   if p not in sys.path:
@@ -146,6 +147,23 @@ def pmgo_task_create(
     )
   except sqlite3.IntegrityError as e:
     return f"Database error (duplicate external id?): {e}"
+
+
+# --- risk radar (SQLite risks + blocked tasks) ---
+
+
+@mcp.tool()
+def pmgo_risk_scan(project_id: str) -> str:
+  """List open/watching risks and blocked tasks for a project (local SQLite)."""
+  err = gate("pmgo.risk.scan", confirmed=False)
+  if err:
+    return err
+  from risk_radar import scan as scanmod
+
+  try:
+    return _j(scanmod.scan_project(project_id))
+  except KeyError as e:
+    return str(e)
 
 
 # --- reports ---

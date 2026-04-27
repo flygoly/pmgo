@@ -106,7 +106,7 @@ pmgo targets the official OpenClaw runtime. Skills are written in
    This runs agent i18n checks (`npm run check`), the full memory
    pipeline (`memory:check`, `memory:init`, `memory:migrate`,
    `memory:verify`), a read-only `project-core` list smoke test, and
-   `daily-standup` / `weekly-report` render smoke tests (no-op when the
+   `daily-standup` / `weekly-report` / `risk-radar` render smoke tests (no-op when the
    database has no projects), and a GitHub CLI smoke that **skips** when
    `GITHUB_TOKEN` / `GITHUB_REPO` are unset (so CI does not need
    secrets), and `mcp:pmgo:check` (imports `mcp` + `pyyaml` when installed;
