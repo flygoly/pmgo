@@ -7,6 +7,7 @@ Shipped in tree (code or docs):
 - `project-core` — Python store + `scripts/project-core.py` CLI against `memory/pmgo.db` (OpenClaw/MCP wiring later)
 - `daily-standup` — `scripts/daily-standup.py` CLI + `memory/templates/daily-standup.*.md`
 - `weekly-report` — `scripts/weekly-report.py` CLI + `memory/templates/weekly-report.*.md`
+- `integration-github` — `scripts/github-issues.py` for Issues REST + optional `import-task` into SQLite (`GITHUB_TOKEN`, `GITHUB_REPO`)
 
 Planned modules include:
 

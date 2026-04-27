@@ -20,6 +20,7 @@
 
 - `jira.create` and state transition writes
 - `github.close_pr` and workflow-impacting writes
+- `github.issue.create`, `github.issue.update`, and `github.issue.import_task` (Issues REST writes and local task import)
 - Broadcast messages to group channels
 - Batch updates that may change ownership or schedule
 

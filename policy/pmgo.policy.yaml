@@ -11,6 +11,21 @@ tools:
     allow: true
     require_confirm: true
 
+  github.issue.read:
+    allow: true
+
+  github.issue.create:
+    allow: true
+    require_confirm: true
+
+  github.issue.update:
+    allow: true
+    require_confirm: true
+
+  github.issue.import_task:
+    allow: true
+    require_confirm: true
+
   jira.transition_issue:
     allow: true
     require_confirm: true

@@ -100,6 +100,18 @@ Optional arguments:
 - `--slug` to force a custom directory name under `memory/projects/`.
 - `--locale` supports `en`, `zh-CN`, and `zh-TW` (default: `en`).
 
+## GitHub Issues (optional)
+
+Set `GITHUB_TOKEN` and `GITHUB_REPO=owner/name` (for example `flygoly/pmgo`). Then use the bundled REST helper:
+
+```bash
+npm run github-issues -- smoke
+npm run github-issues -- list --state open
+npm run github-issues -- import-task --project-id <UUID> --number 42
+```
+
+Details: `skills/integration-github/SKILL.md`. Importing creates a local task with `source=github` and `external_id` set to GitHub’s numeric issue id for idempotency.
+
 ## Architecture at a glance
 
 ```
@@ -141,7 +153,7 @@ Contributions are welcome. A few ground rules:
 2. New user-facing strings must be added to all three locale files in the same PR.
 3. Follow the allow-list policy in `policy/pmgo.policy.yaml` — never expand shell or delete permissions casually.
 
-Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, and `daily-standup` / `weekly-report` render smokes when a project exists):
+Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` render smokes when a project exists, and `github-issues:smoke` which skips if GitHub env vars are missing):
 
 ```bash
 npm run validate

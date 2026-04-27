@@ -86,6 +86,18 @@ npm run memory:init:project -- --name "PMGO MVP" --locale zh-TW
 - `--slug`：指定 `memory/projects/` 下的目錄名稱。
 - `--locale`：支援 `en`、`zh-CN`、`zh-TW`（預設 `en`）。
 
+## GitHub Issues（選用）
+
+設定 `GITHUB_TOKEN` 與 `GITHUB_REPO=owner/name`（例如 `flygoly/pmgo`），再使用內附的 REST 工具：
+
+```bash
+npm run github-issues -- smoke
+npm run github-issues -- list --state open
+npm run github-issues -- import-task --project-id <UUID> --number 42
+```
+
+說明見 `skills/integration-github/SKILL.md`。`import-task` 會建立本機任務，`source=github`，`external_id` 為 GitHub 的數值型 issue id，以便去重。
+
 ## 架構速覽
 
 ```
@@ -127,7 +139,7 @@ OpenClaw Gateway（多通道）
 2. 新增的使用者可見文案必須在同一個 PR 裡同步三個 locale。
 3. 遵守 `policy/pmgo.policy.yaml` 中的白名單策略，不要隨意放開 shell 或刪除權限。
 
-建立 PR 前請執行倉庫檢查（Agent i18n、memory 資源與資料庫驗證、`project-core` 列表冒煙，以及在有專案時執行 `daily-standup` / `weekly-report` 渲染冒煙）：
+建立 PR 前請執行倉庫檢查（Agent i18n、memory 資源與資料庫驗證、`project-core` 列表冒煙、在有專案時執行 `daily-standup` / `weekly-report` 渲染冒煙，以及未設定 GitHub 環境變數時會略過的 `github-issues:smoke`）：
 
 ```bash
 npm run validate

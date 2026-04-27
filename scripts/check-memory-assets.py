@@ -29,6 +29,7 @@ REQUIRED_SCRIPT_FILES = {
   "pmgo_common.py",
   "daily-standup.py",
   "weekly-report.py",
+  "github-issues.py",
 }
 
 
