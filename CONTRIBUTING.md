@@ -108,7 +108,8 @@ pmgo targets the official OpenClaw runtime. Skills are written in
    `daily-standup` / `weekly-report` render smoke tests (no-op when the
    database has no projects), and a GitHub CLI smoke that **skips** when
    `GITHUB_TOKEN` / `GITHUB_REPO` are unset (so CI does not need
-   secrets). When TypeScript/Python tooling is wired up, also
+   secrets), and `mcp:pmgo:check` (imports `mcp` + `pyyaml` when installed;
+   skips otherwise). When TypeScript/Python tooling is wired up, also
    run:
 
    ```bash

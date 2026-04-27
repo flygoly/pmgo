@@ -33,6 +33,10 @@ Entry: `python3 scripts/github-issues.py` / `npm run github-issues -- …`
 
 - Writes (`create`, `close`, `import-task`) should go through policy + human confirmation when exposed as OpenClaw tools (see `policy/pmgo.policy.yaml`).
 
+## OpenClaw
+
+The same operations are available through the **MCP** server `scripts/pmgo_mcp_server.py` (tools `pmgo_github_*`). Register the server in OpenClaw with `openclaw mcp set` — see `openclaw/README.md`.
+
 ## Future work
 
 - Labels, assignees, Projects v2 / linked PRs; two-way sync (push task status to GitHub).

@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
+[project.optional-dependencies]
+# Used by `scripts/pmgo_mcp_server.py` (stdio MCP for OpenClaw Gateway).
+mcp = ["mcp", "pyyaml"]
+
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"

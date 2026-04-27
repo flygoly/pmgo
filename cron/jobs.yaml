@@ -1,3 +1,7 @@
+# Human-readable intent only — OpenClaw does NOT read this file.
+# Production schedules: use Gateway cron (`openclaw cron add`); see `openclaw/README.md`.
+# Repo scripts: `scripts/daily-standup.py`, `scripts/weekly-report.py`, `scripts/pmgo_mcp_server.py`.
+
 - name: morning-briefing
   cron: "0 9 * * 1-5"
   agent: pmgo-reporter

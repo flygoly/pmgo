@@ -26,6 +26,23 @@ tools:
     allow: true
     require_confirm: true
 
+  project_core.read:
+    allow: true
+
+  project_core.project.write:
+    allow: true
+    require_confirm: true
+
+  project_core.task.write:
+    allow: true
+    require_confirm: true
+
+  pmgo.report.daily:
+    allow: true
+
+  pmgo.report.weekly:
+    allow: true
+
   jira.transition_issue:
     allow: true
     require_confirm: true

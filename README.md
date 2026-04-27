@@ -112,6 +112,10 @@ npm run github-issues -- import-task --project-id <UUID> --number 42
 
 Details: `skills/integration-github/SKILL.md`. Importing creates a local task with `source=github` and `external_id` set to GitHub’s numeric issue id for idempotency.
 
+## OpenClaw (tools, channels, cron)
+
+To register the **policy-aware MCP tool server** (`scripts/pmgo_mcp_server.py`), connect **Telegram** (or another channel), and schedule **daily/weekly** runs with Gateway **cron**, follow **[openclaw/README.md](./openclaw/README.md)**. The small `cron/jobs.yaml` in this repo is a narrative reference only; production schedules use `openclaw cron add`.
+
 ## Architecture at a glance
 
 ```
@@ -153,7 +157,7 @@ Contributions are welcome. A few ground rules:
 2. New user-facing strings must be added to all three locale files in the same PR.
 3. Follow the allow-list policy in `policy/pmgo.policy.yaml` — never expand shell or delete permissions casually.
 
-Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` render smokes when a project exists, and `github-issues:smoke` which skips if GitHub env vars are missing):
+Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` render smokes when a project exists, `github-issues:smoke` when GitHub env vars are missing, and `mcp:pmgo:check` for OpenClaw MCP dependencies when `pip install mcp pyyaml` is available):
 
 ```bash
 npm run validate

@@ -35,3 +35,4 @@ openclaw agent add ./agent
 - Locale strings: `../locales/`
 - Policy: `../policy/pmgo.policy.yaml`
 - Cron jobs: `../cron/jobs.yaml`
+- OpenClaw: register the pmgo MCP stdio server and Gateway cron from `../openclaw/README.md`
