@@ -98,6 +98,19 @@ npm run github-issues -- import-task --project-id <UUID> --number 42
 
 說明見 `skills/integration-github/SKILL.md`。`import-task` 會建立本機任務，`source=github`，`external_id` 為 GitHub 的數值型 issue id，以便去重。
 
+## Linear（選用）
+
+在 Linear →**設定 → API** 建立 `LINEAR_API_KEY`，然後：
+
+```bash
+npm run linear-issues -- smoke
+npm run linear-issues -- list --first 10
+npm run linear-issues -- get ENG-123
+npm run linear-issues -- import-task --project-id <UUID> --identifier ENG-123
+```
+
+說明見 `skills/integration-linear/SKILL.md`。`import-task` 使用 `source=linear`，`external_id` 為 Linear 端 issue 的 UUID。
+
 ## OpenClaw（工具、通道、排程）
 
 註冊受策略約束的 **MCP 工具服務**（`scripts/pmgo_mcp_server.py`）、連接 **Telegram** 等通道、以 Gateway **cron** 跑日報/週報，請見 **[openclaw/README.md](./openclaw/README.md)**。倉庫根目錄的 `cron/jobs.yaml` 僅為示意；正式排程請用 `openclaw cron add`。
@@ -113,7 +126,7 @@ OpenClaw Gateway（多通道）
         ▼
   技能包（MCP）
    project-core · daily-standup · weekly-report · risk-radar
-   integration-{github,jira,linear,notion,feishu,dingtalk}
+   integration-{github,linear,jira,notion,feishu,dingtalk}
         │
         ▼
    記憶層：SQLite + Markdown   ◄── Heartbeat / Cron 排程任務
@@ -143,7 +156,7 @@ OpenClaw Gateway（多通道）
 2. 新增的使用者可見文案必須在同一個 PR 裡同步三個 locale。
 3. 遵守 `policy/pmgo.policy.yaml` 中的白名單策略，不要隨意放開 shell 或刪除權限。
 
-建立 PR 前請執行倉庫檢查（Agent i18n、memory 資源與資料庫驗證、`project-core` 列表冒煙、在有專案時執行 `daily-standup` / `weekly-report` 渲染冒煙、未設定 GitHub 環境變數時會略過的 `github-issues:smoke`，以及已安裝 `mcp`/`pyyaml` 時的 `mcp:pmgo:check`）：
+建立 PR 前請執行倉庫檢查（Agent i18n、memory 資源與資料庫驗證、`project-core` 列表冒煙、在有專案時執行 `daily-standup` / `weekly-report` / `risk-radar` 冒煙、未設定 GitHub / Linear 相關環境變數時會略過的 `github-issues:smoke` / `linear-issues:smoke`，以及已安裝 `mcp`/`pyyaml` 時的 `mcp:pmgo:check`）：
 
 ```bash
 npm run validate

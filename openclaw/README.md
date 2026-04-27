@@ -44,7 +44,7 @@ Add **GitHub** credentials to the same `env` object if you use GitHub tools from
 
 **Policy model:** every tool first checks `policy/pmgo.policy.yaml` via `scripts/pmgo_policy.py`. Writes (`project`/`task` creation, GitHub create/close/import) require `confirmed: true` in the tool arguments when the policy entry sets `require_confirm: true` (mirrors human approval in chat before the model re-calls the tool with `confirmed: true`).
 
-**Tool names** exposed by the server include: `pmgo_project_list`, `pmgo_project_create`, `pmgo_task_list`, `pmgo_task_create`, `pmgo_risk_scan`, `pmgo_daily_report`, `pmgo_weekly_report`, `pmgo_github_issue_list`, `pmgo_github_issue_get`, `pmgo_github_issue_create`, `pmgo_github_issue_close`, `pmgo_github_import_task`.
+**Tool names** exposed by the server include: `pmgo_project_list`, `pmgo_project_create`, `pmgo_task_list`, `pmgo_task_create`, `pmgo_risk_scan`, `pmgo_daily_report`, `pmgo_weekly_report`, `pmgo_github_issue_list`, `pmgo_github_issue_get`, `pmgo_github_issue_create`, `pmgo_github_issue_close`, `pmgo_github_import_task`, `pmgo_linear_issue_list`, `pmgo_linear_issue_get`, `pmgo_linear_import_task`.
 
 Embedded/bundled MCP runtimes are controlled by OpenClaw `tools` profiles; if MCP tools are missing in the agent, check `tools.deny` / `tools.profile` in Gateway config and ensure MCP bundles are not disabled (see [config-tools](https://docs.openclaw.ai/gateway/config-tools)).
 

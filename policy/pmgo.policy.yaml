@@ -26,6 +26,13 @@ tools:
     allow: true
     require_confirm: true
 
+  linear.issue.read:
+    allow: true
+
+  linear.issue.import_task:
+    allow: true
+    require_confirm: true
+
   project_core.read:
     allow: true
 

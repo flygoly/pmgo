@@ -31,12 +31,15 @@ class TestPmgoPolicyGate(unittest.TestCase):
   def test_read_allows_without_confirm(self) -> None:
     self.assertIsNone(gate("project_core.read", confirmed=False))
     self.assertIsNone(gate("github.issue.read", confirmed=False))
+    self.assertIsNone(gate("linear.issue.read", confirmed=False))
     self.assertIsNone(gate("pmgo.report.daily", confirmed=False))
     self.assertIsNone(gate("pmgo.risk.scan", confirmed=False))
 
   def test_write_requires_confirm(self) -> None:
     self.assertIsNotNone(gate("github.issue.create", confirmed=False))
     self.assertIsNone(gate("github.issue.create", confirmed=True))
+    self.assertIsNotNone(gate("linear.issue.import_task", confirmed=False))
+    self.assertIsNone(gate("linear.issue.import_task", confirmed=True))
     self.assertIsNotNone(gate("project_core.task.write", confirmed=False))
     self.assertIsNone(gate("project_core.task.write", confirmed=True))
 

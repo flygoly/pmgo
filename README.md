@@ -112,6 +112,19 @@ npm run github-issues -- import-task --project-id <UUID> --number 42
 
 Details: `skills/integration-github/SKILL.md`. Importing creates a local task with `source=github` and `external_id` set to GitHub’s numeric issue id for idempotency.
 
+## Linear (optional)
+
+Set `LINEAR_API_KEY` from Linear → **Settings → API**. Then:
+
+```bash
+npm run linear-issues -- smoke
+npm run linear-issues -- list --first 10
+npm run linear-issues -- get ENG-123
+npm run linear-issues -- import-task --project-id <UUID> --identifier ENG-123
+```
+
+Details: `skills/integration-linear/SKILL.md`. Importing sets `source=linear` and `external_id` to Linear’s issue UUID.
+
 ## OpenClaw (tools, channels, cron)
 
 To register the **policy-aware MCP tool server** (`scripts/pmgo_mcp_server.py`), connect **Telegram** (or another channel), and schedule **daily/weekly** runs with Gateway **cron**, follow **[openclaw/README.md](./openclaw/README.md)**. The small `cron/jobs.yaml` in this repo is a narrative reference only; production schedules use `openclaw cron add`.
@@ -127,7 +140,7 @@ OpenClaw Gateway (channels)
         ▼
   Skills Pack (MCP)
    project-core · daily-standup · weekly-report · risk-radar
-   integration-{github,jira,linear,notion,feishu,dingtalk}
+   integration-{github,linear,jira,notion,feishu,dingtalk}
         │
         ▼
    Memory: SQLite + Markdown   ◄── Heartbeat/Cron jobs
@@ -157,7 +170,7 @@ Contributions are welcome. A few ground rules:
 2. New user-facing strings must be added to all three locale files in the same PR.
 3. Follow the allow-list policy in `policy/pmgo.policy.yaml` — never expand shell or delete permissions casually.
 
-Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` render smokes when a project exists, `github-issues:smoke` when GitHub env vars are missing, and `mcp:pmgo:check` for OpenClaw MCP dependencies when `pip install mcp pyyaml` is available):
+Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` / `risk-radar` smokes when a project exists, `github-issues:smoke` and `linear-issues:smoke` when the respective API env vars are missing, and `mcp:pmgo:check` for OpenClaw MCP dependencies when `pip install mcp pyyaml` is available):
 
 ```bash
 npm run validate
