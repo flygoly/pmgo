@@ -48,6 +48,7 @@ pmgo targets the official OpenClaw runtime. Skills are written in
 
    ```bash
    npm test
+   # Policy tests use PyYAML when available: pip install pyyaml
    pytest
    ```
 

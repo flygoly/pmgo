@@ -26,11 +26,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Python deps for MCP preflight
+      - name: Install Python deps for MCP preflight and tests
         run: pip install mcp pyyaml
 
       - name: Install npm dependencies
         run: npm install
+
+      - name: Unit tests (Python)
+        run: npm test
 
       - name: Validate (i18n + memory)
         run: npm run validate

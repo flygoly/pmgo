@@ -1,6 +1,12 @@
 # Import Validation Tests
 
-This directory contains tests to validate that the current `agent/` package is importable by OpenClaw.
+This directory contains tests to validate that the current `agent/` package is importable by OpenClaw, plus small **Python unit tests** (e.g. `test_pmgo_policy.py` for `scripts/pmgo_policy.py`). Run:
+
+```bash
+npm test
+```
+
+`test_pmgo_policy` uses PyYAML if installed (`pip install pyyaml`); without it, policy tests are skipped and a layout smoke test still runs.
 
 ## Test script
 
