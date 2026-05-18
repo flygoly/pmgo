@@ -33,6 +33,13 @@ tools:
     allow: true
     require_confirm: true
 
+  jira.issue.read:
+    allow: true
+
+  jira.issue.import_task:
+    allow: true
+    require_confirm: true
+
   project_core.read:
     allow: true
 

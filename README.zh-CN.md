@@ -111,6 +111,19 @@ npm run linear-issues -- import-task --project-id <UUID> --identifier ENG-123
 
 说明见 `skills/integration-linear/SKILL.md`。`import-task` 使用 `source=linear`，`external_id` 为 Linear 侧 issue 的 UUID。
 
+## Jira（可选）
+
+配置 `JIRA_BASE_URL`、`JIRA_EMAIL`、`JIRA_API_TOKEN`（可选 `JIRA_PROJECT` 作为默认 list 的 JQL 项目），然后：
+
+```bash
+npm run jira-issues -- smoke
+npm run jira-issues -- list --max-results 10
+npm run jira-issues -- get PROJ-123
+npm run jira-issues -- import-task --project-id <UUID> --issue-key PROJ-123
+```
+
+说明见 `skills/integration-jira/SKILL.md`。`import-task` 使用 `source=jira`，`external_id` 为 Jira issue 的数字 id。
+
 ## OpenClaw（工具、通道、定时任务）
 
 注册受策略约束的 **MCP 工具服务**（`scripts/pmgo_mcp_server.py`）、接入 **Telegram** 等通道、用 Gateway **cron** 跑日报/周报，请见 **[openclaw/README.md](./openclaw/README.md)**。仓库根目录的 `cron/jobs.yaml` 仅为示意；正式排期请用 `openclaw cron add`。
@@ -156,7 +169,7 @@ OpenClaw Gateway（多渠道）
 2. 新增的用户可见文案必须在同一个 PR 里同步三个 locale。
 3. 遵守 `policy/pmgo.policy.yaml` 中的白名单策略，不要随意放开 shell 或删除权限。
 
-提交 PR 前请运行仓库检查（Agent i18n 校验、memory 资源与数据库校验、`project-core` 列表冒烟、在有项目时执行 `daily-standup` / `weekly-report` / `risk-radar` 冒烟、未设置 GitHub / Linear 相关环境变量时会跳过的 `github-issues:smoke` / `linear-issues:smoke`，以及已安装 `mcp`/`pyyaml` 时的 `mcp:pmgo:check`）：
+提交 PR 前请运行仓库检查（Agent i18n 校验、memory 资源与数据库校验、`project-core` 列表冒烟、在有项目时执行 `daily-standup` / `weekly-report` / `risk-radar` 冒烟、未设置 GitHub / Linear / Jira 相关环境变量时会跳过的 `github-issues:smoke` / `linear-issues:smoke` / `jira-issues:smoke`，以及已安装 `mcp`/`pyyaml` 时的 `mcp:pmgo:check`）：
 
 ```bash
 npm run validate

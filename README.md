@@ -125,6 +125,19 @@ npm run linear-issues -- import-task --project-id <UUID> --identifier ENG-123
 
 Details: `skills/integration-linear/SKILL.md`. Importing sets `source=linear` and `external_id` to Linear’s issue UUID.
 
+## Jira (optional)
+
+Set `JIRA_BASE_URL`, `JIRA_EMAIL`, and `JIRA_API_TOKEN` (optional `JIRA_PROJECT` for default list JQL). Then:
+
+```bash
+npm run jira-issues -- smoke
+npm run jira-issues -- list --max-results 10
+npm run jira-issues -- get PROJ-123
+npm run jira-issues -- import-task --project-id <UUID> --issue-key PROJ-123
+```
+
+Details: `skills/integration-jira/SKILL.md`. Importing sets `source=jira` and `external_id` to Jira’s numeric issue id.
+
 ## OpenClaw (tools, channels, cron)
 
 To register the **policy-aware MCP tool server** (`scripts/pmgo_mcp_server.py`), connect **Telegram** (or another channel), and schedule **daily/weekly** runs with Gateway **cron**, follow **[openclaw/README.md](./openclaw/README.md)**. The small `cron/jobs.yaml` in this repo is a narrative reference only; production schedules use `openclaw cron add`.
@@ -170,7 +183,7 @@ Contributions are welcome. A few ground rules:
 2. New user-facing strings must be added to all three locale files in the same PR.
 3. Follow the allow-list policy in `policy/pmgo.policy.yaml` — never expand shell or delete permissions casually.
 
-Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` / `risk-radar` smokes when a project exists, `github-issues:smoke` and `linear-issues:smoke` when the respective API env vars are missing, and `mcp:pmgo:check` for OpenClaw MCP dependencies when `pip install mcp pyyaml` is available):
+Before opening a PR, run the repository checks (agent i18n validation, memory asset and database verification, `project-core` list smoke, `daily-standup` / `weekly-report` / `risk-radar` smokes when a project exists, `github-issues:smoke`, `linear-issues:smoke`, and `jira-issues:smoke` when the respective API env vars are missing, and `mcp:pmgo:check` for OpenClaw MCP dependencies when `pip install mcp pyyaml` is available):
 
 ```bash
 npm run validate

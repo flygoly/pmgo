@@ -31,6 +31,7 @@ REQUIRED_SCRIPT_FILES = {
   "weekly-report.py",
   "github-issues.py",
   "linear-issues.py",
+  "jira-issues.py",
   "risk-radar.py",
   "pmgo_mcp_server.py",
   "pmgo_policy.py",

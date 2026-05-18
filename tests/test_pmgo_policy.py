@@ -32,6 +32,7 @@ class TestPmgoPolicyGate(unittest.TestCase):
     self.assertIsNone(gate("project_core.read", confirmed=False))
     self.assertIsNone(gate("github.issue.read", confirmed=False))
     self.assertIsNone(gate("linear.issue.read", confirmed=False))
+    self.assertIsNone(gate("jira.issue.read", confirmed=False))
     self.assertIsNone(gate("pmgo.report.daily", confirmed=False))
     self.assertIsNone(gate("pmgo.risk.scan", confirmed=False))
 
@@ -40,6 +41,8 @@ class TestPmgoPolicyGate(unittest.TestCase):
     self.assertIsNone(gate("github.issue.create", confirmed=True))
     self.assertIsNotNone(gate("linear.issue.import_task", confirmed=False))
     self.assertIsNone(gate("linear.issue.import_task", confirmed=True))
+    self.assertIsNotNone(gate("jira.issue.import_task", confirmed=False))
+    self.assertIsNone(gate("jira.issue.import_task", confirmed=True))
     self.assertIsNotNone(gate("project_core.task.write", confirmed=False))
     self.assertIsNone(gate("project_core.task.write", confirmed=True))
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-stdio MCP server exposing pmgo CLIs (project-core, reports, GitHub, Linear) with policy
+stdio MCP server exposing pmgo CLIs (project-core, reports, GitHub, Linear, Jira) with policy
 checks from `policy/pmgo.policy.yaml`. Run via OpenClaw: `openclaw mcp set pmgo
 '{"command":"python3","args":["'$(pwd)'/scripts/pmgo_mcp_server.py"]}'` (use an
 absolute path to this script; optional env PMGO_WORKSPACE for clarity).
@@ -29,6 +29,7 @@ for _d in (
   _ROOT / "skills" / "integration-github",
   _ROOT / "skills" / "risk-radar",
   _ROOT / "skills" / "integration-linear",
+  _ROOT / "skills" / "integration-jira",
 ):
   p = str(_d)
   if p not in sys.path:
@@ -397,6 +398,94 @@ def pmgo_linear_import_task(
     )
   except sqlite3.IntegrityError:
     return "A task for this Linear issue already exists (same project + source + external_id)."
+
+
+# --- Jira ---
+
+
+@mcp.tool()
+def pmgo_jira_issue_list(jql: str = "", max_results: int = 20) -> str:
+  """Search Jira issues via JQL (empty jql uses default). Needs Jira env vars."""
+  err = gate("jira.issue.read", confirmed=False)
+  if err:
+    return err
+  from jira_integration.api import search_issues
+  from jira_integration.cli import _issue_public
+  from jira_integration.config import load_config
+
+  try:
+    cfg = load_config()
+  except OSError as e:
+    return str(e)
+  try:
+    items = search_issues(cfg, jql=jql or None, max_results=max_results)
+    return _j([_issue_public(cfg, x) for x in items])
+  except RuntimeError as e:
+    return str(e)
+
+
+@mcp.tool()
+def pmgo_jira_issue_get(issue_key: str) -> str:
+  """Get one Jira issue by key (e.g. PROJ-123)."""
+  err = gate("jira.issue.read", confirmed=False)
+  if err:
+    return err
+  from jira_integration.api import get_issue
+  from jira_integration.cli import _issue_public
+  from jira_integration.config import load_config
+
+  try:
+    cfg = load_config()
+    return _j(_issue_public(cfg, get_issue(cfg, issue_key)))
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
+
+
+@mcp.tool()
+def pmgo_jira_import_task(
+  project_id: str,
+  issue_key: str,
+  confirmed: bool = False,
+) -> str:
+  """Import a Jira issue as a local task (source=jira, requires confirmed)."""
+  err = gate("jira.issue.import_task", confirmed=confirmed)
+  if err:
+    return err
+  from jira_integration.api import get_issue
+  from jira_integration.cli import _issue_public, _status_category_to_pmgo
+  from jira_integration.config import load_config
+  from project_core.store import default_task_store
+
+  try:
+    cfg = load_config()
+    issue = get_issue(cfg, issue_key)
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
+  pub = _issue_public(cfg, issue)
+  ttitle = str(pub.get("title") or pub.get("key") or "Jira issue")
+  body = (pub.get("description") or "").strip() if pub.get("description") else ""
+  url = str(pub.get("url") or "")
+  if url:
+    body = f"{body}\n\nJira: {url}".strip() if body else f"Jira: {url}"
+  tstatus = _status_category_to_pmgo(
+    str(pub.get("status_category") or ""),
+    str(pub.get("status") or ""),
+  )
+  ext_id = str(pub.get("id") or "")
+  store = default_task_store()
+  try:
+    return _j(
+      store.create_task(
+        project_id,
+        title=ttitle,
+        detail=body or None,
+        status=tstatus,
+        source="jira",
+        external_id=ext_id,
+      )
+    )
+  except sqlite3.IntegrityError:
+    return "A task for this Jira issue already exists (same project + source + external_id)."
 
 
 def main() -> None:
