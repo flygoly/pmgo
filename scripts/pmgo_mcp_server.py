@@ -71,6 +71,12 @@ def _slugify(name: str) -> str:
   return slugify(name)
 
 
+def _resolve_project_id(project_id: str) -> str | None:
+  import pmgo_common  # noqa: WPS433
+
+  return pmgo_common.resolve_project_id(explicit=project_id or None)
+
+
 # --- project / tasks (project_core) ---
 
 
@@ -92,22 +98,30 @@ def pmgo_project_create(
   slug: str = "",
   description: str = "",
   owner: str = "",
+  scaffold_markdown: bool = False,
+  locale: str = "en",
 ) -> str:
-  """Create a project (requires confirmed=true if policy says so)."""
+  """Create a project (requires confirmed=true if policy says so). Optionally scaffold markdown memory."""
   err = gate("project_core.project.write", confirmed=confirmed)
   if err:
     return err
+  from project_core.memory_md import scaffold_project_markdown
   from project_core.store import default_project_store
 
   s = (slug or "").strip() or _slugify(name)
-  return _j(
-    default_project_store().create_project(
-      name=name,
-      slug=s,
-      description=description or None,
-      owner=owner or None,
-    )
+  row = default_project_store().create_project(
+    name=name,
+    slug=s,
+    description=description or None,
+    owner=owner or None,
   )
+  if scaffold_markdown:
+    try:
+      memory_dir = scaffold_project_markdown(name=name, slug=s, locale=locale)
+      row = {**row, "memory_dir": str(memory_dir)}
+    except (ValueError, FileNotFoundError) as e:
+      return str(e)
+  return _j(row)
 
 
 @mcp.tool()
@@ -151,19 +165,134 @@ def pmgo_task_create(
     return f"Database error (duplicate external id?): {e}"
 
 
+@mcp.tool()
+def pmgo_task_update(
+  task_id: str,
+  confirmed: bool = False,
+  title: str = "",
+  detail: str = "",
+  task_status: str = "",
+  priority: str = "",
+  assignee: str = "",
+  due_at: str = "",
+  blocked_reason: str = "",
+  milestone_id: str = "",
+) -> str:
+  """Update a task (requires confirmed=true for writes). Pass only fields to change."""
+  err = gate("project_core.task.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_task_store
+
+  kwargs: dict[str, object] = {}
+  if title.strip():
+    kwargs["title"] = title
+  if detail.strip():
+    kwargs["detail"] = detail
+  if task_status.strip():
+    kwargs["status"] = task_status
+  if priority.strip():
+    kwargs["priority"] = priority
+  if assignee.strip():
+    kwargs["assignee"] = assignee
+  if due_at.strip():
+    kwargs["due_at"] = due_at
+  if blocked_reason.strip():
+    kwargs["blocked_reason"] = blocked_reason
+  if milestone_id.strip():
+    kwargs["milestone_id"] = milestone_id
+  try:
+    return _j(default_task_store().update_task(task_id, **kwargs))
+  except KeyError as e:
+    return str(e)
+
+
+# --- milestones ---
+
+
+@mcp.tool()
+def pmgo_milestone_list(project_id: str) -> str:
+  """List milestones for a project."""
+  err = gate("project_core.milestone.read", confirmed=False)
+  if err:
+    return err
+  from project_core.store import default_milestone_store
+
+  return _j(default_milestone_store().list_milestones(project_id))
+
+
+@mcp.tool()
+def pmgo_milestone_create(
+  project_id: str,
+  title: str,
+  confirmed: bool = False,
+  milestone_status: str = "todo",
+  owner: str = "",
+  due_at: str = "",
+) -> str:
+  """Create a milestone (requires confirmed=true for writes)."""
+  err = gate("project_core.milestone.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_milestone_store
+
+  return _j(
+    default_milestone_store().create_milestone(
+      project_id,
+      title=title,
+      status=milestone_status,
+      owner=owner or None,
+      due_at=due_at or None,
+    )
+  )
+
+
+@mcp.tool()
+def pmgo_milestone_update(
+  milestone_id: str,
+  confirmed: bool = False,
+  title: str = "",
+  milestone_status: str = "",
+  owner: str = "",
+  due_at: str = "",
+) -> str:
+  """Update a milestone (requires confirmed=true for writes)."""
+  err = gate("project_core.milestone.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_milestone_store
+
+  kwargs: dict[str, object] = {}
+  if title.strip():
+    kwargs["title"] = title
+  if milestone_status.strip():
+    kwargs["status"] = milestone_status
+  if owner.strip():
+    kwargs["owner"] = owner
+  if due_at.strip():
+    kwargs["due_at"] = due_at
+  try:
+    return _j(default_milestone_store().update_milestone(milestone_id, **kwargs))
+  except KeyError as e:
+    return str(e)
+
+
 # --- risk radar (SQLite risks + blocked tasks) ---
 
 
 @mcp.tool()
-def pmgo_risk_scan(project_id: str) -> str:
-  """List open/watching risks and blocked tasks for a project (local SQLite)."""
+def pmgo_risk_scan(project_id: str = "") -> str:
+  """List open/watching risks and blocked tasks. Uses PMGO_DEFAULT_PROJECT_ID when empty."""
   err = gate("pmgo.risk.scan", confirmed=False)
   if err:
     return err
   from risk_radar import scan as scanmod
 
+  pid = _resolve_project_id(project_id)
+  if not pid:
+    return "project_id is required (or set PMGO_DEFAULT_PROJECT_ID)."
   try:
-    return _j(scanmod.scan_project(project_id))
+    return _j(scanmod.scan_project(pid))
   except KeyError as e:
     return str(e)
 
@@ -172,30 +301,40 @@ def pmgo_risk_scan(project_id: str) -> str:
 
 
 @mcp.tool()
-def pmgo_daily_report(project_id: str, locale: str = "en") -> str:
-  """Render the Markdown daily standup for a project (UTC 24h window)."""
+def pmgo_daily_report(project_id: str = "", locale: str = "") -> str:
+  """Render the Markdown daily standup. Uses PMGO_DEFAULT_PROJECT_ID when project_id is empty."""
   err = gate("pmgo.report.daily", confirmed=False)
   if err:
     return err
+  import pmgo_common  # noqa: WPS433
   from daily_standup.build import build_daily_markdown
 
-  return build_daily_markdown(project_id=project_id, locale=locale)
+  pid = _resolve_project_id(project_id)
+  if not pid:
+    return "project_id is required (or set PMGO_DEFAULT_PROJECT_ID)."
+  loc = locale.strip() or pmgo_common.default_locale()
+  return build_daily_markdown(project_id=pid, locale=loc)
 
 
 @mcp.tool()
 def pmgo_weekly_report(
-  project_id: str,
-  locale: str = "en",
+  project_id: str = "",
+  locale: str = "",
   week_offset: int = 0,
 ) -> str:
-  """Render the Markdown weekly report (UTC ISO week; week_offset 0 = current)."""
+  """Render the Markdown weekly report. Uses PMGO_DEFAULT_PROJECT_ID when project_id is empty."""
   err = gate("pmgo.report.weekly", confirmed=False)
   if err:
     return err
+  import pmgo_common  # noqa: WPS433
   from weekly_report.build import build_weekly_markdown
 
+  pid = _resolve_project_id(project_id)
+  if not pid:
+    return "project_id is required (or set PMGO_DEFAULT_PROJECT_ID)."
+  loc = locale.strip() or pmgo_common.default_locale()
   return build_weekly_markdown(
-    project_id=project_id, locale=locale, week_offset=week_offset
+    project_id=pid, locale=loc, week_offset=week_offset
   )
 
 

@@ -72,6 +72,11 @@ class ProjectStore:
       ).fetchall()
     return [row_to_dict(r) for r in rows]
 
+  def get_project_by_slug(self, slug: str) -> Optional[dict[str, Any]]:
+    with self.connect() as conn:
+      row = conn.execute("SELECT * FROM projects WHERE slug = ?", (slug,)).fetchone()
+    return row_to_dict(row) if row is not None else None
+
   def create_project(
     self,
     *,
@@ -244,9 +249,120 @@ class TaskStore:
     return row_to_dict(row)
 
 
+@dataclass
+class MilestoneStore:
+  db_file: Path
+
+  def connect(self) -> sqlite3.Connection:
+    return _connect(self.db_file)
+
+  def list_milestones(self, project_id: str) -> list[dict[str, Any]]:
+    with self.connect() as conn:
+      rows = conn.execute(
+        """
+        SELECT * FROM milestones
+        WHERE project_id = ?
+        ORDER BY due_at IS NULL, due_at, created_at
+        """,
+        (project_id,),
+      ).fetchall()
+    return [row_to_dict(r) for r in rows]
+
+  def create_milestone(
+    self,
+    project_id: str,
+    *,
+    title: str,
+    status: str = "todo",
+    owner: Optional[str] = None,
+    due_at: Optional[str] = None,
+    external_id: Optional[str] = None,
+  ) -> dict[str, Any]:
+    mid = str(uuid.uuid4())
+    ts = _now()
+    with self.connect() as conn:
+      conn.execute(
+        """
+        INSERT INTO milestones (
+          id, project_id, title, status, owner, due_at, external_id, created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (mid, project_id, title, status, owner, due_at, external_id, ts),
+      )
+      _audit(
+        conn,
+        project_id=project_id,
+        action="milestone.create",
+        target_type="milestone",
+        target_id=mid,
+        payload={"title": title, "status": status},
+      )
+      conn.commit()
+      row = conn.execute("SELECT * FROM milestones WHERE id = ?", (mid,)).fetchone()
+    assert row is not None
+    return row_to_dict(row)
+
+  def update_milestone(
+    self,
+    milestone_id: str,
+    *,
+    title: Optional[str] = None,
+    status: Optional[str] = None,
+    owner: Optional[str] = None,
+    due_at: Optional[str] = None,
+  ) -> dict[str, Any]:
+    fields: dict[str, Any] = {}
+    if title is not None:
+      fields["title"] = title
+    if status is not None:
+      fields["status"] = status
+    if owner is not None:
+      fields["owner"] = owner
+    if due_at is not None:
+      fields["due_at"] = due_at
+    if not fields:
+      with self.connect() as conn:
+        row = conn.execute(
+          "SELECT * FROM milestones WHERE id = ?", (milestone_id,)
+        ).fetchone()
+      if row is None:
+        raise KeyError(f"Unknown milestone id: {milestone_id}")
+      return row_to_dict(row)
+
+    cols = ", ".join(f"{k} = ?" for k in fields)
+    values = list(fields.values()) + [milestone_id]
+    with self.connect() as conn:
+      cur = conn.execute(f"UPDATE milestones SET {cols} WHERE id = ?", values)
+      if cur.rowcount == 0:
+        raise KeyError(f"Unknown milestone id: {milestone_id}")
+      project_id = conn.execute(
+        "SELECT project_id FROM milestones WHERE id = ?", (milestone_id,)
+      ).fetchone()
+      pid = project_id[0] if project_id else None
+      _audit(
+        conn,
+        project_id=pid,
+        action="milestone.update",
+        target_type="milestone",
+        target_id=milestone_id,
+        payload=fields,
+      )
+      conn.commit()
+      row = conn.execute(
+        "SELECT * FROM milestones WHERE id = ?", (milestone_id,)
+      ).fetchone()
+    assert row is not None
+    return row_to_dict(row)
+
+
 def default_project_store() -> ProjectStore:
   return ProjectStore(db_path())
 
 
 def default_task_store() -> TaskStore:
   return TaskStore(db_path())
+
+
+def default_milestone_store() -> MilestoneStore:
+  return MilestoneStore(db_path())

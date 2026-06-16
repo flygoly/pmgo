@@ -19,7 +19,7 @@ def main() -> None:
   parser = argparse.ArgumentParser(
     description=(
       "Run memory init/migrate/verify in order, and optionally scaffold "
-      "memory/projects/<slug>/ markdown files."
+      "memory/projects/<slug>/ markdown files plus a linked SQLite project."
     )
   )
   parser.add_argument("--project-name", help="Optional project display name.")
@@ -38,15 +38,16 @@ def main() -> None:
   if args.project_name:
     command = [
       sys.executable,
-      "scripts/init-memory-project.py",
+      "scripts/gtd-bootstrap.py",
       "--name",
       args.project_name,
       "--locale",
       args.locale,
+      "--skip-db-init",
     ]
     if args.project_slug:
       command.extend(["--slug", args.project_slug])
-    run_step(command, "init-project-memory")
+    run_step(command, "bootstrap-project")
   elif args.project_slug:
     raise ValueError("--project-slug requires --project-name.")
 

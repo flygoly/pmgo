@@ -45,6 +45,11 @@ class TestPmgoPolicyGate(unittest.TestCase):
     self.assertIsNone(gate("jira.issue.import_task", confirmed=True))
     self.assertIsNotNone(gate("project_core.task.write", confirmed=False))
     self.assertIsNone(gate("project_core.task.write", confirmed=True))
+    self.assertIsNotNone(gate("project_core.milestone.write", confirmed=False))
+    self.assertIsNone(gate("project_core.milestone.write", confirmed=True))
+
+  def test_milestone_read_allows_without_confirm(self) -> None:
+    self.assertIsNone(gate("project_core.milestone.read", confirmed=False))
 
   def test_unknown_tool_denied(self) -> None:
     msg = gate("definitely.not.a.real.tool", confirmed=True)

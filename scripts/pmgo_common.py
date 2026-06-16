@@ -32,3 +32,41 @@ def load_strings(locale: str) -> dict[str, str]:
   p = root / "locales" / f"{locale}.json"
   with open(p, encoding="utf-8") as f:
     return json.load(f)
+
+
+def first_project_id() -> str | None:
+  conn = connect_db(db_path())
+  try:
+    row = conn.execute("SELECT id FROM projects ORDER BY created_at LIMIT 1").fetchone()
+  finally:
+    conn.close()
+  if row is None:
+    return None
+  return str(row[0])
+
+
+def default_project_id() -> str | None:
+  override = os.environ.get("PMGO_DEFAULT_PROJECT_ID", "").strip()
+  return override or None
+
+
+def default_locale() -> str:
+  loc = os.environ.get("PMGO_DEFAULT_LOCALE", "").strip()
+  if loc in {"en", "zh-CN", "zh-TW"}:
+    return loc
+  return "en"
+
+
+def resolve_project_id(
+  *,
+  explicit: str | None = None,
+  from_first: bool = False,
+) -> str | None:
+  if explicit and str(explicit).strip():
+    return str(explicit).strip()
+  default = default_project_id()
+  if default:
+    return default
+  if from_first:
+    return first_project_id()
+  return None

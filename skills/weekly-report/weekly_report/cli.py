@@ -12,17 +12,6 @@ import pmgo_common  # type: ignore
 from . import build as buildmod
 
 
-def _first_project_id() -> str | None:
-  conn = pmgo_common.connect_db(pmgo_common.db_path())
-  try:
-    row = conn.execute("SELECT id FROM projects ORDER BY created_at LIMIT 1").fetchone()
-  finally:
-    conn.close()
-  if row is None:
-    return None
-  return str(row[0])
-
-
 def build_parser() -> argparse.ArgumentParser:
   p = argparse.ArgumentParser(
     prog="weekly-report",
@@ -40,8 +29,9 @@ def build_parser() -> argparse.ArgumentParser:
   r.add_argument("--project-id", default=None, dest="project_id")
   r.add_argument(
     "--locale",
-    default="en",
+    default=None,
     choices=["en", "zh-CN", "zh-TW"],
+    help="Report locale (default: PMGO_DEFAULT_LOCALE or en).",
   )
   r.add_argument(
     "--week-offset",
@@ -61,19 +51,25 @@ def build_parser() -> argparse.ArgumentParser:
 def cmd_report(args: Any) -> int:
   if args.db:
     os.environ["PMGO_MEMORY_DB"] = args.db
-  pid: str | None = args.project_id
-  if args.from_first_project:
-    pid = _first_project_id()
-    if pid is None:
-      print("No projects in database; skip weekly report (smoke OK).", file=sys.stderr)
-      return 0
+  pid = pmgo_common.resolve_project_id(
+    explicit=args.project_id,
+    from_first=args.from_first_project,
+  )
+  if pid is None and args.from_first_project:
+    print("No projects in database; skip weekly report (smoke OK).", file=sys.stderr)
+    return 0
   if not pid:
-    print("--project-id is required unless --from-first-project is set", file=sys.stderr)
+    print(
+      "--project-id is required unless --from-first-project is set or "
+      "PMGO_DEFAULT_PROJECT_ID is configured",
+      file=sys.stderr,
+    )
     return 1
+  locale = args.locale or pmgo_common.default_locale()
   try:
     text = buildmod.build_weekly_markdown(
       project_id=pid,
-      locale=args.locale,
+      locale=locale,
       week_offset=args.week_offset,
     )
   except (KeyError, FileNotFoundError) as e:

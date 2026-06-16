@@ -25,6 +25,7 @@ venv/
 memory/*.sqlite
 memory/*.db
 memory/audit.log
+memory/projects/
 reports/
 .openclaw/
 .pmgo/

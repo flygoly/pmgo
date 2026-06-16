@@ -33,6 +33,7 @@
     "memory:check": "python3 scripts/check-memory-assets.py",
     "memory:scaffold": "python3 scripts/scaffold-memory.py",
     "memory:verify": "python3 scripts/verify-memory-db.py",
+    "gtd:bootstrap": "python3 scripts/gtd-bootstrap.py",
     "test": "python3 -m unittest discover -s tests -p \"test_*.py\" -v"
   }
 }

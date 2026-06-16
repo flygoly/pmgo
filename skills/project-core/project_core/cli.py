@@ -8,7 +8,12 @@ import sys
 from typing import Any
 
 from .config import slugify
-from .store import default_project_store, default_task_store
+from .memory_md import scaffold_project_markdown
+from .store import (
+  default_milestone_store,
+  default_project_store,
+  default_task_store,
+)
 
 
 def _print_json(data: Any) -> None:
@@ -37,6 +42,17 @@ def build_parser() -> argparse.ArgumentParser:
   p_c.add_argument("--slug", default=None, help="Unique slug; default from name")
   p_c.add_argument("--description", default=None)
   p_c.add_argument("--owner", default=None)
+  p_c.add_argument(
+    "--scaffold-markdown",
+    action="store_true",
+    help="Also create memory/projects/<slug>/ markdown templates.",
+  )
+  p_c.add_argument(
+    "--locale",
+    default="en",
+    choices=["en", "zh-CN", "zh-TW"],
+    help="Locale for markdown scaffold when --scaffold-markdown is set.",
+  )
   p_c.set_defaults(_fn=cmd_project_create)
 
   t_l = sub.add_parser("task-list", help="List tasks for a project")
@@ -87,6 +103,34 @@ def build_parser() -> argparse.ArgumentParser:
   t_u.add_argument("--milestone-id", default=None, dest="milestone_id")
   t_u.set_defaults(_fn=cmd_task_update)
 
+  m_l = sub.add_parser("milestone-list", help="List milestones for a project")
+  m_l.add_argument("--project-id", required=True, dest="project_id")
+  m_l.set_defaults(_fn=cmd_milestone_list)
+
+  m_c = sub.add_parser("milestone-create", help="Create a milestone")
+  m_c.add_argument("--project-id", required=True, dest="project_id")
+  m_c.add_argument("--title", required=True)
+  m_c.add_argument(
+    "--status",
+    default="todo",
+    choices=["todo", "doing", "done", "cancelled"],
+  )
+  m_c.add_argument("--owner", default=None)
+  m_c.add_argument("--due-at", default=None, dest="due_at")
+  m_c.set_defaults(_fn=cmd_milestone_create)
+
+  m_u = sub.add_parser("milestone-update", help="Update a milestone")
+  m_u.add_argument("--milestone-id", required=True, dest="milestone_id")
+  m_u.add_argument("--title", default=None)
+  m_u.add_argument(
+    "--status",
+    default=None,
+    choices=["todo", "doing", "done", "cancelled"],
+  )
+  m_u.add_argument("--owner", default=None)
+  m_u.add_argument("--due-at", default=None, dest="due_at")
+  m_u.set_defaults(_fn=cmd_milestone_update)
+
   return p
 
 
@@ -111,6 +155,17 @@ def cmd_project_create(args: argparse.Namespace) -> int:
     description=args.description,
     owner=args.owner,
   )
+  if args.scaffold_markdown:
+    try:
+      memory_dir = scaffold_project_markdown(
+        name=args.name,
+        slug=slug,
+        locale=args.locale,
+      )
+      row = {**row, "memory_dir": str(memory_dir)}
+    except (ValueError, FileNotFoundError) as e:
+      print(str(e), file=sys.stderr)
+      return 1
   _print_json(row)
   return 0
 
@@ -150,6 +205,42 @@ def cmd_task_update(args: argparse.Namespace) -> int:
       due_at=args.due_at,
       blocked_reason=args.blocked_reason,
       milestone_id=args.milestone_id,
+    )
+  except KeyError as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  _print_json(row)
+  return 0
+
+
+def cmd_milestone_list(args: argparse.Namespace) -> int:
+  store = default_milestone_store()
+  _print_json(store.list_milestones(args.project_id))
+  return 0
+
+
+def cmd_milestone_create(args: argparse.Namespace) -> int:
+  store = default_milestone_store()
+  row = store.create_milestone(
+    args.project_id,
+    title=args.title,
+    status=args.status,
+    owner=args.owner,
+    due_at=args.due_at,
+  )
+  _print_json(row)
+  return 0
+
+
+def cmd_milestone_update(args: argparse.Namespace) -> int:
+  store = default_milestone_store()
+  try:
+    row = store.update_milestone(
+      args.milestone_id,
+      title=args.title,
+      status=args.status,
+      owner=args.owner,
+      due_at=args.due_at,
     )
   except KeyError as e:
     print(str(e), file=sys.stderr)

@@ -17,28 +17,22 @@ def _j(data: object) -> str:
   return json.dumps(data, indent=2, default=str, ensure_ascii=False)
 
 
-def _first_project_id() -> str | None:
-  conn = pmgo_common.connect_db(pmgo_common.db_path())
-  try:
-    row = conn.execute("SELECT id FROM projects ORDER BY created_at LIMIT 1").fetchone()
-  finally:
-    conn.close()
-  if row is None:
-    return None
-  return str(row[0])
-
-
 def cmd_report(args: Any) -> int:
   if args.db:
     os.environ["PMGO_MEMORY_DB"] = args.db
-  pid: str | None = args.project_id
-  if args.from_first_project:
-    pid = _first_project_id()
-    if pid is None:
-      print("No projects in database; skip risk scan (smoke OK).", file=sys.stderr)
-      return 0
+  pid = pmgo_common.resolve_project_id(
+    explicit=args.project_id,
+    from_first=args.from_first_project,
+  )
+  if pid is None and args.from_first_project:
+    print("No projects in database; skip risk scan (smoke OK).", file=sys.stderr)
+    return 0
   if not pid:
-    print("--project-id is required unless --from-first-project is set", file=sys.stderr)
+    print(
+      "--project-id is required unless --from-first-project is set or "
+      "PMGO_DEFAULT_PROJECT_ID is configured",
+      file=sys.stderr,
+    )
     return 1
   try:
     out = scanmod.scan_project(pid)

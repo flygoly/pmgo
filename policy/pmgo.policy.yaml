@@ -51,6 +51,13 @@ tools:
     allow: true
     require_confirm: true
 
+  project_core.milestone.read:
+    allow: true
+
+  project_core.milestone.write:
+    allow: true
+    require_confirm: true
+
   pmgo.report.daily:
     allow: true
 
