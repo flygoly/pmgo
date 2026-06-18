@@ -23,19 +23,20 @@ Entry: `python3 scripts/github-issues.py` / `npm run github-issues -- …`
 | `create` | `--title` and optional `--body` |
 | `close <number>` | Set issue state to `closed` |
 | `import-task` | `--project-id` and `--number` — creates a local task; fails if the same GitHub id was already imported for that project |
+| `sync` | `--project-id` — import all matching issues not yet in local tasks (`--state open\|closed\|all`, `--per-page`) |
 
 ## Idempotency
 
-- Re-running `import-task` for the same issue hits the unique index and exits with an error message (no duplicate row).
+- Re-running `import-task` or `sync` for the same issue hits the unique index and skips (no duplicate row).
 - For multi-repo automation, keep one pmgo project per GitHub repo or use separate `project_id` slices so `external_id` namespaces do not collide.
 
 ## Safety
 
-- Writes (`create`, `close`, `import-task`) should go through policy + human confirmation when exposed as OpenClaw tools (see `policy/pmgo.policy.yaml`).
+- Writes (`create`, `close`, `import-task`, `sync`) should go through policy + human confirmation when exposed as MCP tools (see `policy/pmgo.policy.yaml`).
 
 ## OpenClaw
 
-The same operations are available through the **MCP** server `scripts/pmgo_mcp_server.py` (tools `pmgo_github_*`). Register via `runtimes/openclaw/README.md` or `npm run runtime:config -- --runtime openclaw`.
+The same operations are available through the **MCP** server `scripts/pmgo_mcp_server.py` (tools `pmgo_github_*`, including `pmgo_github_sync_tasks`). Register via `runtimes/openclaw/README.md` or `npm run runtime:config -- --runtime openclaw`.
 
 ## Future work
 

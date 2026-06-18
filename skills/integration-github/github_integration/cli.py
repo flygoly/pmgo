@@ -5,13 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
 
 from . import api
 from .config import load_config
+from .sync import import_issue_as_task, sync_issues_to_project
 
 
 def _print_json(data: Any) -> None:
@@ -137,32 +137,49 @@ def cmd_import_task(args: argparse.Namespace) -> int:
     print(str(e), file=sys.stderr)
     return 1
 
-  title = str(issue.get("title") or f"Issue #{args.number}")
-  body = (issue.get("body") or "").strip()
-  url = str(issue.get("html_url") or "")
-  if url:
-    body = f"{body}\n\nGitHub: {url}".strip() if body else f"GitHub: {url}"
-  gh_state = str(issue.get("state") or "open")
-  status = "done" if gh_state == "closed" else "todo"
-  ext_id = str(issue.get("id") or "")
-
   store = default_task_store()
-  try:
-    row = store.create_task(
-      args.project_id,
-      title=title,
-      detail=body or None,
-      status=status,
-      source="github",
-      external_id=ext_id,
-    )
-  except sqlite3.IntegrityError:
-    print(
-      "A task with this GitHub id already exists for this project (source=github).",
-      file=sys.stderr,
-    )
+  row = import_issue_as_task(store, args.project_id, issue)
+  if row is not None:
+    _print_json(row)
+    return 0
+  if not str(issue.get("id") or ""):
+    print("Issue missing GitHub id; cannot import.", file=sys.stderr)
     return 1
-  _print_json(row)
+  print(
+    "A task with this GitHub id already exists for this project (source=github).",
+    file=sys.stderr,
+  )
+  return 1
+
+
+def cmd_sync(args: argparse.Namespace) -> int:
+  """Import open GitHub issues not yet present as local tasks (idempotent)."""
+  if not (os.environ.get("GITHUB_TOKEN") or "").strip():
+    print("SKIP: GITHUB_TOKEN not set (GitHub sync skipped).", file=sys.stderr)
+    return 0
+  if not (os.environ.get("GITHUB_REPO") or "").strip():
+    print("SKIP: GITHUB_REPO not set (GitHub sync skipped).", file=sys.stderr)
+    return 0
+  if args.db:
+    os.environ["PMGO_MEMORY_DB"] = args.db
+  root = Path(__file__).resolve().parents[3]
+  sys.path[:0] = [str(root / "scripts"), str(root / "skills" / "project-core")]
+  from project_core.store import default_task_store  # noqa: WPS433
+
+  try:
+    cfg = load_config()
+    store = default_task_store()
+    out = sync_issues_to_project(
+      cfg,
+      store,
+      args.project_id,
+      state=args.state,
+      per_page=args.per_page,
+    )
+  except (OSError, RuntimeError, ValueError) as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  _print_json(out)
   return 0
 
 
@@ -209,6 +226,15 @@ def build_parser() -> argparse.ArgumentParser:
   it.add_argument("--project-id", required=True, dest="project_id")
   it.add_argument("--number", type=int, required=True, dest="number")
   it.set_defaults(_fn=cmd_import_task)
+
+  sy = s.add_parser(
+    "sync",
+    help="Import all matching GitHub issues not yet in local tasks (idempotent)",
+  )
+  sy.add_argument("--project-id", required=True, dest="project_id")
+  sy.add_argument("--state", default="open", choices=["open", "closed", "all"])
+  sy.add_argument("--per-page", type=int, default=50, dest="per_page")
+  sy.set_defaults(_fn=cmd_sync)
 
   return p
 

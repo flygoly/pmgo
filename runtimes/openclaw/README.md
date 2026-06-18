@@ -46,7 +46,7 @@ Add optional integration keys to the `env` object — see [shared/mcp.env.exampl
 
 **Policy:** writes require `confirmed: true` when `policy/pmgo.policy.yaml` sets `require_confirm: true`.
 
-**Tools:** `pmgo_project_*`, `pmgo_task_*`, `pmgo_milestone_*`, `pmgo_risk_scan`, `pmgo_daily_report`, `pmgo_weekly_report`, `pmgo_github_*`, `pmgo_linear_*`, `pmgo_jira_*`.
+**Tools:** `pmgo_project_*`, `pmgo_task_*`, `pmgo_milestone_*`, `pmgo_risk_*`, `pmgo_daily_report`, `pmgo_weekly_report`, `pmgo_github_*`, `pmgo_linear_*`, `pmgo_jira_*`.
 
 GTD walkthrough: [gtd-quickstart.md](./gtd-quickstart.md)
 

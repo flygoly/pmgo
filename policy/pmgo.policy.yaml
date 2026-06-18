@@ -58,6 +58,24 @@ tools:
     allow: true
     require_confirm: true
 
+  project_core.risk.read:
+    allow: true
+
+  project_core.risk.write:
+    allow: true
+    require_confirm: true
+
+  project_core.decision.read:
+    allow: true
+
+  project_core.decision.write:
+    allow: true
+    require_confirm: true
+
+  github.issue.sync:
+    allow: true
+    require_confirm: true
+
   pmgo.report.daily:
     allow: true
 

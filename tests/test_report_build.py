@@ -37,6 +37,9 @@ class TestReportBuild(unittest.TestCase):
     self.tasks.create_task(self.project_id, title="In progress item", status="doing")
     self.tasks.create_task(self.project_id, title="Blocked item", status="blocked")
     self.tasks.create_task(self.project_id, title="Todo item", status="todo")
+    from project_core.store import RiskStore  # noqa: E402
+    risks = RiskStore(self.db_path)
+    risks.create_risk(self.project_id, title="Vendor delay", severity="high")
 
   def tearDown(self) -> None:
     os.environ.pop("PMGO_DEFAULT_PROJECT_ID", None)
@@ -53,6 +56,8 @@ class TestReportBuild(unittest.TestCase):
     self.assertIn("# Daily — Report Demo", text)
     self.assertIn("In progress item", text)
     self.assertIn("Blocked item", text)
+    self.assertIn("Vendor delay", text)
+    self.assertIn("Active risks", text)
     self.assertIn("Todo item", text)
     self.assertNotIn("{{", text)
 

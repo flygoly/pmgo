@@ -17,3 +17,7 @@
 ## Blocked
 
 {{b_blocked}}
+
+## Active risks
+
+{{b_risks}}

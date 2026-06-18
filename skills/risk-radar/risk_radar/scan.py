@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import pmgo_common  # type: ignore
@@ -11,8 +12,23 @@ def _row_dict(row: Any) -> dict[str, Any]:
   return {k: row[k] for k in row.keys()}
 
 
-def scan_project(project_id: str) -> dict[str, Any]:
-  """Return open/watching risks and blocked tasks for one project."""
+def _parse_ts(raw: str | None) -> datetime | None:
+  if not raw:
+    return None
+  raw = str(raw).replace("Z", "+00:00")
+  try:
+    d = datetime.fromisoformat(raw)
+  except ValueError:
+    return None
+  if d.tzinfo is None:
+    return d.replace(tzinfo=timezone.utc)
+  return d
+
+
+def scan_project(project_id: str, *, now: datetime | None = None) -> dict[str, Any]:
+  """Return open/watching risks, blocked tasks, and stale blockers (>24h)."""
+  now = now or datetime.now(timezone.utc)
+  stale_cutoff = now - timedelta(hours=24)
   conn = pmgo_common.connect_db(pmgo_common.db_path())
   try:
     proj = conn.execute(
@@ -52,6 +68,13 @@ def scan_project(project_id: str) -> dict[str, Any]:
     s = str(r["severity"])
     by_sev[s] = by_sev.get(s, 0) + 1
 
+  blocked = [_row_dict(r) for r in blocked_rows]
+  stale_blocked: list[dict[str, Any]] = []
+  for t in blocked:
+    ut = _parse_ts(t.get("updated_at"))
+    if ut is not None and ut < stale_cutoff:
+      stale_blocked.append(t)
+
   return {
     "project": {
       "id": str(proj["id"]),
@@ -59,10 +82,12 @@ def scan_project(project_id: str) -> dict[str, Any]:
       "slug": str(proj["slug"]),
     },
     "risks_open": [_row_dict(r) for r in risk_rows],
-    "tasks_blocked": [_row_dict(r) for r in blocked_rows],
+    "tasks_blocked": blocked,
+    "tasks_blocked_stale_24h": stale_blocked,
     "summary": {
       "risk_count": len(risk_rows),
       "blocked_task_count": len(blocked_rows),
+      "stale_blocked_count": len(stale_blocked),
       "risks_by_severity": by_sev,
     },
   }

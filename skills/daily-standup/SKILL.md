@@ -5,6 +5,7 @@ Daily project snapshot derived from `memory/pmgo.db` task rows (standup-style se
 ## Responsibilities
 
 - Classify tasks into: **done (last 24h)**, **in progress** (`doing`), **up next** (`todo`), **blocked** (`blocked`); `cancelled` is omitted, `done` older than 24h is omitted from the "done" section.
+- List **active risks** (`open` / `watching`) with severity.
 - Render locale-specific Markdown using `memory/templates/daily-standup.<locale>.md`.
 - Use `standup.empty` from `locales/<locale>.json` for empty sections.
 
@@ -25,6 +26,10 @@ npm run daily-standup -- report --project-id <UUID> --locale zh-CN
 - `--from-first-project` — pick the first project (used for `daily-standup:smoke` / CI; no project → exit 0).
 - `--db PATH` — override database file.
 
+## MCP
+
+Tool: `pmgo_daily_report` (policy `pmgo.report.daily`). Register via [runtimes/README.md](../../runtimes/README.md).
+
 ## Future work
 
-- OpenClaw / MCP tool surface; “yesterday / today” narrative from audit history or work logs.
+- “Yesterday / today” narrative from audit history or work logs.

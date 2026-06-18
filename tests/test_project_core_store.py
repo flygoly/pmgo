@@ -14,8 +14,10 @@ sys.path.insert(0, str(_ROOT / "skills" / "project-core"))
 
 from project_core.memory_md import scaffold_project_markdown  # noqa: E402
 from project_core.store import (  # noqa: E402
+  DecisionStore,
   MilestoneStore,
   ProjectStore,
+  RiskStore,
   TaskStore,
 )
 
@@ -31,6 +33,8 @@ class TestProjectCoreStore(unittest.TestCase):
     self.projects = ProjectStore(self.db_path)
     self.tasks = TaskStore(self.db_path)
     self.milestones = MilestoneStore(self.db_path)
+    self.risks = RiskStore(self.db_path)
+    self.decisions = DecisionStore(self.db_path)
 
   def tearDown(self) -> None:
     os.environ.pop("PMGO_MEMORY_DB", None)
@@ -78,6 +82,47 @@ class TestProjectCoreStore(unittest.TestCase):
     self.assertEqual(len(listed), 1)
     updated = self.milestones.update_milestone(ms["id"], status="doing")
     self.assertEqual(updated["status"], "doing")
+
+  def test_risk_crud(self) -> None:
+    project = self.projects.create_project(name="Demo", slug="demo-risk")
+    risk = self.risks.create_risk(
+      project["id"],
+      title="Schedule slip",
+      severity="high",
+    )
+    listed = self.risks.list_risks(project["id"])
+    self.assertEqual(len(listed), 1)
+    updated = self.risks.update_risk(risk["id"], status="watching")
+    self.assertEqual(updated["status"], "watching")
+
+  def test_decision_crud(self) -> None:
+    project = self.projects.create_project(name="Demo", slug="demo-decision")
+    dec = self.decisions.create_decision(
+      project["id"],
+      title="Use SQLite",
+      status="proposed",
+      rationale="Local-first",
+    )
+    listed = self.decisions.list_decisions(project["id"])
+    self.assertEqual(len(listed), 1)
+    updated = self.decisions.update_decision(
+      dec["id"],
+      status="accepted",
+      decided_by="team",
+    )
+    self.assertEqual(updated["status"], "accepted")
+    self.assertEqual(updated["decided_by"], "team")
+
+  def test_risk_task_marker_dedupe(self) -> None:
+    project = self.projects.create_project(name="Demo", slug="demo-marker")
+    marker = "pmgo_task_id:abc-123"
+    self.assertFalse(self.risks.has_risk_for_task_marker(project["id"], marker))
+    self.risks.create_risk(
+      project["id"],
+      title="Stale blocker",
+      evidence=marker,
+    )
+    self.assertTrue(self.risks.has_risk_for_task_marker(project["id"], marker))
 
   def test_scaffold_markdown_creates_files(self) -> None:
     slug = "demo-test-scaffold-unit"

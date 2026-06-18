@@ -20,7 +20,7 @@
 
 - `jira.create` and state transition writes
 - `github.close_pr` and workflow-impacting writes
-- `github.issue.create`, `github.issue.update`, and `github.issue.import_task` (Issues REST writes and local task import)
+- `github.issue.create`, `github.issue.update`, `github.issue.import_task`, and `github.issue.sync` (Issues REST writes and local task import/sync)
 - Broadcast messages to group channels
 - Batch updates that may change ownership or schedule
 
@@ -41,8 +41,8 @@
 
 Register **`scripts/pmgo_mcp_server.py`** once per gateway — see [runtimes/README.md](../runtimes/README.md).
 
-- **Read / reports:** `pmgo_project_list`, `pmgo_task_list`, `pmgo_milestone_list`, `pmgo_risk_scan`, `pmgo_daily_report`, `pmgo_weekly_report`, `pmgo_github_issue_list`, `pmgo_github_issue_get`, `pmgo_linear_issue_list`, `pmgo_linear_issue_get`, `pmgo_jira_issue_list`, `pmgo_jira_issue_get`
-- **Writes (policy may require `confirmed: true` in the same tool call after user approval):** `pmgo_project_create`, `pmgo_task_create`, `pmgo_task_update`, `pmgo_milestone_create`, `pmgo_milestone_update`, `pmgo_github_issue_create`, `pmgo_github_issue_close`, `pmgo_github_import_task`, `pmgo_linear_import_task`, `pmgo_jira_import_task`
+- **Read / reports:** `pmgo_project_list`, `pmgo_task_list`, `pmgo_milestone_list`, `pmgo_risk_list`, `pmgo_risk_scan`, `pmgo_decision_list`, `pmgo_daily_report`, `pmgo_weekly_report`, ...
+- **Writes (policy may require `confirmed: true` ...):** `pmgo_project_create`, `pmgo_task_create`, `pmgo_task_update`, `pmgo_milestone_create`, `pmgo_milestone_update`, `pmgo_risk_create`, `pmgo_risk_update`, `pmgo_decision_create`, `pmgo_decision_update`, `pmgo_github_sync_tasks`, ...
 
 | Runtime | Register MCP |
 | --- | --- |

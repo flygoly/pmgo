@@ -69,6 +69,21 @@ def build_daily_markdown(
       "SELECT * FROM tasks WHERE project_id = ? ORDER BY created_at",
       (project_id,),
     ).fetchall()
+    risk_rows = conn.execute(
+      """
+      SELECT * FROM risks
+      WHERE project_id = ? AND status IN ('open', 'watching')
+      ORDER BY
+        CASE severity
+          WHEN 'critical' THEN 0
+          WHEN 'high' THEN 1
+          WHEN 'medium' THEN 2
+          ELSE 3
+        END,
+        created_at
+      """,
+      (project_id,),
+    ).fetchall()
   finally:
     conn.close()
 
@@ -93,6 +108,10 @@ def build_daily_markdown(
         done_24.append(title)
     # cancelled: omit
 
+  risks: list[str] = []
+  for r in risk_rows:
+    risks.append(f"{r['title']} ({r['severity']})")
+
   ctx = {
     "project_name": name,
     "date_line": _date_line(now, locale),
@@ -100,6 +119,7 @@ def build_daily_markdown(
     "b_doing": _bullet(doing, empty),
     "b_todo": _bullet(todo, empty),
     "b_blocked": _bullet(blocked, empty),
+    "b_risks": _bullet(risks, strings.get("risk.none", empty)),
   }
   out = template
   for k, v in ctx.items():
