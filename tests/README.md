@@ -8,6 +8,8 @@ npm test
 
 `test_pmgo_policy` uses PyYAML if installed (`pip install pyyaml`); without it, policy tests are skipped and a layout smoke test still runs.
 
+`test_render_runtime_config.py` smoke-tests the OpenClaw/Hermes MCP config generator (`npm run runtime:config`).
+
 ## Test script
 
 - `validate_openclaw_import.sh`

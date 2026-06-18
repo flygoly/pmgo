@@ -1,12 +1,14 @@
 # Heartbeat and scheduled reports
 
-- **OpenClaw Gateway** heartbeat, cron, and channel defaults are **not** controlled by this file. They live in your OpenClaw Gateway configuration (per-[Heartbeat](https://docs.openclaw.ai/gateway/heartbeat) and [cron jobs](https://docs.openclaw.ai/automation/cron-jobs)).
+- **Gateway** heartbeat, cron, and channel defaults are **not** controlled by this file. Configure them in OpenClaw or Hermes (see [runtimes/README.md](./runtimes/README.md)).
 
 - **This repository** can still use `HEARTBEAT.md` as a *local checklist* the agent (or you) can edit. Keep it small: reminders to run `npm run validate`, to check blockers, or to paste a one-line “what to do on the next heartbeat” note.
 
-- **Daily / weekly Markdown** generation is implemented by `scripts/daily-standup.py` and `scripts/weekly-report.py`, and is exposed to OpenClaw via **`scripts/pmgo_mcp_server.py`** (see `openclaw/README.md` for registering the server and for **`openclaw cron add`** examples that deliver to Telegram or other channels).
+- **Daily / weekly Markdown** is implemented by `scripts/daily-standup.py` and `scripts/weekly-report.py`, exposed via **`scripts/pmgo_mcp_server.py`**:
+  - OpenClaw: [runtimes/openclaw/README.md](./runtimes/openclaw/README.md) · `openclaw cron add`
+  - Hermes: [runtimes/hermes/README.md](./runtimes/hermes/README.md) · `hermes cron create`
 
-- The **`cron/jobs.yaml`** file at the repo root is a **reference sketch** of intended automations, not a runtime consumed by OpenClaw. Real schedules should be created with **`openclaw cron add`**.
+- **`cron/jobs.yaml`** is a **reference sketch** only. Production schedules use gateway cron CLI; shared agent messages live in [shared/cron-messages.md](./shared/cron-messages.md).
 
 ## Example local checklist (optional)
 

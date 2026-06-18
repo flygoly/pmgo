@@ -4,7 +4,7 @@
 
 - Name 維持 `pmgo` 不翻譯。
 - Role 翻譯為「AI 專案經理」。
-- 強調形態為 `Agent Persona + Skills Pack`，不 fork OpenClaw。
+- 強調形態為 `Agent Persona + Skills Pack`，不 fork 閘道；支援 OpenClaw 與 Hermes。
 
 ## 主要職責
 

@@ -2,7 +2,7 @@
   "name": "pmgo",
   "version": "0.1.0",
   "private": true,
-  "description": "pmgo - OpenClaw-based AI project manager agent and skills pack.",
+  "description": "pmgo - Runtime-neutral AI project manager (OpenClaw & Hermes) agent and skills pack.",
   "license": "Apache-2.0",
   "scripts": {
     "check": "node scripts/validate-agent-i18n.js",
@@ -34,6 +34,7 @@
     "memory:scaffold": "python3 scripts/scaffold-memory.py",
     "memory:verify": "python3 scripts/verify-memory-db.py",
     "gtd:bootstrap": "python3 scripts/gtd-bootstrap.py",
+    "runtime:config": "python3 scripts/render-runtime-config.py",
     "test": "python3 -m unittest discover -s tests -p \"test_*.py\" -v"
   }
 }

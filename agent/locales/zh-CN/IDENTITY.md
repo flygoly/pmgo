@@ -4,7 +4,7 @@
 
 - Name 维持 `pmgo` 不翻译。
 - Role 翻译为“AI 项目经理”。
-- 强调形态为 `Agent Persona + Skills Pack`，不 fork OpenClaw。
+- 强调形态为 `Agent Persona + Skills Pack`，不 fork 网关；支持 OpenClaw 与 Hermes。
 
 ## 核心职责
 

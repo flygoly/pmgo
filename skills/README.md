@@ -11,7 +11,7 @@ Shipped in tree (code or docs):
 - `integration-linear` — `scripts/linear-issues.py` for GraphQL list/get + `import-task` into SQLite (`LINEAR_API_KEY`)
 - `integration-jira` — `scripts/jira-issues.py` for Cloud REST list/get + `import-task` into SQLite (`JIRA_*` env vars)
 - `risk-radar` — `scripts/risk-radar.py` JSON scan: open/watching `risks` + `blocked` tasks per project (MCP: `pmgo_risk_scan`)
-- **MCP (OpenClaw)** — `scripts/pmgo_mcp_server.py` stdio tool server (see `openclaw/README.md`)
+- **MCP (OpenClaw & Hermes)** — `scripts/pmgo_mcp_server.py` stdio tool server (see `runtimes/`)
 
 Planned modules include:
 

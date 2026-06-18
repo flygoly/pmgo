@@ -101,7 +101,7 @@ def main() -> None:
     f"  export PMGO_DEFAULT_PROJECT_ID={result['id']}\n"
     f"  export PMGO_DEFAULT_LOCALE={args.locale}\n"
     "  npm run daily-standup -- report\n"
-    "  See openclaw/gtd-quickstart.md for Gateway + MCP setup.",
+    "  See runtimes/README.md for OpenClaw or Hermes Gateway setup.",
     file=sys.stderr,
   )
 

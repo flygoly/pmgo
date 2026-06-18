@@ -31,7 +31,7 @@ Entry: `python3 scripts/linear-issues.py` / `npm run linear-issues -- …`
 
 ## OpenClaw
 
-MCP tools: `pmgo_linear_issue_list`, `pmgo_linear_issue_get`, `pmgo_linear_import_task` via `scripts/pmgo_mcp_server.py` — see `openclaw/README.md`.
+MCP tools: `pmgo_linear_issue_list`, `pmgo_linear_issue_get`, `pmgo_linear_import_task` via `scripts/pmgo_mcp_server.py` — see `runtimes/README.md`.
 
 ## Future work
 

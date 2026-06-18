@@ -35,7 +35,7 @@ Entry: `python3 scripts/github-issues.py` / `npm run github-issues -- …`
 
 ## OpenClaw
 
-The same operations are available through the **MCP** server `scripts/pmgo_mcp_server.py` (tools `pmgo_github_*`). Register the server in OpenClaw with `openclaw mcp set` — see `openclaw/README.md`.
+The same operations are available through the **MCP** server `scripts/pmgo_mcp_server.py` (tools `pmgo_github_*`). Register via `runtimes/openclaw/README.md` or `npm run runtime:config -- --runtime openclaw`.
 
 ## Future work
 

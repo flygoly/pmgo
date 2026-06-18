@@ -1,6 +1,6 @@
 # pmgo
 
-> An AI Project Manager built on [OpenClaw](https://github.com/openclaw/openclaw).
+> An AI Project Manager for [OpenClaw](https://github.com/openclaw/openclaw) and [Hermes Agent](https://github.com/NousResearch/hermes-agent).
 
 **Languages**: **English** · [简体中文](./README.zh-CN.md) · [繁體中文](./README.zh-TW.md)
 
@@ -16,18 +16,19 @@
 
 ## What is pmgo?
 
-`pmgo` is an **OpenClaw Agent persona + MCP Skills Pack** that turns your OpenClaw gateway into a digital project manager. It covers four scenarios with one codebase:
+`pmgo` is a **runtime-neutral Agent persona + MCP Skills Pack** that turns your OpenClaw or Hermes gateway into a digital project manager. It covers four scenarios with one codebase:
 
 - Personal GTD / OKR
 - Agile team workflows (Jira, Linear, GitHub Issues)
 - Full software development lifecycle (requirements → dev → test → release)
 - General team project management (Feishu, DingTalk, Notion)
 
-It ships as a **skills pack, not a fork** — so it keeps pace with OpenClaw upstream without merge pain.
+It ships as a **skills pack, not a fork** — one MCP server and one memory store work on both runtimes without merge pain.
 
 ## Highlights
 
-- **Multi-channel** — reach pmgo over Telegram, Feishu, Slack, Discord, WhatsApp, and more via the OpenClaw Gateway.
+- **Dual runtime** — same skills on [OpenClaw](https://openclaw.ai) and [Hermes](https://github.com/NousResearch/hermes-agent); see [runtimes/README.md](./runtimes/README.md).
+- **Multi-channel** — Telegram, Feishu, Slack, Discord, WhatsApp, and more via your gateway.
 - **Always-on** — heartbeats drive morning briefings, blocker scans, and Friday reports without you asking.
 - **Persistent memory** — SQLite + human-readable Markdown under `memory/projects/<slug>/`.
 - **Sandboxed** — allow-list policy for sensitive writes (Jira transitions, PR close, file writes).
@@ -36,22 +37,28 @@ It ships as a **skills pack, not a fork** — so it keeps pace with OpenClaw ups
 
 ## Quick start
 
-> The project is in **early development** — the commands below are the target UX, not a fully working install yet. Follow the roadmap below for progress.
+> Early development — commands below are the target UX. See [runtimes/](./runtimes/) for gateway-specific steps.
 
 ```bash
-# Install OpenClaw first (see https://openclaw.ai)
-npm i -g openclaw
-openclaw onboard
+# 1) Bootstrap local memory + linked project (runtime-agnostic)
+npm run gtd:bootstrap -- --name "My GTD" --locale zh-CN
+export PMGO_DEFAULT_PROJECT_ID="<uuid-from-output>"
+export PMGO_WORKSPACE="/absolute/path/to/pmgo"
 
-# Add pmgo as an agent (planned)
-openclaw agent add ./agent
+# 2) Pick a runtime and register MCP (prints ready-to-run snippet)
+npm run runtime:config -- --runtime openclaw   # or: hermes
+
+# 3) OpenClaw: openclaw agent add ./agent
+#    Hermes:   hermes claw migrate  OR  copy agent/SOUL.md → ~/.hermes/SOUL.md
 ```
 
-## OpenClaw Standard Layout
+Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [GTD quickstart (OpenClaw)](./runtimes/openclaw/gtd-quickstart.md)
 
-This repository now includes an importable OpenClaw agent package:
+## Repository layout
 
-- `agent/` - canonical agent package (`SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `AGENTS.md`)
+- `agent/` — persona package (`SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `AGENTS.md`)
+- `runtimes/` — OpenClaw and Hermes integration guides
+- `shared/` — shared MCP env and cron message templates
 - `skills/` - MCP skill definitions and implementations
 - `locales/` - runtime i18n dictionaries (`en`, `zh-CN`, `zh-TW`)
 - `policy/pmgo.policy.yaml` - allow-list and confirmation policy
@@ -138,25 +145,33 @@ npm run jira-issues -- import-task --project-id <UUID> --issue-key PROJ-123
 
 Details: `skills/integration-jira/SKILL.md`. Importing sets `source=jira` and `external_id` to Jira’s numeric issue id.
 
-## OpenClaw (tools, channels, cron)
+## Gateway integration (OpenClaw & Hermes)
 
-To register the **policy-aware MCP tool server** (`scripts/pmgo_mcp_server.py`), connect **Telegram** (or another channel), and schedule **daily/weekly** runs with Gateway **cron**, follow **[openclaw/README.md](./openclaw/README.md)**. The small `cron/jobs.yaml` in this repo is a narrative reference only; production schedules use `openclaw cron add`.
+Register the **policy-aware MCP server** (`scripts/pmgo_mcp_server.py`), connect channels, and schedule daily/weekly runs:
+
+| Runtime | Guide |
+| --- | --- |
+| **OpenClaw** | [runtimes/openclaw/README.md](./runtimes/openclaw/README.md) |
+| **Hermes** | [runtimes/hermes/README.md](./runtimes/hermes/README.md) |
+| **Overview** | [runtimes/README.md](./runtimes/README.md) |
+
+The repo `cron/jobs.yaml` is a narrative reference only; use `openclaw cron add` or `hermes cron create` in production.
 
 ## Architecture at a glance
 
 ```
-OpenClaw Gateway (channels)
+Gateway (OpenClaw or Hermes — channels)
         │
         ▼
    pmgo Agent  ──► planner / tracker / risker / reporter
         │
         ▼
-  Skills Pack (MCP)
+  Skills Pack (MCP stdio — shared)
    project-core · daily-standup · weekly-report · risk-radar
    integration-{github,linear,jira,notion,feishu,dingtalk}
         │
         ▼
-   Memory: SQLite + Markdown   ◄── Heartbeat/Cron jobs
+   Memory: SQLite + Markdown   ◄── Cron / heartbeat
 ```
 
 ## Roadmap

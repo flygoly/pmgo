@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
 stdio MCP server exposing pmgo CLIs (project-core, reports, GitHub, Linear, Jira) with policy
-checks from `policy/pmgo.policy.yaml`. Run via OpenClaw: `openclaw mcp set pmgo
-'{"command":"python3","args":["'$(pwd)'/scripts/pmgo_mcp_server.py"]}'` (use an
-absolute path to this script; optional env PMGO_WORKSPACE for clarity).
+checks from `policy/pmgo.policy.yaml`.
+
+OpenClaw: `openclaw mcp set pmgo '...'` — see `runtimes/openclaw/README.md`
+Hermes:   `mcp_servers.pmgo` in config.yaml — see `runtimes/hermes/README.md`
+Generate: `npm run runtime:config -- --runtime openclaw|hermes`
 """
 
 from __future__ import annotations

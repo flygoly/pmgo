@@ -1,0 +1,12 @@
+# Example fragment for ~/.hermes/config.yaml
+# Generate with: npm run runtime:config -- --runtime hermes
+#
+# mcp_servers:
+#   pmgo:
+#     command: python3
+#     args:
+#       - /absolute/path/to/pmgo/scripts/pmgo_mcp_server.py
+#     env:
+#       PMGO_WORKSPACE: /absolute/path/to/pmgo
+#       PMGO_DEFAULT_PROJECT_ID: ""
+#       PMGO_DEFAULT_LOCALE: en

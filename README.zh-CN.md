@@ -1,6 +1,6 @@
 # pmgo
 
-> 基于 [OpenClaw](https://github.com/openclaw/openclaw) 构建的 AI 项目经理。
+> 面向 [OpenClaw](https://github.com/openclaw/openclaw) 与 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 的 AI 项目经理。
 
 **语言**：[English](./README.md) · **简体中文** · [繁體中文](./README.zh-TW.md)
 
@@ -15,18 +15,19 @@
 
 ## pmgo 是什么？
 
-`pmgo` 是一个 **OpenClaw Agent 人格 + MCP 技能包**，可以把你的 OpenClaw Gateway 变成一位数字项目经理。一套代码覆盖四类场景：
+`pmgo` 是一个**运行时无关的 Agent 人格 + MCP 技能包**，可把 OpenClaw 或 Hermes 网关变成数字项目经理。一套代码覆盖四类场景：
 
 - 个人 GTD / OKR
 - 团队敏捷（Jira、Linear、GitHub Issues）
 - 软件研发全流程（需求 → 开发 → 测试 → 发布）
 - 通用团队项目管理（飞书、钉钉、Notion）
 
-它以**技能包形态交付，而非 fork** —— 这样可以随官方 OpenClaw 同步升级，不陷入合并地狱。
+它以**技能包形态交付，而非 fork** —— 同一套 MCP 与记忆层可在两种运行时上共用。
 
 ## 核心亮点
 
-- **多渠道接入**：通过 OpenClaw Gateway 在 Telegram、飞书、Slack、Discord、WhatsApp 等渠道与 pmgo 对话。
+- **双运行时** — 同时支持 [OpenClaw](https://openclaw.ai) 与 [Hermes](https://github.com/NousResearch/hermes-agent)，见 [runtimes/README.md](./runtimes/README.md)。
+- **多渠道接入**：通过网关（OpenClaw 或 Hermes）在 Telegram、飞书、Slack、Discord、WhatsApp 等渠道与 pmgo 对话。
 - **永久在线**：Heartbeat 驱动晨间简报、阻塞巡查、周五周报，无需手动触发。
 - **持久化记忆**：SQLite + 人类可读的 Markdown，保存在 `memory/projects/<slug>/` 下。
 - **权限沙箱**：敏感写操作（修改 Jira 状态、关闭 PR、写文件）走白名单策略。
@@ -35,16 +36,17 @@
 
 ## 快速开始
 
-> 项目目前处于**早期开发阶段**，以下命令是目标使用体验，尚未完全可用。请关注下方路线图。
+> 项目处于**早期开发阶段**。网关相关步骤见 [runtimes/](./runtimes/)。
 
 ```bash
-# 先安装 OpenClaw（见 https://openclaw.ai）
-npm i -g openclaw
-openclaw onboard
-
-# 添加 pmgo 智能体（规划中）
-openclaw agent add pmgo
+npm run gtd:bootstrap -- --name "My GTD" --locale zh-CN
+export PMGO_DEFAULT_PROJECT_ID="<uuid>"
+export PMGO_WORKSPACE="/absolute/path/to/pmgo"
+npm run runtime:config -- --runtime openclaw   # 或 hermes
 ```
+
+- OpenClaw：[runtimes/openclaw/README.md](./runtimes/openclaw/README.md)
+- Hermes：[runtimes/hermes/README.md](./runtimes/hermes/README.md)
 
 ## 长期记忆存储
 
@@ -124,25 +126,33 @@ npm run jira-issues -- import-task --project-id <UUID> --issue-key PROJ-123
 
 说明见 `skills/integration-jira/SKILL.md`。`import-task` 使用 `source=jira`，`external_id` 为 Jira issue 的数字 id。
 
-## OpenClaw（工具、通道、定时任务）
+## 网关集成（OpenClaw 与 Hermes）
 
-注册受策略约束的 **MCP 工具服务**（`scripts/pmgo_mcp_server.py`）、接入 **Telegram** 等通道、用 Gateway **cron** 跑日报/周报，请见 **[openclaw/README.md](./openclaw/README.md)**。仓库根目录的 `cron/jobs.yaml` 仅为示意；正式排期请用 `openclaw cron add`。
+注册 **MCP 工具服务**（`scripts/pmgo_mcp_server.py`）、接入通道、配置定时日报/周报：
+
+| 运行时 | 文档 |
+| --- | --- |
+| OpenClaw | [runtimes/openclaw/README.md](./runtimes/openclaw/README.md) |
+| Hermes | [runtimes/hermes/README.md](./runtimes/hermes/README.md) |
+| 总览 | [runtimes/README.md](./runtimes/README.md) |
+
+仓库内 `cron/jobs.yaml` 仅为示意；生产环境请用 `openclaw cron add` 或 `hermes cron create`。
 
 ## 架构速览
 
 ```
-OpenClaw Gateway（多渠道）
+网关（OpenClaw 或 Hermes — 多渠道）
         │
         ▼
    pmgo 主脑  ──► planner / tracker / risker / reporter
         │
         ▼
-  技能包（MCP）
+  技能包（MCP stdio — 共用）
    project-core · daily-standup · weekly-report · risk-radar
    integration-{github,linear,jira,notion,feishu,dingtalk}
         │
         ▼
-   记忆层：SQLite + Markdown   ◄── Heartbeat / Cron 定时任务
+   记忆层：SQLite + Markdown   ◄── Cron / Heartbeat
 ```
 
 ## 路线图

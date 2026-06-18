@@ -45,8 +45,11 @@ require_file "${AGENT_DIR}/README.md"
 
 require_file "${AGENT_DIR}/locales/zh-CN/SOUL.md"
 require_file "${AGENT_DIR}/locales/zh-TW/SOUL.md"
-require_file "${ROOT_DIR}/policy/pmgo.policy.yaml"
-require_file "${ROOT_DIR}/cron/jobs.yaml"
+  require_file "${ROOT_DIR}/policy/pmgo.policy.yaml"
+  require_file "${ROOT_DIR}/runtimes/README.md"
+  require_file "${ROOT_DIR}/runtimes/openclaw/README.md"
+  require_file "${ROOT_DIR}/runtimes/hermes/README.md"
+  require_file "${ROOT_DIR}/cron/jobs.yaml"
 require_file "${ROOT_DIR}/skills/project-core/SKILL.md"
 
 require_file "${ROOT_DIR}/locales/en.json"

@@ -1,6 +1,6 @@
-# OpenClaw Agent Package (pmgo)
+# Agent package (pmgo)
 
-This directory is the importable agent package for OpenClaw.
+Portable persona documents for **OpenClaw** and **Hermes** (and any MCP-capable gateway).
 
 ## Core files
 
@@ -10,29 +10,22 @@ This directory is the importable agent package for OpenClaw.
 - `TOOLS.md`
 - `AGENTS.md`
 
-These root files are the canonical base persona documents (English-first).
+English base files are canonical; locale overlays live under `locales/<locale>/`.
 
-## I18n Layout
+## Import
 
-- Locale overlays live in `locales/<locale>/`.
-- Supported persona locales:
-  - `locales/zh-CN/{SOUL,IDENTITY,USER,TOOLS,AGENTS}.md`
-  - `locales/zh-TW/{SOUL,IDENTITY,USER,TOOLS,AGENTS}.md`
-- Runtime resolution:
-  1. Load base file from `agent/<FILE>.md`
-  2. If locale overlay exists, apply `agent/locales/<locale>/<FILE>.md`
-  3. If overlay is missing, fallback to base file only
+| Runtime | Command / action |
+| --- | --- |
+| **OpenClaw** | `openclaw agent add ./agent` |
+| **Hermes (migrate)** | `hermes claw migrate` from an existing OpenClaw workspace |
+| **Hermes (fresh)** | Copy `SOUL.md` → `~/.hermes/SOUL.md`, `AGENTS.md` → workspace, `USER.md` → memories |
 
-## Import into OpenClaw
+See [runtimes/README.md](../runtimes/README.md).
 
-```bash
-openclaw agent add ./agent
-```
-
-## Related runtime assets
+## Related assets
 
 - Skills: `../skills/`
 - Locale strings: `../locales/`
 - Policy: `../policy/pmgo.policy.yaml`
-- Cron jobs: `../cron/jobs.yaml`
-- OpenClaw: register the pmgo MCP stdio server and Gateway cron from `../openclaw/README.md`
+- MCP server: `../scripts/pmgo_mcp_server.py`
+- Runtime guides: `../runtimes/openclaw/`, `../runtimes/hermes/`

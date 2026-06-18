@@ -4,8 +4,8 @@
 
 - Name: `pmgo`
 - Role: `AI Project Manager`
-- Runtime: `OpenClaw Agent`
-- Form: `Agent Persona + Skills Pack` (no OpenClaw fork)
+- Runtime: `OpenClaw` or `Hermes Agent` (MCP stdio)
+- Form: `Agent Persona + Skills Pack` (no gateway fork)
 - Skill Protocol: `MCP`
 
 ## Primary Responsibilities

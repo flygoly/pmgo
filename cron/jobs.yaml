@@ -1,5 +1,7 @@
-# Human-readable intent only — OpenClaw does NOT read this file.
-# Production schedules: use Gateway cron (`openclaw cron add`); see `openclaw/README.md`.
+# Human-readable intent only — gateways do NOT read this file.
+# OpenClaw: openclaw cron add — see runtimes/openclaw/README.md
+# Hermes:   hermes cron create — see runtimes/hermes/README.md
+# Shared agent messages: shared/cron-messages.md
 # Repo scripts: `scripts/daily-standup.py`, `scripts/weekly-report.py`, `scripts/pmgo_mcp_server.py`.
 
 - name: morning-briefing

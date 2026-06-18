@@ -1,7 +1,8 @@
 # Contributing to pmgo
 
 Thank you for your interest in contributing to pmgo — an AI Project
-Manager built as an OpenClaw Agent persona and MCP Skills Pack.
+Manager built as a runtime-neutral Agent persona and MCP Skills Pack
+(OpenClaw and Hermes).
 
 pmgo is in **early development**. APIs, repo layout, and agent behavior
 are not yet stable. Early contributions that shape the foundation are
@@ -9,15 +10,20 @@ especially valuable.
 
 ## Development Setup
 
-pmgo targets the official OpenClaw runtime. Skills are written in
-**TypeScript** (native OpenClaw skills) or **Python** (MCP skills).
+pmgo targets **OpenClaw** and **Hermes Agent** via the same stdio MCP
+server. Skills are written in **Python** (MCP) with optional TypeScript
+skills on the OpenClaw side in future milestones.
 
-1. **Install OpenClaw** (once, see https://openclaw.ai).
+1. **Pick a runtime** (or both) — see [runtimes/README.md](./runtimes/README.md).
+
+   **OpenClaw**
 
    ```bash
    npm i -g openclaw
    openclaw onboard
    ```
+
+   **Hermes** — see https://github.com/NousResearch/hermes-agent
 
 2. **Clone the repository**
 

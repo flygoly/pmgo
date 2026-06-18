@@ -39,7 +39,7 @@ Jira `statusCategory.key` maps to pmgo task status: `done` → `done`, `indeterm
 
 ## OpenClaw
 
-MCP tools: `pmgo_jira_issue_list`, `pmgo_jira_issue_get`, `pmgo_jira_import_task` via `scripts/pmgo_mcp_server.py` — see `openclaw/README.md`.
+MCP tools: `pmgo_jira_issue_list`, `pmgo_jira_issue_get`, `pmgo_jira_import_task` via `scripts/pmgo_mcp_server.py` — see `runtimes/README.md`.
 
 ## Future work
 
