@@ -20,6 +20,7 @@ Entry: `python3 scripts/linear-issues.py` / `npm run linear-issues -- …`
 | `list` | Recent issues (`--first` page size, default 20). |
 | `get <identifier>` | One issue by **UUID** or human id (e.g. `ENG-42`). |
 | `import-task` | `--project-id` and `--identifier` — creates a local task; fails if the same Linear id was already imported for that project |
+| `comment` | `<identifier> --body` — post a comment (trusted CLI write) |
 
 ## Idempotency
 
@@ -27,12 +28,12 @@ Entry: `python3 scripts/linear-issues.py` / `npm run linear-issues -- …`
 
 ## Safety
 
-- `import-task` and the MCP `pmgo_linear_import_task` tool require **policy** + `confirmed: true` when the policy calls for confirmation (see `policy/pmgo.policy.yaml`).
+- `import-task` / `pmgo_linear_import_task` and `comment` / `pmgo_linear_comment` require **policy** + `confirmed: true` when configured.
 
 ## OpenClaw
 
-MCP tools: `pmgo_linear_issue_list`, `pmgo_linear_issue_get`, `pmgo_linear_import_task` via `scripts/pmgo_mcp_server.py` — see `runtimes/README.md`.
+MCP tools: `pmgo_linear_issue_list`, `pmgo_linear_issue_get`, `pmgo_linear_import_task`, `pmgo_linear_comment` via `scripts/pmgo_mcp_server.py` — see `runtimes/README.md`.
 
 ## Future work
 
-- Create/update issue mutations; project/team-scoped list filters; two-way status sync.
+- Create/update issue mutations; project/team-scoped list filters; status write-back.

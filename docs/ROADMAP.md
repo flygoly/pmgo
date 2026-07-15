@@ -18,11 +18,12 @@ Phased rollout for pmgo. Details stay aligned with root `README.md`.
 - Jira / Linear connectors (read + import shipped; transitions / write-back deepening)
 - Live cron/heartbeat via generated gateway commands (`npm run cron:config`)
 - Multi-agent config snippets (persona routing + pasteable gateway topology)
-- Schema tables `people` / `retrospectives`: **deferred** until assignee/retro UX is designed (tables reserved)
+- Schema tables `people` / `retrospectives`: **CRUD shipped** (CLI + MCP)
+- Linear comment write-back; GitHub `push-done` (local done → close issue)
 
 ## M3 — v1.0
 
-- Feishu / DingTalk / Notion connectors (scaffolds in `skills/integration-*`)
+- Feishu tasklist list/get/import (shipped); deepen Bitable; DingTalk / Notion deepen
 - OpenClaw Live Canvas: Gantt & burndown — see `docs/LIVE_CANVAS.md`
 - Publishable skills pack (`SKILL.md` standard) — see `docs/PUBLISHING.md`
 

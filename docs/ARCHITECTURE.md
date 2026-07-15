@@ -40,7 +40,7 @@ memory/pmgo.db (SQLite)  +  memory/projects/<slug>/*.md
 - **Long-term structured:** SQLite tables (`projects`, `tasks`, `milestones`, `risks`, `decisions`, `audit_logs`, …).
 - **Long-term narrative:** Markdown under `memory/projects/<slug>/` (overview, decisions, standups).
 - **Short-term:** gateway session context only — not stored by pmgo.
-- **Deferred tables:** `people` and `retrospectives` exist in schema for M2+; no MCP CRUD yet (see [ROADMAP.md](./ROADMAP.md)).
+- **Roster / retros:** `people` and `retrospectives` have store + MCP/CLI CRUD (see `project-core`).
 
 ## Multi-agent topology
 

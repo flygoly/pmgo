@@ -108,6 +108,39 @@ def _parse_team_number(identifier: str) -> tuple[str, float]:
   return team_key, float(int(num_s.strip()))
 
 
+def create_comment(
+  cfg: LinearConfig,
+  *,
+  issue_id: str,
+  body: str,
+) -> dict[str, Any]:
+  """Post a comment on a Linear issue (UUID). Limited write-back for PM notes."""
+  issue_uuid = issue_id.strip()
+  text = body.strip()
+  if not issue_uuid or not text:
+    raise ValueError("issue_id and body are required")
+  q = """
+  mutation CommentCreate($issueId: String!, $body: String!) {
+    commentCreate(input: { issueId: $issueId, body: $body }) {
+      success
+      comment {
+        id
+        body
+        url
+      }
+    }
+  }
+  """
+  data = _request(cfg, q, {"issueId": issue_uuid, "body": text})
+  block = data.get("commentCreate") or {}
+  if not block.get("success"):
+    raise RuntimeError(f"Linear commentCreate failed: {block}")
+  comment = block.get("comment")
+  if not isinstance(comment, dict):
+    raise RuntimeError("Linear commentCreate missing comment")
+  return comment
+
+
 def get_issue(cfg: LinearConfig, identifier: str) -> dict[str, Any]:
   """Fetch one issue by UUID, human id (e.g. ENG-42), or team+number filter."""
   ident = identifier.strip()

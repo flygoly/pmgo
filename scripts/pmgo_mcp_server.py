@@ -32,6 +32,7 @@ for _d in (
   _ROOT / "skills" / "risk-radar",
   _ROOT / "skills" / "integration-linear",
   _ROOT / "skills" / "integration-jira",
+  _ROOT / "skills" / "integration-feishu",
 ):
   p = str(_d)
   if p not in sys.path:
@@ -505,6 +506,136 @@ def pmgo_decision_update(
     return str(e)
 
 
+@mcp.tool()
+def pmgo_people_list() -> str:
+  """List people in the roster (assignees / contacts)."""
+  err = gate("project_core.people.read", confirmed=False)
+  if err:
+    return err
+  from project_core.store import default_people_store
+
+  return _j(default_people_store().list_people())
+
+
+@mcp.tool()
+def pmgo_people_create(
+  name: str,
+  confirmed: bool = False,
+  role: str = "",
+  contact: str = "",
+) -> str:
+  """Create a person in the roster (requires confirmed=true for writes)."""
+  err = gate("project_core.people.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_people_store
+
+  return _j(
+    default_people_store().create_person(
+      name=name,
+      role=role or None,
+      contact=contact or None,
+    )
+  )
+
+
+@mcp.tool()
+def pmgo_people_update(
+  person_id: str,
+  confirmed: bool = False,
+  name: str = "",
+  role: str = "",
+  contact: str = "",
+) -> str:
+  """Update a person (requires confirmed=true for writes)."""
+  err = gate("project_core.people.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_people_store
+
+  kwargs: dict[str, object] = {}
+  if name.strip():
+    kwargs["name"] = name
+  if role.strip():
+    kwargs["role"] = role
+  if contact.strip():
+    kwargs["contact"] = contact
+  try:
+    return _j(default_people_store().update_person(person_id, **kwargs))
+  except KeyError as e:
+    return str(e)
+
+
+@mcp.tool()
+def pmgo_retrospective_list(project_id: str = "") -> str:
+  """List retrospectives for a project."""
+  err = gate("project_core.retrospective.read", confirmed=False)
+  if err:
+    return err
+  from project_core.store import default_retrospective_store
+
+  pid = project_id.strip() or (_resolve_project_id("") or "")
+  if not pid:
+    return "project_id is required (or set PMGO_DEFAULT_PROJECT_ID)."
+  return _j(default_retrospective_store().list_retrospectives(pid))
+
+
+@mcp.tool()
+def pmgo_retrospective_create(
+  project_id: str,
+  period: str,
+  confirmed: bool = False,
+  summary: str = "",
+  action_items: str = "",
+) -> str:
+  """Create a retrospective (requires confirmed=true for writes)."""
+  err = gate("project_core.retrospective.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_retrospective_store
+
+  pid = project_id.strip() or (_resolve_project_id("") or "")
+  if not pid:
+    return "project_id is required (or set PMGO_DEFAULT_PROJECT_ID)."
+  return _j(
+    default_retrospective_store().create_retrospective(
+      pid,
+      period=period,
+      summary=summary or None,
+      action_items=action_items or None,
+    )
+  )
+
+
+@mcp.tool()
+def pmgo_retrospective_update(
+  retrospective_id: str,
+  confirmed: bool = False,
+  period: str = "",
+  summary: str = "",
+  action_items: str = "",
+) -> str:
+  """Update a retrospective (requires confirmed=true for writes)."""
+  err = gate("project_core.retrospective.write", confirmed=confirmed)
+  if err:
+    return err
+  from project_core.store import default_retrospective_store
+
+  kwargs: dict[str, object] = {}
+  if period.strip():
+    kwargs["period"] = period
+  if summary.strip():
+    kwargs["summary"] = summary
+  if action_items.strip():
+    kwargs["action_items"] = action_items
+  try:
+    return _j(
+      default_retrospective_store().update_retrospective(retrospective_id, **kwargs)
+    )
+  except KeyError as e:
+    return str(e)
+
+
 # --- reports ---
 
 
@@ -682,6 +813,36 @@ def pmgo_github_sync_tasks(
     return str(e)
 
 
+@mcp.tool()
+def pmgo_github_push_done(
+  project_id: str,
+  confirmed: bool = False,
+  per_page: int = 50,
+  max_pages: int = 10,
+) -> str:
+  """Close open GitHub issues for local done tasks (source=github). Requires confirmed."""
+  err = gate("github.issue.update", confirmed=confirmed)
+  if err:
+    return err
+  from github_integration.config import load_config
+  from github_integration.sync import push_done_tasks_to_github
+  from project_core.store import default_task_store
+
+  try:
+    cfg = load_config()
+    return _j(
+      push_done_tasks_to_github(
+        cfg,
+        default_task_store(),
+        project_id,
+        per_page=per_page,
+        max_pages=max_pages,
+      )
+    )
+  except (OSError, RuntimeError) as e:
+    return str(e)
+
+
 # --- Linear ---
 
 
@@ -765,6 +926,32 @@ def pmgo_linear_import_task(
     )
   except sqlite3.IntegrityError:
     return "A task for this Linear issue already exists (same project + source + external_id)."
+
+
+@mcp.tool()
+def pmgo_linear_comment(
+  identifier: str,
+  body: str,
+  confirmed: bool = False,
+) -> str:
+  """Post a comment on a Linear issue (requires confirmed=true)."""
+  err = gate("linear.issue.comment", confirmed=confirmed)
+  if err:
+    return err
+  from linear_integration.api import create_comment, get_issue
+  from linear_integration.cli import _issue_public
+  from linear_integration.config import load_config
+
+  try:
+    cfg = load_config()
+    issue = get_issue(cfg, identifier)
+    issue_id = str(issue.get("id") or "")
+    if not issue_id:
+      return "Issue has no id"
+    comment = create_comment(cfg, issue_id=issue_id, body=body)
+    return _j({"ok": True, "issue": _issue_public(issue), "comment": comment})
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
 
 
 # --- Jira ---
@@ -899,6 +1086,98 @@ def pmgo_jira_transition_issue(
     return _j({"ok": True, "issue_key": issue_key, "transition_id": transition_id})
   except (OSError, RuntimeError, ValueError) as e:
     return str(e)
+
+
+# --- Feishu ---
+
+
+@mcp.tool()
+def pmgo_feishu_task_list(tasklist_guid: str = "", page_size: int = 50) -> str:
+  """List Feishu tasks in a tasklist (FEISHU_TASKLIST_GUID or tasklist_guid)."""
+  err = gate("feishu.task.read", confirmed=False)
+  if err:
+    return err
+  import os
+
+  from feishu_integration.api import list_tasklist_tasks, task_to_public
+  from feishu_integration.config import load_config
+
+  try:
+    cfg = load_config()
+    guid = (tasklist_guid or os.environ.get("FEISHU_TASKLIST_GUID") or "").strip()
+    if not guid:
+      return "tasklist_guid is required (or set FEISHU_TASKLIST_GUID)."
+    data = list_tasklist_tasks(cfg, guid, page_size=page_size)
+    items = data.get("items") or data.get("tasks") or []
+    public = [task_to_public(x) for x in items if isinstance(x, dict)]
+    return _j(
+      {
+        "tasklist_guid": guid,
+        "items": public,
+        "has_more": data.get("has_more"),
+        "page_token": data.get("page_token"),
+      }
+    )
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
+
+
+@mcp.tool()
+def pmgo_feishu_task_get(task_guid: str) -> str:
+  """Get one Feishu task by guid."""
+  err = gate("feishu.task.read", confirmed=False)
+  if err:
+    return err
+  from feishu_integration.api import get_task, task_to_public
+  from feishu_integration.config import load_config
+
+  try:
+    cfg = load_config()
+    return _j(task_to_public(get_task(cfg, task_guid)))
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
+
+
+@mcp.tool()
+def pmgo_feishu_import_task(
+  project_id: str,
+  task_guid: str,
+  confirmed: bool = False,
+) -> str:
+  """Import a Feishu task as a local task (source=feishu, requires confirmed)."""
+  err = gate("feishu.task.import_task", confirmed=confirmed)
+  if err:
+    return err
+  from feishu_integration.api import get_task, task_to_public
+  from feishu_integration.config import load_config
+  from project_core.store import default_task_store
+
+  try:
+    cfg = load_config()
+    pub = task_to_public(get_task(cfg, task_guid))
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
+  title = str(pub.get("summary") or pub.get("guid") or "Feishu task")
+  body = (pub.get("description") or "").strip() if pub.get("description") else ""
+  url = str(pub.get("url") or "")
+  if url:
+    body = f"{body}\n\nFeishu: {url}".strip() if body else f"Feishu: {url}"
+  ext_id = str(pub.get("guid") or "")
+  if not ext_id:
+    return "Feishu task missing guid"
+  try:
+    return _j(
+      default_task_store().create_task(
+        project_id,
+        title=title,
+        detail=body or None,
+        status=str(pub.get("status") or "todo"),
+        source="feishu",
+        external_id=ext_id,
+      )
+    )
+  except sqlite3.IntegrityError:
+    return "A task for this Feishu guid already exists (same project + source + external_id)."
 
 
 def main() -> None:

@@ -13,10 +13,11 @@ The `skills/` directory hosts MCP-compatible capabilities for `pmgo`.
 - `integration-jira` — Cloud REST list/get/import + transitions
 - **MCP hub** — `scripts/pmgo_mcp_server.py` (policy-gated)
 
-## Scaffold / planned
+## Scaffold / deepening
 
-- `integration-feishu` — tenant token smoke CLI (`npm run feishu:smoke`)
+- `integration-feishu` — tasklist list/get/import + MCP (`FEISHU_TASKLIST_GUID`)
 - `integration-notion` — users/me smoke CLI (`npm run notion:smoke`)
 - `integration-dingtalk` — docs only until M3 client lands
+- `project-core` also covers **people** / **retrospectives** CRUD
 
 Each skill should include its own `SKILL.md` and implementation files.

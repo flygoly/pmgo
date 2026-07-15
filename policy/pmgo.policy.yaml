@@ -33,6 +33,10 @@ tools:
     allow: true
     require_confirm: true
 
+  linear.issue.comment:
+    allow: true
+    require_confirm: true
+
   jira.issue.read:
     allow: true
 
@@ -72,6 +76,20 @@ tools:
     allow: true
     require_confirm: true
 
+  project_core.people.read:
+    allow: true
+
+  project_core.people.write:
+    allow: true
+    require_confirm: true
+
+  project_core.retrospective.read:
+    allow: true
+
+  project_core.retrospective.write:
+    allow: true
+    require_confirm: true
+
   github.issue.sync:
     allow: true
     require_confirm: true
@@ -86,6 +104,13 @@ tools:
     allow: true
 
   jira.transition_issue:
+    allow: true
+    require_confirm: true
+
+  feishu.task.read:
+    allow: true
+
+  feishu.task.import_task:
     allow: true
     require_confirm: true
 

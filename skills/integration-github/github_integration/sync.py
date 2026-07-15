@@ -1,11 +1,11 @@
-"""Incremental GitHub Issues → pmgo task sync (idempotent import)."""
+"""Incremental GitHub Issues ↔ pmgo task sync (import + close-on-done)."""
 
 from __future__ import annotations
 
 import sqlite3
 from typing import Any, Optional
 
-from .api import list_issues
+from .api import list_issues, update_issue
 from .config import GitHubConfig
 
 
@@ -95,4 +95,62 @@ def sync_issues_to_project(
     "imported": imported,
     "skipped_numbers": skipped,
     "invalid_numbers": invalid,
+  }
+
+
+def push_done_tasks_to_github(
+  cfg: GitHubConfig,
+  store: Any,
+  project_id: str,
+  *,
+  per_page: int = 50,
+  max_pages: int = 10,
+) -> dict[str, Any]:
+  """
+  Close open GitHub issues whose matching local tasks are status=done
+  (source=github, matched by GitHub numeric issue id in external_id).
+  """
+  done_tasks = [
+    t
+    for t in store.list_tasks(project_id, status="done")
+    if str(t.get("source") or "") == "github" and str(t.get("external_id") or "")
+  ]
+  open_issues = list_issues(cfg, state="open", per_page=per_page, max_pages=max_pages)
+  by_ext: dict[str, dict[str, Any]] = {
+    str(i.get("id")): i for i in open_issues if i.get("id") is not None
+  }
+  closed: list[dict[str, Any]] = []
+  skipped: list[str] = []
+  errors: list[dict[str, Any]] = []
+  for task in done_tasks:
+    ext = str(task.get("external_id"))
+    issue = by_ext.get(ext)
+    if issue is None:
+      skipped.append(ext)
+      continue
+    number = issue.get("number")
+    if not isinstance(number, int):
+      skipped.append(ext)
+      continue
+    try:
+      update_issue(cfg, number, state="closed")
+      closed.append(
+        {
+          "task_id": task.get("id"),
+          "external_id": ext,
+          "number": number,
+          "title": task.get("title"),
+        }
+      )
+    except RuntimeError as e:
+      errors.append({"external_id": ext, "number": number, "error": str(e)})
+  return {
+    "project_id": project_id,
+    "done_local": len(done_tasks),
+    "closed_count": len(closed),
+    "skipped_count": len(skipped),
+    "error_count": len(errors),
+    "closed": closed,
+    "skipped_external_ids": skipped,
+    "errors": errors,
   }

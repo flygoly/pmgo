@@ -12,7 +12,9 @@ from .memory_md import scaffold_project_markdown
 from .store import (
   default_decision_store,
   default_milestone_store,
+  default_people_store,
   default_project_store,
+  default_retrospective_store,
   default_risk_store,
   default_task_store,
 )
@@ -217,6 +219,40 @@ def build_parser() -> argparse.ArgumentParser:
   d_u.add_argument("--decided-at", default=None, dest="decided_at")
   d_u.set_defaults(_fn=cmd_decision_update)
 
+  pe_l = sub.add_parser("people-list", help="List people (roster)")
+  pe_l.set_defaults(_fn=cmd_people_list)
+
+  pe_c = sub.add_parser("people-create", help="Create a person")
+  pe_c.add_argument("--name", required=True)
+  pe_c.add_argument("--role", default=None)
+  pe_c.add_argument("--contact", default=None)
+  pe_c.set_defaults(_fn=cmd_people_create)
+
+  pe_u = sub.add_parser("people-update", help="Update a person")
+  pe_u.add_argument("--person-id", required=True, dest="person_id")
+  pe_u.add_argument("--name", default=None)
+  pe_u.add_argument("--role", default=None)
+  pe_u.add_argument("--contact", default=None)
+  pe_u.set_defaults(_fn=cmd_people_update)
+
+  re_l = sub.add_parser("retro-list", help="List retrospectives for a project")
+  re_l.add_argument("--project-id", required=True, dest="project_id")
+  re_l.set_defaults(_fn=cmd_retro_list)
+
+  re_c = sub.add_parser("retro-create", help="Create a retrospective")
+  re_c.add_argument("--project-id", required=True, dest="project_id")
+  re_c.add_argument("--period", required=True, help="e.g. 2026-W28 or 2026-Q3")
+  re_c.add_argument("--summary", default=None)
+  re_c.add_argument("--action-items", default=None, dest="action_items")
+  re_c.set_defaults(_fn=cmd_retro_create)
+
+  re_u = sub.add_parser("retro-update", help="Update a retrospective")
+  re_u.add_argument("--retrospective-id", required=True, dest="retrospective_id")
+  re_u.add_argument("--period", default=None)
+  re_u.add_argument("--summary", default=None)
+  re_u.add_argument("--action-items", default=None, dest="action_items")
+  re_u.set_defaults(_fn=cmd_retro_update)
+
   return p
 
 
@@ -409,6 +445,67 @@ def cmd_decision_update(args: argparse.Namespace) -> int:
       evidence=args.evidence,
       decided_by=args.decided_by,
       decided_at=args.decided_at,
+    )
+  except KeyError as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  _print_json(row)
+  return 0
+
+
+def cmd_people_list(_args: argparse.Namespace) -> int:
+  _print_json(default_people_store().list_people())
+  return 0
+
+
+def cmd_people_create(args: argparse.Namespace) -> int:
+  row = default_people_store().create_person(
+    name=args.name,
+    role=args.role,
+    contact=args.contact,
+  )
+  _print_json(row)
+  return 0
+
+
+def cmd_people_update(args: argparse.Namespace) -> int:
+  try:
+    row = default_people_store().update_person(
+      args.person_id,
+      name=args.name,
+      role=args.role,
+      contact=args.contact,
+    )
+  except KeyError as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  _print_json(row)
+  return 0
+
+
+def cmd_retro_list(args: argparse.Namespace) -> int:
+  _print_json(default_retrospective_store().list_retrospectives(args.project_id))
+  return 0
+
+
+def cmd_retro_create(args: argparse.Namespace) -> int:
+  row = default_retrospective_store().create_retrospective(
+    args.project_id,
+    period=args.period,
+    summary=args.summary,
+    action_items=args.action_items,
+  )
+  _print_json(row)
+  return 0
+
+
+def cmd_retro_update(args: argparse.Namespace) -> int:
+  try:
+    row = default_retrospective_store().update_retrospective(
+      args.retrospective_id,
+      period=args.period,
+      summary=args.summary,
+      action_items=args.action_items,
     )
   except KeyError as e:
     print(str(e), file=sys.stderr)

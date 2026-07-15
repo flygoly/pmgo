@@ -50,7 +50,6 @@ ON tasks(project_id, status, due_at);
 CREATE INDEX IF NOT EXISTS idx_tasks_assignee_status
 ON tasks(assignee, status);
 
--- Reserved for M2+ assignee/roster UX (no MCP CRUD yet).
 CREATE TABLE IF NOT EXISTS people (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -97,7 +96,6 @@ CREATE TABLE IF NOT EXISTS decisions (
 CREATE INDEX IF NOT EXISTS idx_decisions_project
 ON decisions(project_id);
 
--- Reserved for M2+ sprint retro UX (no MCP CRUD yet).
 CREATE TABLE IF NOT EXISTS retrospectives (
   id TEXT PRIMARY KEY,
   project_id TEXT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,

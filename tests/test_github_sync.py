@@ -7,13 +7,17 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT / "skills" / "integration-github"))
 sys.path.insert(0, str(_ROOT / "skills" / "project-core"))
 
-from github_integration.sync import import_issue_as_task, sync_issues_to_project  # noqa: E402
+from github_integration.sync import (  # noqa: E402
+  import_issue_as_task,
+  push_done_tasks_to_github,
+  sync_issues_to_project,
+)
 from project_core.store import ProjectStore, TaskStore  # noqa: E402
 
 from test_helpers import init_test_db  # noqa: E402
@@ -58,21 +62,35 @@ class TestGitHubSync(unittest.TestCase):
   def test_sync_issues_to_project_counts(self) -> None:
     cfg = MagicMock()
     issues = [_issue(1, 2001), _issue(2, 2002)]
-    with unittest.mock.patch(
-      "github_integration.sync.list_issues",
-      return_value=issues,
-    ):
+    with patch("github_integration.sync.list_issues", return_value=issues):
       out = sync_issues_to_project(cfg, self.tasks, self.project_id)
     self.assertEqual(out["scanned"], 2)
     self.assertEqual(out["imported_count"], 2)
     self.assertEqual(out["skipped_count"], 0)
-    with unittest.mock.patch(
-      "github_integration.sync.list_issues",
-      return_value=issues,
-    ):
+    with patch("github_integration.sync.list_issues", return_value=issues):
       again = sync_issues_to_project(cfg, self.tasks, self.project_id)
     self.assertEqual(again["imported_count"], 0)
     self.assertEqual(again["skipped_count"], 2)
+
+  def test_push_done_closes_matching_open_issues(self) -> None:
+    cfg = MagicMock()
+    issue = _issue(7, 3007, title="Ship it")
+    import_issue_as_task(self.tasks, self.project_id, issue)
+    tasks = self.tasks.list_tasks(self.project_id)
+    self.assertEqual(len(tasks), 1)
+    self.tasks.update_task(tasks[0]["id"], status="done")
+
+    with patch(
+      "github_integration.sync.list_issues",
+      return_value=[issue],
+    ), patch(
+      "github_integration.sync.update_issue",
+      return_value={**issue, "state": "closed"},
+    ) as upd:
+      out = push_done_tasks_to_github(cfg, self.tasks, self.project_id)
+    self.assertEqual(out["closed_count"], 1)
+    self.assertEqual(out["closed"][0]["number"], 7)
+    upd.assert_called_once_with(cfg, 7, state="closed")
 
 
 if __name__ == "__main__":

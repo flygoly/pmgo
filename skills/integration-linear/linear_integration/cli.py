@@ -90,6 +90,21 @@ def cmd_get(args: argparse.Namespace) -> int:
   return 0
 
 
+def cmd_comment(args: argparse.Namespace) -> int:
+  try:
+    cfg = load_config()
+    issue = api.get_issue(cfg, args.identifier)
+    issue_id = str(issue.get("id") or "")
+    if not issue_id:
+      raise RuntimeError("Issue has no id")
+    comment = api.create_comment(cfg, issue_id=issue_id, body=args.body)
+    _print_json({"ok": True, "issue": _issue_public(issue), "comment": comment})
+  except (OSError, RuntimeError, ValueError) as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  return 0
+
+
 def cmd_import_task(args: argparse.Namespace) -> int:
   if args.db:
     os.environ["PMGO_MEMORY_DB"] = args.db
@@ -160,6 +175,10 @@ def build_parser() -> argparse.ArgumentParser:
   it.add_argument("--project-id", required=True, dest="project_id")
   it.add_argument("--identifier", type=str, required=True, dest="identifier")
   it.set_defaults(_fn=cmd_import_task)
+  cm = s.add_parser("comment", help="Post a comment on an issue (trusted CLI write)")
+  cm.add_argument("identifier", type=str, help="Issue UUID or ENG-42")
+  cm.add_argument("--body", required=True, help="Markdown comment body")
+  cm.set_defaults(_fn=cmd_comment)
   return p
 
 

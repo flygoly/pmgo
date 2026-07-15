@@ -24,6 +24,7 @@ Entry: `python3 scripts/github-issues.py` / `npm run github-issues -- …`
 | `close <number>` | Set issue state to `closed` |
 | `import-task` | `--project-id` and `--number` — creates a local task; fails if the same GitHub id was already imported for that project |
 | `sync` | `--project-id` — import matching issues not yet in local tasks (`--state`, `--per-page`; API client paginates up to `max_pages`) |
+| `push-done` | `--project-id` — close open GitHub issues whose local tasks are `done` (`source=github`) |
 
 ## Idempotency
 
@@ -43,6 +44,10 @@ The same operations are available through the **MCP** server `scripts/pmgo_mcp_s
 - `create_issue` / `update_issue` accept optional `labels` and `assignees` in the Python API (wire through CLI/MCP as needed).
 - List/sync walk multiple pages (`page` / `max_pages`).
 
+## Outbound sync
+
+`push-done` / MCP `pmgo_github_push_done` closes **open** GitHub issues that match local `done` tasks by `external_id` (GitHub issue id). Policy: `github.issue.update` + `confirmed=true`.
+
 ## Future work
 
-- Projects v2 / linked PRs; two-way sync (push task status to GitHub).
+- Projects v2 / linked PRs; reopen / label sync.

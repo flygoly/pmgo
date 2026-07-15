@@ -69,6 +69,19 @@ class TestPmgoPolicyGate(unittest.TestCase):
     self.assertIsNotNone(gate("github.issue.sync", confirmed=False))
     self.assertIsNone(gate("github.issue.sync", confirmed=True))
 
+  def test_people_and_retro_policy(self) -> None:
+    self.assertIsNone(gate("project_core.people.read", confirmed=False))
+    self.assertIsNotNone(gate("project_core.people.write", confirmed=False))
+    self.assertIsNone(gate("project_core.people.write", confirmed=True))
+    self.assertIsNone(gate("project_core.retrospective.read", confirmed=False))
+    self.assertIsNotNone(gate("project_core.retrospective.write", confirmed=False))
+
+  def test_linear_comment_and_feishu_policy(self) -> None:
+    self.assertIsNotNone(gate("linear.issue.comment", confirmed=False))
+    self.assertIsNone(gate("linear.issue.comment", confirmed=True))
+    self.assertIsNone(gate("feishu.task.read", confirmed=False))
+    self.assertIsNotNone(gate("feishu.task.import_task", confirmed=False))
+
   def test_milestone_read_allows_without_confirm(self) -> None:
     self.assertIsNone(gate("project_core.milestone.read", confirmed=False))
 

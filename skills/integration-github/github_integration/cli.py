@@ -11,7 +11,7 @@ from typing import Any
 
 from . import api
 from .config import load_config
-from .sync import import_issue_as_task, sync_issues_to_project
+from .sync import import_issue_as_task, push_done_tasks_to_github, sync_issues_to_project
 
 
 def _print_json(data: Any) -> None:
@@ -183,6 +183,35 @@ def cmd_sync(args: argparse.Namespace) -> int:
   return 0
 
 
+def cmd_push_done(args: argparse.Namespace) -> int:
+  """Close open GitHub issues for local done tasks (source=github)."""
+  if not (os.environ.get("GITHUB_TOKEN") or "").strip():
+    print("SKIP: GITHUB_TOKEN not set (GitHub push-done skipped).", file=sys.stderr)
+    return 0
+  if not (os.environ.get("GITHUB_REPO") or "").strip():
+    print("SKIP: GITHUB_REPO not set (GitHub push-done skipped).", file=sys.stderr)
+    return 0
+  if args.db:
+    os.environ["PMGO_MEMORY_DB"] = args.db
+  root = Path(__file__).resolve().parents[3]
+  sys.path[:0] = [str(root / "scripts"), str(root / "skills" / "project-core")]
+  from project_core.store import default_task_store  # noqa: WPS433
+
+  try:
+    cfg = load_config()
+    out = push_done_tasks_to_github(
+      cfg,
+      default_task_store(),
+      args.project_id,
+      per_page=args.per_page,
+    )
+  except (OSError, RuntimeError, ValueError) as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  _print_json(out)
+  return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
   p = argparse.ArgumentParser(
     prog="github-issues",
@@ -235,6 +264,14 @@ def build_parser() -> argparse.ArgumentParser:
   sy.add_argument("--state", default="open", choices=["open", "closed", "all"])
   sy.add_argument("--per-page", type=int, default=50, dest="per_page")
   sy.set_defaults(_fn=cmd_sync)
+
+  pd = s.add_parser(
+    "push-done",
+    help="Close open GitHub issues whose local tasks are done (source=github)",
+  )
+  pd.add_argument("--project-id", required=True, dest="project_id")
+  pd.add_argument("--per-page", type=int, default=50, dest="per_page")
+  pd.set_defaults(_fn=cmd_push_done)
 
   return p
 

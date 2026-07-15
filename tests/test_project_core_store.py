@@ -16,7 +16,9 @@ from project_core.memory_md import scaffold_project_markdown  # noqa: E402
 from project_core.store import (  # noqa: E402
   DecisionStore,
   MilestoneStore,
+  PeopleStore,
   ProjectStore,
+  RetrospectiveStore,
   RiskStore,
   TaskStore,
 )
@@ -35,6 +37,8 @@ class TestProjectCoreStore(unittest.TestCase):
     self.milestones = MilestoneStore(self.db_path)
     self.risks = RiskStore(self.db_path)
     self.decisions = DecisionStore(self.db_path)
+    self.people = PeopleStore(self.db_path)
+    self.retros = RetrospectiveStore(self.db_path)
 
   def tearDown(self) -> None:
     os.environ.pop("PMGO_MEMORY_DB", None)
@@ -112,6 +116,28 @@ class TestProjectCoreStore(unittest.TestCase):
     )
     self.assertEqual(updated["status"], "accepted")
     self.assertEqual(updated["decided_by"], "team")
+
+  def test_people_crud(self) -> None:
+    person = self.people.create_person(name="Ada", role="PM", contact="ada@example.com")
+    listed = self.people.list_people()
+    self.assertEqual(len(listed), 1)
+    updated = self.people.update_person(person["id"], role="Eng")
+    self.assertEqual(updated["role"], "Eng")
+    self.assertEqual(updated["name"], "Ada")
+
+  def test_retrospective_crud(self) -> None:
+    project = self.projects.create_project(name="Demo", slug="demo-retro")
+    retro = self.retros.create_retrospective(
+      project["id"],
+      period="2026-W28",
+      summary="Went well",
+      action_items="- Ship tests",
+    )
+    listed = self.retros.list_retrospectives(project["id"])
+    self.assertEqual(len(listed), 1)
+    updated = self.retros.update_retrospective(retro["id"], summary="Updated")
+    self.assertEqual(updated["summary"], "Updated")
+    self.assertEqual(updated["period"], "2026-W28")
 
   def test_risk_task_marker_dedupe(self) -> None:
     project = self.projects.create_project(name="Demo", slug="demo-marker")
