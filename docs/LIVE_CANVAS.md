@@ -1,4 +1,4 @@
-# OpenClaw Live Canvas (planned)
+# OpenClaw Live Canvas
 
 M3 visualization surface for pmgo. **OpenClaw-only** — Hermes users keep Markdown reports.
 
@@ -7,22 +7,31 @@ M3 visualization surface for pmgo. **OpenClaw-only** — Hermes users keep Markd
 - **Gantt:** milestones + task `due_at` / status from SQLite
 - **Burndown:** done vs remaining tasks in the current UTC week (same bounds as weekly report)
 
-## Data source
+## Data source (shipped)
 
-Read-only MCP / store queries:
+Read-only exports — no separate analytics DB:
 
-- `pmgo_milestone_list`
-- `pmgo_task_list`
-- Optional: `pmgo_weekly_report` aggregates for narrative
+```bash
+npm run canvas -- gantt --project-id <UUID>
+npm run canvas -- burndown --from-first-project
+npm run canvas -- snapshot --project-id <UUID>
+```
 
-No separate analytics DB.
+MCP tools (policy `pmgo.canvas.read`):
+
+- `pmgo_canvas_gantt`
+- `pmgo_canvas_burndown`
+- `pmgo_canvas_snapshot`
+
+Schemas: `pmgo.canvas.gantt/v1`, `pmgo.canvas.burndown/v1`, `pmgo.canvas.snapshot/v1`  
+Implementation: `skills/canvas-data/`.
 
 ## Delivery sketch
 
-1. Agent (or cron) fetches JSON via MCP.
-2. OpenClaw Live Canvas renders charts from a small JSON schema (to be frozen at M3).
+1. Agent (or cron) fetches JSON via MCP / CLI.
+2. OpenClaw Live Canvas renders charts from the JSON schema above.
 3. Canvas updates are announce-only; writes still go through policy-gated MCP tools.
 
 ## Status
 
-Specification only. Track progress in [ROADMAP.md](./ROADMAP.md). Until shipped, use `npm run weekly-report` / Telegram announce.
+**Data export shipped.** Visual rendering remains OpenClaw Canvas UI work. Until a Canvas template is published, paste `snapshot` JSON into any charting surface or keep using Markdown weekly reports.

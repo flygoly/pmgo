@@ -4,15 +4,28 @@ DingTalk connector scaffold for pmgo.
 
 ## Status
 
-**Planned (M3).** No Python client yet — channel delivery should go through the Hermes/OpenClaw DingTalk plugin when available. Local memory remains SQLite via `project-core`.
+**Scaffold:** access token smoke CLI. Task/todo sync is planned. Channel delivery should prefer the Hermes/OpenClaw DingTalk plugin.
 
-## Intended environment (future)
+## Environment
 
-| Variable | Purpose |
-| --- | --- |
-| `DINGTALK_APP_KEY` | App key |
-| `DINGTALK_APP_SECRET` | App secret |
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DINGTALK_APP_KEY` | For smoke | App key |
+| `DINGTALK_APP_SECRET` | For smoke | App secret |
+
+## CLI
+
+```bash
+npm run dingtalk:smoke
+# or
+python3 scripts/dingtalk-issues.py smoke
+```
 
 ## Near-term workaround
 
-Use Telegram E2E ([runtimes/openclaw/telegram-e2e.md](../../runtimes/openclaw/telegram-e2e.md)) or any gateway channel already configured; pmgo MCP tools are channel-agnostic.
+Use Telegram E2E ([runtimes/openclaw/telegram-e2e.md](../../runtimes/openclaw/telegram-e2e.md)) or any gateway channel; pmgo MCP tools are channel-agnostic.
+
+## Future
+
+- Todo / calendar task list + import (`source=dingtalk`)
+- MCP `pmgo_dingtalk_*` surface

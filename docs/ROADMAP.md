@@ -23,8 +23,9 @@ Phased rollout for pmgo. Details stay aligned with root `README.md`.
 
 ## M3 — v1.0
 
-- Feishu tasklist list/get/import (shipped); deepen Bitable; DingTalk / Notion deepen
-- OpenClaw Live Canvas: Gantt & burndown — see `docs/LIVE_CANVAS.md`
+- Feishu tasklist list/get/import (shipped); deepen Bitable
+- Notion database query / import (shipped); DingTalk token smoke (shipped)
+- OpenClaw Live Canvas **data export** shipped (`npm run canvas`) — UI rendering still OpenClaw-side
 - Publishable skills pack (`SKILL.md` standard) — see `docs/PUBLISHING.md`
 
 Local planning notes (untracked drafts) may live under `docs/plan/`; see `docs/plan/README.md`.

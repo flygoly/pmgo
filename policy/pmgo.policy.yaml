@@ -114,6 +114,16 @@ tools:
     allow: true
     require_confirm: true
 
+  notion.page.read:
+    allow: true
+
+  notion.page.import_task:
+    allow: true
+    require_confirm: true
+
+  pmgo.canvas.read:
+    allow: true
+
 quiet_hours:
   timezone: "Asia/Shanghai"
   ranges:

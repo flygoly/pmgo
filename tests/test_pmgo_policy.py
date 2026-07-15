@@ -82,6 +82,11 @@ class TestPmgoPolicyGate(unittest.TestCase):
     self.assertIsNone(gate("feishu.task.read", confirmed=False))
     self.assertIsNotNone(gate("feishu.task.import_task", confirmed=False))
 
+  def test_notion_and_canvas_policy(self) -> None:
+    self.assertIsNone(gate("notion.page.read", confirmed=False))
+    self.assertIsNotNone(gate("notion.page.import_task", confirmed=False))
+    self.assertIsNone(gate("pmgo.canvas.read", confirmed=False))
+
   def test_milestone_read_allows_without_confirm(self) -> None:
     self.assertIsNone(gate("project_core.milestone.read", confirmed=False))
 

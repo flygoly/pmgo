@@ -15,9 +15,10 @@ The `skills/` directory hosts MCP-compatible capabilities for `pmgo`.
 
 ## Scaffold / deepening
 
-- `integration-feishu` — tasklist list/get/import + MCP (`FEISHU_TASKLIST_GUID`)
-- `integration-notion` — users/me smoke CLI (`npm run notion:smoke`)
-- `integration-dingtalk` — docs only until M3 client lands
+- `integration-feishu` — tasklist list/get/import + MCP
+- `integration-notion` — database query / import + MCP (`NOTION_DATABASE_ID`)
+- `integration-dingtalk` — access token smoke (`npm run dingtalk:smoke`)
+- `canvas-data` — Live Canvas Gantt/burndown JSON (`npm run canvas`)
 - `project-core` also covers **people** / **retrospectives** CRUD
 
 Each skill should include its own `SKILL.md` and implementation files.
