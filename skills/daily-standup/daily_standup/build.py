@@ -8,18 +8,7 @@ from typing import Any
 
 import pmgo_common  # type: ignore
 
-
-def _parse_ts(raw: str | None) -> datetime | None:
-  if not raw:
-    return None
-  raw = str(raw).replace("Z", "+00:00")
-  try:
-    d = datetime.fromisoformat(raw)
-  except ValueError:
-    return None
-  if d.tzinfo is None:
-    return d.replace(tzinfo=timezone.utc)
-  return d
+_parse_ts = pmgo_common.parse_ts
 
 
 def _task_title(t: Any) -> str:

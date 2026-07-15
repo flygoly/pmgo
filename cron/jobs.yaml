@@ -1,8 +1,7 @@
-# Human-readable intent only — gateways do NOT read this file.
-# OpenClaw: openclaw cron add — see runtimes/openclaw/README.md
-# Hermes:   hermes cron create — see runtimes/hermes/README.md
+# Intent file — gateways do NOT read this directly.
+# Generate CLI commands: npm run cron:config -- --runtime openclaw|hermes
+# OpenClaw: runtimes/openclaw/README.md · Hermes: runtimes/hermes/README.md
 # Shared agent messages: shared/cron-messages.md
-# Repo scripts: `scripts/daily-standup.py`, `scripts/weekly-report.py`, `scripts/pmgo_mcp_server.py`.
 
 - name: morning-briefing
   cron: "0 9 * * 1-5"

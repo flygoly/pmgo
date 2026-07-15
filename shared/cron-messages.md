@@ -24,7 +24,14 @@ You are pmgo. Call pmgo_weekly_report (locale from PMGO_DEFAULT_LOCALE), then pm
 You are pmgo. Call pmgo_risk_scan with auto_escalate=true and confirmed=true when the user has approved escalation; otherwise scan only. If any task has been blocked >24h, list severity and recommend escalation options. Keep under 150 words.
 ```
 
-See executable examples:
+Generate ready-to-run CLI lines from `cron/jobs.yaml`:
+
+```bash
+npm run cron:config -- --runtime openclaw
+npm run cron:config -- --runtime hermes
+```
+
+Also see:
 
 - [runtimes/openclaw/cron.examples.sh](../runtimes/openclaw/cron.examples.sh)
 - [runtimes/hermes/cron.examples.sh](../runtimes/hermes/cron.examples.sh)

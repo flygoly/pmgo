@@ -5,5 +5,13 @@
   "standup.today": "Today",
   "standup.blockers": "Blockers",
   "standup.empty": "—",
-  "risk.none": "No active blockers detected."
+  "risk.none": "No active blockers detected.",
+  "policy.confirm_required": "Policy requires confirmation. Ask the user in chat, then retry with confirmed=true.",
+  "policy.denied": "Policy denied this tool.",
+  "error.missing_project": "No project id. Set PMGO_DEFAULT_PROJECT_ID or pass project_id.",
+  "error.missing_credentials": "Integration credentials are not configured.",
+  "cli.trusted_operator": "CLI is a trusted-operator path and does not enforce MCP policy gates.",
+  "onboarding.next_report": "Run: npm run daily-standup -- report",
+  "cron.morning_hint": "Morning briefing: daily report + risk scan.",
+  "cron.weekly_hint": "Friday weekly report for stakeholders."
 }

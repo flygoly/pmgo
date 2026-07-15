@@ -7,22 +7,11 @@ from typing import Any
 
 import pmgo_common  # type: ignore
 
+_parse_ts = pmgo_common.parse_ts
+
 
 def _row_dict(row: Any) -> dict[str, Any]:
   return {k: row[k] for k in row.keys()}
-
-
-def _parse_ts(raw: str | None) -> datetime | None:
-  if not raw:
-    return None
-  raw = str(raw).replace("Z", "+00:00")
-  try:
-    d = datetime.fromisoformat(raw)
-  except ValueError:
-    return None
-  if d.tzinfo is None:
-    return d.replace(tzinfo=timezone.utc)
-  return d
 
 
 def scan_project(project_id: str, *, now: datetime | None = None) -> dict[str, Any]:

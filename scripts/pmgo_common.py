@@ -1,14 +1,20 @@
-"""Shared helpers for pmgo Python skills (DB path, locale JSON)."""
+"""Shared helpers for pmgo Python skills (DB path, locale JSON, timestamps)."""
 
 from __future__ import annotations
 
 import json
 import os
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 
 
 def repo_root() -> Path:
+  override = os.environ.get("PMGO_WORKSPACE", "").strip()
+  if override:
+    p = Path(override).expanduser().resolve()
+    if p.is_dir():
+      return p
   return Path(__file__).resolve().parent.parent
 
 
@@ -17,6 +23,20 @@ def db_path() -> Path:
   if override:
     return Path(override).expanduser().resolve()
   return repo_root() / "memory" / "pmgo.db"
+
+
+def parse_ts(raw: str | None) -> datetime | None:
+  """Parse ISO-8601 timestamps; naive values are treated as UTC."""
+  if not raw:
+    return None
+  text = str(raw).replace("Z", "+00:00")
+  try:
+    d = datetime.fromisoformat(text)
+  except ValueError:
+    return None
+  if d.tzinfo is None:
+    return d.replace(tzinfo=timezone.utc)
+  return d
 
 
 def connect_db(path: Path) -> sqlite3.Connection:

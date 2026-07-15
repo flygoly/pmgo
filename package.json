@@ -24,9 +24,14 @@
     "linear-issues": "python3 scripts/linear-issues.py",
     "jira-issues:smoke": "python3 scripts/jira-issues.py smoke",
     "jira-issues": "python3 scripts/jira-issues.py",
+    "feishu:smoke": "python3 scripts/feishu-issues.py smoke",
+    "feishu-issues": "python3 scripts/feishu-issues.py",
+    "notion:smoke": "python3 scripts/notion-issues.py smoke",
+    "notion-issues": "python3 scripts/notion-issues.py",
+    "cron:config": "python3 scripts/render-cron-jobs.py",
     "mcp:pmgo:check": "python3 scripts/pmgo_mcp_preflight.py",
     "mcp:pmgo": "python3 scripts/pmgo_mcp_server.py",
-    "validate": "npm run check && npm run validate:memory && npm run project-core:smoke && npm run daily-standup:smoke && npm run weekly-report:smoke && npm run risk-radar:smoke && npm run github-issues:smoke && npm run linear-issues:smoke && npm run jira-issues:smoke && npm run mcp:pmgo:check",
+    "validate": "npm run check && npm run validate:memory && npm run project-core:smoke && npm run daily-standup:smoke && npm run weekly-report:smoke && npm run risk-radar:smoke && npm run github-issues:smoke && npm run linear-issues:smoke && npm run jira-issues:smoke && npm run feishu:smoke && npm run notion:smoke && npm run mcp:pmgo:check",
     "memory:init": "python3 scripts/init-memory-db.py",
     "memory:init:project": "python3 scripts/init-memory-project.py",
     "memory:migrate": "python3 scripts/migrate-memory-db.py",
@@ -35,6 +40,7 @@
     "memory:verify": "python3 scripts/verify-memory-db.py",
     "gtd:bootstrap": "python3 scripts/gtd-bootstrap.py",
     "runtime:config": "python3 scripts/render-runtime-config.py",
-    "test": "python3 -m unittest discover -s tests -p \"test_*.py\" -v"
+    "test": "python3 -m unittest discover -s tests -p \"test_*.py\" -v",
+    "test:coverage": "python3 -m coverage run -m unittest discover -s tests -p \"test_*.py\" -v && python3 -m coverage report --fail-under=40"
   }
 }

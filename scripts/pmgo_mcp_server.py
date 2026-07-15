@@ -37,7 +37,27 @@ for _d in (
   if p not in sys.path:
     sys.path.insert(0, p)
 
-from pmgo_policy import gate  # noqa: E402
+from pmgo_log import elapsed_ms, log_event, setup_logging, tool_timer  # noqa: E402
+from pmgo_policy import gate as _policy_gate  # noqa: E402
+
+_log = setup_logging()
+
+
+def gate(tool_key: str, *, confirmed: bool) -> str | None:
+  """Policy gate with structured stderr logging."""
+  started = tool_timer()
+  err = _policy_gate(tool_key, confirmed=confirmed)
+  log_event(
+    _log,
+    "mcp.gate",
+    tool=tool_key,
+    confirmed=confirmed,
+    ok=err is None,
+    error=err,
+    ms=elapsed_ms(started),
+  )
+  return err
+
 
 try:
   from mcp.server.fastmcp import FastMCP
@@ -635,6 +655,7 @@ def pmgo_github_sync_tasks(
   confirmed: bool = False,
   state: str = "open",
   per_page: int = 50,
+  max_pages: int = 10,
 ) -> str:
   """Import GitHub issues not yet present as local tasks (idempotent batch sync)."""
   err = gate("github.issue.sync", confirmed=confirmed)
@@ -654,6 +675,7 @@ def pmgo_github_sync_tasks(
         project_id,
         state=state,
         per_page=per_page,
+        max_pages=max_pages,
       )
     )
   except (OSError, RuntimeError) as e:
@@ -831,6 +853,52 @@ def pmgo_jira_import_task(
     )
   except sqlite3.IntegrityError:
     return "A task for this Jira issue already exists (same project + source + external_id)."
+
+
+@mcp.tool()
+def pmgo_jira_list_transitions(issue_key: str) -> str:
+  """List available Jira transitions for an issue key."""
+  err = gate("jira.issue.read", confirmed=False)
+  if err:
+    return err
+  from jira_integration.api import list_transitions
+  from jira_integration.config import load_config
+
+  try:
+    cfg = load_config()
+    transitions = list_transitions(cfg, issue_key)
+    slim = [
+      {
+        "id": t.get("id"),
+        "name": t.get("name"),
+        "to": ((t.get("to") or {}) if isinstance(t.get("to"), dict) else {}).get("name"),
+      }
+      for t in transitions
+    ]
+    return _j(slim)
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
+
+
+@mcp.tool()
+def pmgo_jira_transition_issue(
+  issue_key: str,
+  transition_id: str,
+  confirmed: bool = False,
+) -> str:
+  """Apply a Jira workflow transition (requires confirmed=true)."""
+  err = gate("jira.transition_issue", confirmed=confirmed)
+  if err:
+    return err
+  from jira_integration.api import transition_issue
+  from jira_integration.config import load_config
+
+  try:
+    cfg = load_config()
+    transition_issue(cfg, issue_key, transition_id=transition_id)
+    return _j({"ok": True, "issue_key": issue_key, "transition_id": transition_id})
+  except (OSError, RuntimeError, ValueError) as e:
+    return str(e)
 
 
 def main() -> None:

@@ -1,15 +1,19 @@
 [project]
 name = "pmgo"
 version = "0.1.0"
-description = "Python components for pmgo risk analysis and reporting."
+description = "Python components for pmgo MCP skills, risk analysis, and reporting."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-# Used by `scripts/pmgo_mcp_server.py` (stdio MCP for OpenClaw Gateway).
+# Used by `scripts/pmgo_mcp_server.py` (stdio MCP for OpenClaw / Hermes).
 mcp = ["mcp", "pyyaml"]
+dev = ["coverage>=7.0"]
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []

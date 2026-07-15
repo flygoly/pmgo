@@ -2,38 +2,35 @@
 
 from __future__ import annotations
 
-import json
-import ssl
-import urllib.error
-import urllib.request
+import sys
+from pathlib import Path
 from typing import Any, Optional
 
 from .config import LinearConfig
+
+_SCRIPTS = Path(__file__).resolve().parents[3] / "scripts"
+if str(_SCRIPTS) not in sys.path:
+  sys.path.insert(0, str(_SCRIPTS))
+
+from pmgo_http import request_json  # noqa: E402
 
 ENDPOINT = "https://api.linear.app/graphql"
 
 
 def _request(cfg: LinearConfig, query: str, variables: Optional[dict[str, Any]] = None) -> dict[str, Any]:
-  payload = {"query": query, "variables": variables or {}}
-  data = json.dumps(payload).encode("utf-8")
-  req = urllib.request.Request(
+  out, _ = request_json(
+    "POST",
     ENDPOINT,
-    data=data,
     headers={
       "Content-Type": "application/json",
       "Authorization": cfg.api_key,
       "User-Agent": cfg.user_agent,
     },
-    method="POST",
+    body={"query": query, "variables": variables or {}},
+    error_prefix="Linear HTTP",
   )
-  ctx = ssl.create_default_context()
-  try:
-    with urllib.request.urlopen(req, context=ctx, timeout=60) as resp:  # noqa: S310
-      raw = resp.read().decode("utf-8")
-  except urllib.error.HTTPError as e:
-    err = e.read().decode("utf-8", errors="replace")
-    raise RuntimeError(f"Linear HTTP {e.code}: {err or e.reason}") from e
-  out: dict[str, Any] = json.loads(raw) if raw else {}
+  if not isinstance(out, dict):
+    raise RuntimeError("Linear GraphQL: unexpected response type")
   if out.get("errors"):
     parts = [str((e or {}).get("message", e)) for e in out["errors"]]
     raise RuntimeError("Linear GraphQL: " + "; ".join(parts))
@@ -55,10 +52,17 @@ def viewer_smoke(cfg: LinearConfig) -> dict[str, Any]:
   return _request(cfg, q)
 
 
-def list_issues(cfg: LinearConfig, *, first: int = 20) -> list[dict[str, Any]]:
+def list_issues(
+  cfg: LinearConfig,
+  *,
+  first: int = 20,
+  max_pages: int = 5,
+) -> list[dict[str, Any]]:
+  """List issues with cursor pagination."""
   q = """
-  query IssueList($first: Int!) {
-    issues(first: $first) {
+  query IssueList($first: Int!, $after: String) {
+    issues(first: $first, after: $after) {
+      pageInfo { hasNextPage endCursor }
       nodes {
         id
         identifier
@@ -69,11 +73,29 @@ def list_issues(cfg: LinearConfig, *, first: int = 20) -> list[dict[str, Any]]:
     }
   }
   """
-  data = _request(cfg, q, {"first": int(first)})
-  issues = (data.get("issues") or {}).get("nodes")
-  if not isinstance(issues, list):
-    raise RuntimeError("Unexpected issues list")
-  return [x for x in issues if isinstance(x, dict)]
+  want = max(1, int(first))
+  page_size = min(50, want)
+  collected: list[dict[str, Any]] = []
+  after: str | None = None
+  pages = max(1, int(max_pages))
+  for _ in range(pages):
+    take = min(page_size, want - len(collected))
+    if take <= 0:
+      break
+    data = _request(cfg, q, {"first": take, "after": after})
+    block = data.get("issues") or {}
+    nodes = block.get("nodes")
+    if not isinstance(nodes, list):
+      raise RuntimeError("Unexpected issues list")
+    batch = [x for x in nodes if isinstance(x, dict)]
+    collected.extend(batch)
+    page_info = block.get("pageInfo") or {}
+    if not page_info.get("hasNextPage") or len(collected) >= want:
+      break
+    after = page_info.get("endCursor")
+    if not after:
+      break
+  return collected[:want]
 
 
 def _parse_team_number(identifier: str) -> tuple[str, float]:

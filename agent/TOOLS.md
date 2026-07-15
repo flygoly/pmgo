@@ -18,9 +18,9 @@
 
 ## Require Confirmation
 
-- `jira.create` and state transition writes
-- `github.close_pr` and workflow-impacting writes
-- `github.issue.create`, `github.issue.update`, `github.issue.import_task`, and `github.issue.sync` (Issues REST writes and local task import/sync)
+- `jira.transition_issue` and other Jira state writes
+- `github.close_pr` and workflow-impacting writes (policy key reserved)
+- `github.issue.create`, `github.issue.update`, `github.issue.import_task`, and `github.issue.sync`
 - Broadcast messages to group channels
 - Batch updates that may change ownership or schedule
 
@@ -34,8 +34,13 @@
 ## Idempotency and Audit Constraints
 
 - Use `external_id` as deduplication key for integrations.
-- Log external write actions to an audit trail (e.g. `memory/audit.log`).
+- Store write actions append rows to the SQLite `audit_logs` table (via project-core).
 - If tool state is uncertain, verify before retrying writes.
+
+## CLI vs MCP
+
+- MCP tools always run `gate()` from `policy/pmgo.policy.yaml`.
+- Local CLI scripts (`npm run project-core`, `github-issues`, …) are **trusted-operator** paths and do not call `gate()`. Do not expose them to untrusted IM users.
 
 ## MCP tools (OpenClaw & Hermes)
 

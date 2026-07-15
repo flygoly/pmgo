@@ -1,5 +1,6 @@
-# Local planning / draft docs (not tracked)
-docs/
+# Local planning drafts only (tracked docs live under docs/*.md)
+docs/plan/**
+!docs/plan/README.md
 
 # Node / TypeScript
 node_modules/
@@ -20,6 +21,9 @@ venv/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
 
 # OpenClaw / pmgo runtime artifacts
 memory/*.sqlite

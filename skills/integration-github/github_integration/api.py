@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
-import json
-import ssl
-import urllib.error
-import urllib.parse
-import urllib.request
+import sys
+from pathlib import Path
 from typing import Any, Optional
 
 from .config import GitHubConfig
+
+_SCRIPTS = Path(__file__).resolve().parents[3] / "scripts"
+if str(_SCRIPTS) not in sys.path:
+  sys.path.insert(0, str(_SCRIPTS))
+
+from pmgo_http import request_json  # noqa: E402
 
 API = "https://api.github.com"
 
@@ -31,30 +34,15 @@ def _request(
   body: Optional[dict[str, Any]] = None,
   query: Optional[dict[str, str]] = None,
 ) -> Any:
-  url = API + path
-  if query:
-    url = url + "?" + urllib.parse.urlencode(query)
-  data: Optional[bytes] = None
-  headers = _ua(cfg)
-  if body is not None:
-    data = json.dumps(body).encode("utf-8")
-    headers["Content-Type"] = "application/json"
-  req = urllib.request.Request(url, data=data, headers=headers, method=method)
-  ctx = ssl.create_default_context()
-  try:
-    with urllib.request.urlopen(req, context=ctx, timeout=60) as resp:  # noqa: S310
-      raw = resp.read().decode("utf-8")
-      if not raw:
-        return None
-      return json.loads(raw)
-  except urllib.error.HTTPError as e:
-    err = e.read().decode("utf-8", errors="replace")
-    try:
-      payload = json.loads(err)
-      msg = payload.get("message", err)
-    except json.JSONDecodeError:
-      msg = err or e.reason
-    raise RuntimeError(f"GitHub API {e.code} {e.reason}: {msg}") from e
+  out, _headers = request_json(
+    method,
+    API + path,
+    headers=_ua(cfg),
+    body=body,
+    query=query,
+    error_prefix="GitHub API",
+  )
+  return out
 
 
 def rate_limit(cfg: GitHubConfig) -> dict[str, Any]:
@@ -66,17 +54,33 @@ def list_issues(
   *,
   state: str = "all",
   per_page: int = 30,
+  max_pages: int = 10,
 ) -> list[dict[str, Any]]:
+  """List issues across pages (stops at empty page, short page, or max_pages)."""
   path = f"/repos/{cfg.owner}/{cfg.repo}/issues"
-  out = _request(
-    cfg,
-    "GET",
-    path,
-    query={"state": state, "per_page": str(per_page)},
-  )
-  if not isinstance(out, list):
-    raise RuntimeError("Unexpected list_issues response type")
-  return [x for x in out if isinstance(x, dict) and "pull_request" not in x]
+  collected: list[dict[str, Any]] = []
+  page = 1
+  per = max(1, min(int(per_page), 100))
+  pages = max(1, int(max_pages))
+  while page <= pages:
+    out = _request(
+      cfg,
+      "GET",
+      path,
+      query={
+        "state": state,
+        "per_page": str(per),
+        "page": str(page),
+      },
+    )
+    if not isinstance(out, list):
+      raise RuntimeError("Unexpected list_issues response type")
+    batch = [x for x in out if isinstance(x, dict) and "pull_request" not in x]
+    collected.extend(batch)
+    if len(out) < per:
+      break
+    page += 1
+  return collected
 
 
 def get_issue(cfg: GitHubConfig, number: int) -> dict[str, Any]:
@@ -94,9 +98,16 @@ def create_issue(
   *,
   title: str,
   body: str = "",
+  labels: Optional[list[str]] = None,
+  assignees: Optional[list[str]] = None,
 ) -> dict[str, Any]:
   path = f"/repos/{cfg.owner}/{cfg.repo}/issues"
-  out = _request(cfg, "POST", path, body={"title": title, "body": body or ""})
+  payload: dict[str, Any] = {"title": title, "body": body or ""}
+  if labels:
+    payload["labels"] = labels
+  if assignees:
+    payload["assignees"] = assignees
+  out = _request(cfg, "POST", path, body=payload)
   if not isinstance(out, dict):
     raise RuntimeError("Unexpected create_issue response type")
   return out
@@ -109,15 +120,21 @@ def update_issue(
   state: Optional[str] = None,
   title: Optional[str] = None,
   body: Optional[str] = None,
+  labels: Optional[list[str]] = None,
+  assignees: Optional[list[str]] = None,
 ) -> dict[str, Any]:
   path = f"/repos/{cfg.owner}/{cfg.repo}/issues/{number}"
-  payload: dict[str, str] = {}
+  payload: dict[str, Any] = {}
   if state is not None:
     payload["state"] = state
   if title is not None:
     payload["title"] = title
   if body is not None:
     payload["body"] = body
+  if labels is not None:
+    payload["labels"] = labels
+  if assignees is not None:
+    payload["assignees"] = assignees
   if not payload:
     raise ValueError("No fields to update")
   out = _request(cfg, "PATCH", path, body=payload)

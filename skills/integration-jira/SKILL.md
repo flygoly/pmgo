@@ -20,8 +20,10 @@ Entry: `python3 scripts/jira-issues.py` / `npm run jira-issues -- …`
 | Command | Purpose |
 | --- | --- |
 | `smoke` | If Jira env vars are unset, exit 0 (CI-friendly). Otherwise call `/rest/api/3/myself`. |
-| `list` | Search issues (`--jql`, `--max-results`; default JQL uses `JIRA_PROJECT` or `ORDER BY updated DESC`). |
+| `list` | Search issues (`--jql`, `--max-results`; paginated via `startAt`). |
 | `get <KEY>` | One issue by key (e.g. `PROJ-123`). |
+| `transitions <KEY>` | List available workflow transitions. |
+| `transition <KEY> --transition-id ID` | Apply a transition (**trusted CLI**; MCP requires `confirmed=true`). |
 | `import-task` | `--project-id` and `--issue-key` — creates a local task; fails on duplicate import |
 
 ## Status mapping
@@ -34,13 +36,13 @@ Jira `statusCategory.key` maps to pmgo task status: `done` → `done`, `indeterm
 
 ## Safety
 
-- `import-task` and MCP `pmgo_jira_import_task` require policy + `confirmed: true` when configured (see `policy/pmgo.policy.yaml`).
-- `jira.transition_issue` is reserved for future write/transition support.
+- `import-task` and MCP `pmgo_jira_import_task` / `pmgo_jira_transition_issue` require policy + `confirmed: true` when configured (see `policy/pmgo.policy.yaml`).
+- CLI paths do not call `gate()` (trusted operator).
 
 ## OpenClaw
 
-MCP tools: `pmgo_jira_issue_list`, `pmgo_jira_issue_get`, `pmgo_jira_import_task` via `scripts/pmgo_mcp_server.py` — see `runtimes/README.md`.
+MCP tools: `pmgo_jira_issue_list`, `pmgo_jira_issue_get`, `pmgo_jira_import_task`, `pmgo_jira_list_transitions`, `pmgo_jira_transition_issue` via `scripts/pmgo_mcp_server.py` — see `runtimes/README.md`.
 
 ## Future work
 
-- Issue transitions (`jira.transition_issue`); create/update issue; project-scoped filters; webhook sync.
+- Create/update issue; webhook sync; richer field mapping.

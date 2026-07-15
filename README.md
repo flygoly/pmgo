@@ -10,7 +10,7 @@
 
 ---
 
-> **Heads up — early development.** This project is still in its initial development phase. The design, repo layout, and APIs are not yet stable, and most skills below are planned rather than shipped. **Star / watch the repo and stay tuned** — a first MVP (M1) is on the way. Feedback and issues are very welcome.
+> **Heads up — early development.** Design and APIs may still change. **Shipped in tree:** `project-core`, daily/weekly reports, `risk-radar`, GitHub/Linear/Jira connectors, and the policy-aware MCP server. **Still planned:** Feishu/DingTalk/Notion depth, Live Canvas, and richer multi-agent runtime wiring. Feedback and issues are welcome.
 
 ---
 
@@ -37,22 +37,26 @@ It ships as a **skills pack, not a fork** — one MCP server and one memory stor
 
 ## Quick start
 
-> Early development — commands below are the target UX. See [runtimes/](./runtimes/) for gateway-specific steps.
+Shortest path to a rendered daily report: [docs/FIRST_DAILY_REPORT.md](./docs/FIRST_DAILY_REPORT.md). Gateway steps: [runtimes/](./runtimes/).
 
 ```bash
-# 1) Bootstrap local memory + linked project (runtime-agnostic)
+# 1) Bootstrap local memory + linked project (prints copy-paste export block)
 npm run gtd:bootstrap -- --name "My GTD" --locale zh-CN
+# eval the printed exports, or:
+export PMGO_WORKSPACE="$(pwd)"
 export PMGO_DEFAULT_PROJECT_ID="<uuid-from-output>"
-export PMGO_WORKSPACE="/absolute/path/to/pmgo"
 
-# 2) Pick a runtime and register MCP (prints ready-to-run snippet)
+# 2) First report without a gateway
+npm run daily-standup -- report
+
+# 3) Register MCP (defaults PMGO_WORKSPACE to this repo’s absolute path)
 npm run runtime:config -- --runtime openclaw   # or: hermes
 
-# 3) OpenClaw: openclaw agent add ./agent
-#    Hermes:   hermes claw migrate  OR  copy agent/SOUL.md → ~/.hermes/SOUL.md
+# 4) OpenClaw: openclaw agent add ./agent
+#    Hermes:   merge MCP YAML + persona — see runtimes/hermes/README.md
 ```
 
-Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [GTD quickstart (OpenClaw)](./runtimes/openclaw/gtd-quickstart.md)
+Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) · [Architecture](./docs/ARCHITECTURE.md)
 
 ## Repository layout
 
@@ -62,7 +66,8 @@ Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/
 - `skills/` - MCP skill definitions and implementations
 - `locales/` - runtime i18n dictionaries (`en`, `zh-CN`, `zh-TW`)
 - `policy/pmgo.policy.yaml` - allow-list and confirmation policy
-- `cron/jobs.yaml` - proactive heartbeat and scheduled jobs
+- `cron/jobs.yaml` - schedule intent (generate CLI via `npm run cron:config`)
+- `docs/` - architecture, deploy, first-report, Live Canvas, publishing
 - `memory/templates/` - locale-aware reporting templates
 - `memory/schema.sql` - canonical SQLite schema snapshot
 - `memory/migrations/` - append-only schema migration history
@@ -155,7 +160,11 @@ Register the **policy-aware MCP server** (`scripts/pmgo_mcp_server.py`), connect
 | **Hermes** | [runtimes/hermes/README.md](./runtimes/hermes/README.md) |
 | **Overview** | [runtimes/README.md](./runtimes/README.md) |
 
-The repo `cron/jobs.yaml` is a narrative reference only; use `openclaw cron add` or `hermes cron create` in production.
+Generate gateway cron commands from `cron/jobs.yaml`:
+
+```bash
+npm run cron:config -- --runtime openclaw   # or hermes
+```
 
 ## Architecture at a glance
 
@@ -174,13 +183,22 @@ Gateway (OpenClaw or Hermes — channels)
    Memory: SQLite + Markdown   ◄── Cron / heartbeat
 ```
 
+## Shipped vs planned
+
+| Status | Skills / surfaces |
+|---|---|
+| **Shipped** | `project-core`, `daily-standup`, `weekly-report`, `risk-radar`, `integration-github`, `integration-linear`, `integration-jira`, MCP hub + policy |
+| **Scaffold / planned** | `integration-feishu`, `integration-dingtalk`, `integration-notion`, Live Canvas, publishable one-click pack |
+
 ## Roadmap
 
 | Milestone | Scope |
 |---|---|
-| **M1 — MVP** (2–3 weeks) | Repo scaffold · agent persona · 3 native skills (`project-core`, `daily-standup`, `weekly-report`) · GitHub Issues connector · 1 IM channel (Telegram or Feishu) · end-to-end personal GTD flow |
-| **M2 — Beta** (+3–4 weeks) | `risk-radar` (Python MCP) · Jira/Linear connector · multi-agent orchestration · cron/heartbeat jobs live |
-| **M3 — v1.0** (+4–6 weeks) | Feishu/DingTalk/Notion connectors · Gantt & burndown on OpenClaw Live Canvas · publishable `SKILL.md` for one-click install |
+| **M1 — MVP** | Scaffold · persona · core reports · GitHub · Telegram E2E docs · GTD → first daily report |
+| **M2 — Beta** | `risk-radar` · Jira/Linear · cron generator · multi-agent snippets · integration write depth |
+| **M3 — v1.0** | Feishu/DingTalk/Notion · OpenClaw Live Canvas · publishable `SKILL.md` pack |
+
+See [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ## Internationalisation
 

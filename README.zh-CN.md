@@ -9,7 +9,7 @@
 
 ---
 
-> **提示 — 早期开发阶段。** 本项目仍处于初始开发阶段，设计、目录结构与 API 尚未稳定，下方多数技能还在规划中而非已交付。**欢迎 Star / Watch 本仓库，敬请期待** —— 首个 MVP（M1）正在路上。非常欢迎你的反馈与 Issue。
+> **提示 — 早期开发阶段。** 设计与 API 仍可能变动。**仓库内已交付：** `project-core`、日报/周报、`risk-radar`、GitHub/Linear/Jira 连接器、带策略门禁的 MCP。**仍在规划：** 飞书/钉钉/Notion 深化、Live Canvas、更完整的多智能体运行时接线。欢迎反馈与 Issue。
 
 ---
 
@@ -36,17 +36,21 @@
 
 ## 快速开始
 
-> 项目处于**早期开发阶段**。网关相关步骤见 [runtimes/](./runtimes/)。
+最短路径（零到第一条日报）：[docs/FIRST_DAILY_REPORT.md](./docs/FIRST_DAILY_REPORT.md)。网关步骤见 [runtimes/](./runtimes/)。
 
 ```bash
 npm run gtd:bootstrap -- --name "My GTD" --locale zh-CN
+# 复制命令输出的 export 块，或：
+export PMGO_WORKSPACE="$(pwd)"
 export PMGO_DEFAULT_PROJECT_ID="<uuid>"
-export PMGO_WORKSPACE="/absolute/path/to/pmgo"
+npm run daily-standup -- report
 npm run runtime:config -- --runtime openclaw   # 或 hermes
 ```
 
 - OpenClaw：[runtimes/openclaw/README.md](./runtimes/openclaw/README.md)
 - Hermes：[runtimes/hermes/README.md](./runtimes/hermes/README.md)
+- Telegram E2E：[runtimes/openclaw/telegram-e2e.md](./runtimes/openclaw/telegram-e2e.md)
+- 架构：[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ## 长期记忆存储
 
@@ -136,7 +140,11 @@ npm run jira-issues -- import-task --project-id <UUID> --issue-key PROJ-123
 | Hermes | [runtimes/hermes/README.md](./runtimes/hermes/README.md) |
 | 总览 | [runtimes/README.md](./runtimes/README.md) |
 
-仓库内 `cron/jobs.yaml` 仅为示意；生产环境请用 `openclaw cron add` 或 `hermes cron create`。
+从 `cron/jobs.yaml` 生成网关定时命令：
+
+```bash
+npm run cron:config -- --runtime openclaw   # 或 hermes
+```
 
 ## 架构速览
 
@@ -155,13 +163,22 @@ npm run jira-issues -- import-task --project-id <UUID> --issue-key PROJ-123
    记忆层：SQLite + Markdown   ◄── Cron / Heartbeat
 ```
 
+## 已交付 vs 规划
+
+| 状态 | 技能 / 表面 |
+|---|---|
+| **已交付** | `project-core`、日报/周报、`risk-radar`、GitHub/Linear/Jira、MCP + 策略 |
+| **脚手架 / 规划** | 飞书/钉钉/Notion、Live Canvas、可一键安装的技能包 |
+
 ## 路线图
 
 | 里程碑 | 范围 |
 |---|---|
-| **M1 — MVP**（2–3 周） | 仓库骨架 · Agent 人格 · 3 个原生技能（`project-core`、`daily-standup`、`weekly-report`）· GitHub Issues 连接器 · 1 个 IM 渠道（Telegram 或飞书）· 跑通个人 GTD 端到端 |
-| **M2 — Beta**（+3–4 周） | `risk-radar`（Python MCP）· Jira/Linear 连接器 · 多智能体编排 · 上线 Heartbeat 定时任务 |
-| **M3 — v1.0**（+4–6 周） | 飞书/钉钉/Notion 连接器 · 基于 OpenClaw Live Canvas 的甘特图与燃尽图 · 按 `SKILL.md` 标准发布，支持一键安装 |
+| **M1 — MVP** | 骨架 · 人格 · 核心报告 · GitHub · Telegram E2E · GTD → 第一条日报 |
+| **M2 — Beta** | `risk-radar` · Jira/Linear · cron 生成器 · 多智能体片段 · 写回加深 |
+| **M3 — v1.0** | 飞书/钉钉/Notion · OpenClaw Live Canvas · 可发布 `SKILL.md` 包 |
+
+详见 [docs/ROADMAP.md](./docs/ROADMAP.md)。
 
 ## 国际化约定
 

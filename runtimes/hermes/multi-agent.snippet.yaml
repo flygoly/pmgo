@@ -1,0 +1,48 @@
+# Hermes multi-agent topology sketch for pmgo (paste / merge carefully).
+# Exact schema may differ by Hermes version — validate against Hermes docs.
+
+agents:
+  pmgo:
+    role: lead
+    persona: agent/SOUL.md
+    routes:
+      - when: planning|milestone|breakdown
+        to: pmgo-planner
+      - when: status|progress|velocity
+        to: pmgo-tracker
+      - when: risk|blocker|escalate
+        to: pmgo-risker
+      - when: standup|weekly|report|summary
+        to: pmgo-reporter
+
+  pmgo-planner:
+    role: specialist
+    system_append: >
+      You are pmgo-planner. Clarify requirements, decompose work, design milestones.
+      Prefer pmgo_milestone_* and pmgo_task_* MCP tools. Return Conclusion, Evidence,
+      Recommended Actions.
+
+  pmgo-tracker:
+    role: specialist
+    system_append: >
+      You are pmgo-tracker. Track progress and schedule drift using pmgo_task_list
+      and pmgo_project_list.
+
+  pmgo-risker:
+    role: specialist
+    system_append: >
+      You are pmgo-risker. Call pmgo_risk_scan first. Never escalate writes without
+      user confirmation (confirmed=true).
+
+  pmgo-reporter:
+    role: specialist
+    system_append: >
+      You are pmgo-reporter. Call pmgo_daily_report or pmgo_weekly_report. Keep
+      stakeholder summaries under the limits in shared/cron-messages.md.
+
+mcp_servers:
+  pmgo:
+    # Merge with output of: npm run runtime:config -- --runtime hermes
+    command: python3
+    args:
+      - scripts/pmgo_mcp_server.py

@@ -6,18 +6,7 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 import pmgo_common  # type: ignore
 
-
-def _parse_ts(raw: str | None) -> datetime | None:
-  if not raw:
-    return None
-  raw = str(raw).replace("Z", "+00:00")
-  try:
-    d = datetime.fromisoformat(raw)
-  except ValueError:
-    return None
-  if d.tzinfo is None:
-    return d.replace(tzinfo=timezone.utc)
-  return d
+_parse_ts = pmgo_common.parse_ts
 
 
 def _week_bounds_utc(anchor: datetime, week_offset: int) -> tuple[datetime, datetime]:
@@ -146,6 +135,17 @@ def build_weekly_markdown(
   if blocked_titles:
     esc = blocked_titles[0]
 
+  evidence_urls: list[str] = []
+  for t in task_rows:
+    detail = str(t["detail"] or "")
+    for line in detail.splitlines():
+      line = line.strip()
+      if line.startswith(("GitHub:", "Jira:", "Linear:", "http://", "https://")):
+        url = line.split(":", 1)[-1].strip() if not line.startswith("http") else line
+        if url.startswith("http") and url not in evidence_urls:
+          evidence_urls.append(url)
+  evidence_issues = "\n".join(f"- {u}" for u in evidence_urls[:5]) if evidence_urls else em
+
   ctx: dict[str, str] = {
     "project_name": project_name,
     "week_range": week_range,
@@ -172,7 +172,7 @@ def build_weekly_markdown(
     "next_action_2_owner": na2o,
     "next_action_2_due": na2d,
     "evidence_commits_prs": em,
-    "evidence_issues": em,
+    "evidence_issues": evidence_issues,
     "evidence_docs": em,
   }
   out = template

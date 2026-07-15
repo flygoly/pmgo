@@ -1,22 +1,22 @@
-# Skills Pack Scaffold
+# Skills Pack
 
 The `skills/` directory hosts MCP-compatible capabilities for `pmgo`.
 
-Shipped in tree (code or docs):
+## Shipped
 
-- `project-core` — Python store + `scripts/project-core.py` CLI against `memory/pmgo.db` (OpenClaw/MCP wiring later)
-- `daily-standup` — `scripts/daily-standup.py` CLI + `memory/templates/daily-standup.*.md`
-- `weekly-report` — `scripts/weekly-report.py` CLI + `memory/templates/weekly-report.*.md`
-- `integration-github` — `scripts/github-issues.py` for Issues REST + optional `import-task` into SQLite (`GITHUB_TOKEN`, `GITHUB_REPO`)
-- `integration-linear` — `scripts/linear-issues.py` for GraphQL list/get + `import-task` into SQLite (`LINEAR_API_KEY`)
-- `integration-jira` — `scripts/jira-issues.py` for Cloud REST list/get + `import-task` into SQLite (`JIRA_*` env vars)
-- `risk-radar` — `scripts/risk-radar.py` JSON scan: open/watching `risks` + `blocked` tasks per project (MCP: `pmgo_risk_scan`)
-- **MCP (OpenClaw & Hermes)** — `scripts/pmgo_mcp_server.py` stdio tool server (see `runtimes/`)
+- `project-core` — SQLite store + CLI + MCP CRUD for projects/tasks/milestones/risks/decisions
+- `daily-standup` — Markdown daily report from DB
+- `weekly-report` — Weekly status Markdown (fills evidence URLs from imported task details when present)
+- `risk-radar` — Blocker/risk scan + optional escalate
+- `integration-github` — Issues REST + import/sync (paginated)
+- `integration-linear` — GraphQL list/get + import (cursor pagination)
+- `integration-jira` — Cloud REST list/get/import + transitions
+- **MCP hub** — `scripts/pmgo_mcp_server.py` (policy-gated)
 
-Planned modules include:
+## Scaffold / planned
 
-- `integration-notion`
-- `integration-feishu`
-- `integration-dingtalk`
+- `integration-feishu` — tenant token smoke CLI (`npm run feishu:smoke`)
+- `integration-notion` — users/me smoke CLI (`npm run notion:smoke`)
+- `integration-dingtalk` — docs only until M3 client lands
 
 Each skill should include its own `SKILL.md` and implementation files.

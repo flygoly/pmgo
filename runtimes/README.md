@@ -27,9 +27,7 @@ Use **one** `memory/pmgo.db` and **one** MCP server registration per machine unl
 
    ```bash
    npm run gtd:bootstrap -- --name "My GTD" --locale zh-CN
-   export PMGO_DEFAULT_PROJECT_ID="<uuid-from-output>"
-   export PMGO_DEFAULT_LOCALE=zh-CN
-   export PMGO_WORKSPACE="/absolute/path/to/pmgo"
+   # Copy the printed export block (includes PMGO_WORKSPACE)
    ```
 
 2. **Render MCP config** for your gateway:
@@ -39,14 +37,22 @@ Use **one** `memory/pmgo.db` and **one** MCP server registration per machine unl
    npm run runtime:config -- --runtime hermes
    ```
 
-3. **Follow the runtime guide**:
-   - OpenClaw: [openclaw/README.md](./openclaw/README.md) · [GTD quickstart](./openclaw/gtd-quickstart.md)
+3. **Optional cron commands** from `cron/jobs.yaml`:
+
+   ```bash
+   npm run cron:config -- --runtime openclaw
+   ```
+
+4. **Follow the runtime guide**:
+   - OpenClaw: [openclaw/README.md](./openclaw/README.md) · [GTD quickstart](./openclaw/gtd-quickstart.md) · [Telegram E2E](./openclaw/telegram-e2e.md)
    - Hermes: [hermes/README.md](./hermes/README.md) · [GTD quickstart](./hermes/gtd-quickstart.md)
+   - Multi-agent snippets: [openclaw/multi-agent.snippet.md](./openclaw/multi-agent.snippet.md) · [hermes/multi-agent.snippet.yaml](./hermes/multi-agent.snippet.yaml)
 
 ## Shared assets
 
 - [shared/mcp.env.example](../shared/mcp.env.example) — environment variables for MCP `env` blocks
 - [shared/cron-messages.md](../shared/cron-messages.md) — agent prompts reused by OpenClaw cron and Hermes cron
+- [docs/FIRST_DAILY_REPORT.md](../docs/FIRST_DAILY_REPORT.md) — zero → first standup without a gateway
 
 ## Platform-specific features (not portable)
 

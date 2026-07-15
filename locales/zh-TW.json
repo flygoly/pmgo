@@ -5,5 +5,13 @@
   "standup.today": "今天",
   "standup.blockers": "阻塞",
   "standup.empty": "—",
-  "risk.none": "目前沒有發現活躍阻塞。"
+  "risk.none": "目前沒有發現活躍阻塞。",
+  "policy.confirm_required": "策略要求確認。請先在對話中徵得使用者同意，再使用 confirmed=true 重試。",
+  "policy.denied": "策略拒絕了該工具。",
+  "error.missing_project": "缺少專案 id。請設定 PMGO_DEFAULT_PROJECT_ID 或傳入 project_id。",
+  "error.missing_credentials": "未設定整合憑證。",
+  "cli.trusted_operator": "CLI 為可信操作員路徑，不強制執行 MCP 策略門禁。",
+  "onboarding.next_report": "執行：npm run daily-standup -- report",
+  "cron.morning_hint": "晨間簡報：日報 + 風險掃描。",
+  "cron.weekly_hint": "週五週報，面向利害關係人。"
 }

@@ -61,9 +61,10 @@ def sync_issues_to_project(
   *,
   state: str = "open",
   per_page: int = 50,
+  max_pages: int = 10,
 ) -> dict[str, Any]:
   """List GitHub issues and import any not yet present locally."""
-  issues = list_issues(cfg, state=state, per_page=per_page)
+  issues = list_issues(cfg, state=state, per_page=per_page, max_pages=max_pages)
   imported: list[dict[str, Any]] = []
   skipped: list[int] = []
   invalid: list[int] = []

@@ -96,12 +96,17 @@ def main() -> None:
   )
 
   print(json.dumps(result, indent=2, default=str, ensure_ascii=False))
+  workspace = str(ROOT.resolve())
   print(
-    "\nNext steps:\n"
-    f"  export PMGO_DEFAULT_PROJECT_ID={result['id']}\n"
-    f"  export PMGO_DEFAULT_LOCALE={args.locale}\n"
-    "  npm run daily-standup -- report\n"
-    "  See runtimes/README.md for OpenClaw or Hermes Gateway setup.",
+    "\n# Copy-paste env block (shell)\n"
+    f"export PMGO_WORKSPACE={workspace}\n"
+    f"export PMGO_DEFAULT_PROJECT_ID={result['id']}\n"
+    f"export PMGO_DEFAULT_LOCALE={args.locale}\n"
+    "\n# First daily report (no gateway required)\n"
+    "npm run daily-standup -- report\n"
+    "\n# Register MCP (PMGO_WORKSPACE defaults to this repo)\n"
+    "npm run runtime:config -- --runtime openclaw\n"
+    "\n# Docs: docs/FIRST_DAILY_REPORT.md · runtimes/README.md\n",
     file=sys.stderr,
   )
 

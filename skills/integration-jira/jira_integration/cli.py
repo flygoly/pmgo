@@ -114,6 +114,36 @@ def cmd_get(args: argparse.Namespace) -> int:
   return 0
 
 
+def cmd_transitions(args: argparse.Namespace) -> int:
+  try:
+    cfg = load_config()
+    items = api.list_transitions(cfg, args.issue_key)
+    slim = [
+      {
+        "id": t.get("id"),
+        "name": t.get("name"),
+        "to": ((t.get("to") or {}) if isinstance(t.get("to"), dict) else {}).get("name"),
+      }
+      for t in items
+    ]
+    _print_json(slim)
+  except (OSError, RuntimeError, ValueError) as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  return 0
+
+
+def cmd_transition(args: argparse.Namespace) -> int:
+  try:
+    cfg = load_config()
+    api.transition_issue(cfg, args.issue_key, transition_id=args.transition_id)
+    _print_json({"ok": True, "issue_key": args.issue_key, "transition_id": args.transition_id})
+  except (OSError, RuntimeError, ValueError) as e:
+    print(str(e), file=sys.stderr)
+    return 1
+  return 0
+
+
 def cmd_import_task(args: argparse.Namespace) -> int:
   if args.db:
     os.environ["PMGO_MEMORY_DB"] = args.db
@@ -188,6 +218,13 @@ def build_parser() -> argparse.ArgumentParser:
   it.add_argument("--project-id", required=True, dest="project_id")
   it.add_argument("--issue-key", type=str, required=True, dest="issue_key")
   it.set_defaults(_fn=cmd_import_task)
+  tr = s.add_parser("transitions", help="List workflow transitions for an issue")
+  tr.add_argument("issue_key", type=str)
+  tr.set_defaults(_fn=cmd_transitions)
+  tx = s.add_parser("transition", help="Apply a workflow transition (trusted CLI)")
+  tx.add_argument("issue_key", type=str)
+  tx.add_argument("--transition-id", required=True, dest="transition_id")
+  tx.set_defaults(_fn=cmd_transition)
   return p
 
 

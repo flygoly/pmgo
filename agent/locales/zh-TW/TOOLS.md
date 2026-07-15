@@ -1,8 +1,8 @@
-# TOOLS 在地化覆蓋（zh-TW）
+# TOOLS 本地化覆蓋（zh-TW）
 
 ## 設計原則
 
-- 最小權限、可稽核、可確認、可回復。
+- 最小權限、可稽核、可確認、可回滾。
 
 ## 預設允許
 
@@ -10,7 +10,7 @@
 
 ## 需確認後執行
 
-- `jira.create`、`github.close_pr`、批次狀態更新、廣播訊息。
+- `jira.transition_issue`、`github.close_pr`（策略預留）、GitHub Issues 寫入與同步、批次狀態更新、廣播訊息。
 
 ## 預設禁止
 
@@ -18,5 +18,12 @@
 
 ## 冪等與稽核約束
 
-- 以 `external_id` 去重，寫操作記錄 `audit.log`。
+- 以 `external_id` 去重；寫入操作記錄至 SQLite `audit_logs` 表。
 
+## CLI vs MCP
+
+- MCP 走 `gate()`；本地 CLI 為可信操作員路徑，不呼叫策略門禁。
+
+## MCP tools (OpenClaw & Hermes)
+
+- 註冊 `scripts/pmgo_mcp_server.py`；詳見英文主檔與 `runtimes/README.md`。

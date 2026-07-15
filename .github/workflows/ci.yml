@@ -27,13 +27,16 @@ jobs:
           python-version: "3.12"
 
       - name: Install Python deps for MCP preflight and tests
-        run: pip install mcp pyyaml
+        run: pip install "mcp" "pyyaml" "coverage>=7.0"
 
       - name: Install npm dependencies
         run: npm install
 
       - name: Unit tests (Python)
         run: npm test
+
+      - name: Coverage (fail under 40%)
+        run: npm run test:coverage
 
       - name: Validate (i18n + memory)
         run: npm run validate

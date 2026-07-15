@@ -23,7 +23,7 @@ Entry: `python3 scripts/github-issues.py` / `npm run github-issues -- …`
 | `create` | `--title` and optional `--body` |
 | `close <number>` | Set issue state to `closed` |
 | `import-task` | `--project-id` and `--number` — creates a local task; fails if the same GitHub id was already imported for that project |
-| `sync` | `--project-id` — import all matching issues not yet in local tasks (`--state open\|closed\|all`, `--per-page`) |
+| `sync` | `--project-id` — import matching issues not yet in local tasks (`--state`, `--per-page`; API client paginates up to `max_pages`) |
 
 ## Idempotency
 
@@ -38,6 +38,11 @@ Entry: `python3 scripts/github-issues.py` / `npm run github-issues -- …`
 
 The same operations are available through the **MCP** server `scripts/pmgo_mcp_server.py` (tools `pmgo_github_*`, including `pmgo_github_sync_tasks`). Register via `runtimes/openclaw/README.md` or `npm run runtime:config -- --runtime openclaw`.
 
+## Notes
+
+- `create_issue` / `update_issue` accept optional `labels` and `assignees` in the Python API (wire through CLI/MCP as needed).
+- List/sync walk multiple pages (`page` / `max_pages`).
+
 ## Future work
 
-- Labels, assignees, Projects v2 / linked PRs; two-way sync (push task status to GitHub).
+- Projects v2 / linked PRs; two-way sync (push task status to GitHub).
