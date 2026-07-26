@@ -43,6 +43,8 @@ mcp_servers:
 ```
 
 See [shared/mcp.env.example](../../shared/mcp.env.example) for all optional keys.
+`npm run runtime:config -- --runtime hermes` passes through any non-empty values
+from that list in the current shell (including `FEISHU_*`, `NOTION_*`, `DINGTALK_*`).
 
 Restart Hermes or start a **new session** after MCP config changes so tools are discovered.
 
@@ -92,6 +94,9 @@ FEISHU_DOMAIN=feishu
 FEISHU_CONNECTION_MODE=websocket
 FEISHU_HOME_CHANNEL=oc_xxx   # cron / notification target
 ```
+
+**E2E acceptance:** [feishu-e2e.md](./feishu-e2e.md) — bootstrap → MCP → Feishu chat → optional cron  
+(parity with OpenClaw [telegram-e2e.md](../openclaw/telegram-e2e.md)).
 
 Telegram, Discord, Slack, WhatsApp, and Signal are also supported.
 

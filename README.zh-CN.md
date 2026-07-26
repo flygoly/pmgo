@@ -50,6 +50,7 @@ npm run runtime:config -- --runtime openclaw   # 或 hermes
 - OpenClaw：[runtimes/openclaw/README.md](./runtimes/openclaw/README.md)
 - Hermes：[runtimes/hermes/README.md](./runtimes/hermes/README.md)
 - Telegram E2E：[runtimes/openclaw/telegram-e2e.md](./runtimes/openclaw/telegram-e2e.md)
+- 飞书 E2E：[runtimes/hermes/feishu-e2e.md](./runtimes/hermes/feishu-e2e.md)
 - 架构：[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ## 长期记忆存储

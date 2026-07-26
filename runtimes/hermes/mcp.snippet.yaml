@@ -1,5 +1,7 @@
 # Example fragment for ~/.hermes/config.yaml
 # Generate with: npm run runtime:config -- --runtime hermes
+# Export optional keys first — see shared/mcp.env.example
+# (FEISHU_*, NOTION_*, DINGTALK_*, GITHUB_*, LINEAR_*, JIRA_*, …).
 #
 # mcp_servers:
 #   pmgo:
@@ -10,3 +12,8 @@
 #       PMGO_WORKSPACE: /absolute/path/to/pmgo
 #       PMGO_DEFAULT_PROJECT_ID: ""
 #       PMGO_DEFAULT_LOCALE: en
+#       FEISHU_APP_ID: ""
+#       FEISHU_APP_SECRET: ""
+#       FEISHU_TASKLIST_GUID: ""
+#       NOTION_TOKEN: ""
+#       NOTION_DATABASE_ID: ""

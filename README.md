@@ -56,7 +56,7 @@ npm run runtime:config -- --runtime openclaw   # or: hermes
 #    Hermes:   merge MCP YAML + persona — see runtimes/hermes/README.md
 ```
 
-Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) · [Architecture](./docs/ARCHITECTURE.md)
+Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) · [Feishu E2E](./runtimes/hermes/feishu-e2e.md) · [Architecture](./docs/ARCHITECTURE.md)
 
 ## Repository layout
 
@@ -156,8 +156,8 @@ Register the **policy-aware MCP server** (`scripts/pmgo_mcp_server.py`), connect
 
 | Runtime | Guide |
 | --- | --- |
-| **OpenClaw** | [runtimes/openclaw/README.md](./runtimes/openclaw/README.md) |
-| **Hermes** | [runtimes/hermes/README.md](./runtimes/hermes/README.md) |
+| **OpenClaw** | [runtimes/openclaw/README.md](./runtimes/openclaw/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) |
+| **Hermes** | [runtimes/hermes/README.md](./runtimes/hermes/README.md) · [Feishu E2E](./runtimes/hermes/feishu-e2e.md) |
 | **Overview** | [runtimes/README.md](./runtimes/README.md) |
 
 Generate gateway cron commands from `cron/jobs.yaml`:

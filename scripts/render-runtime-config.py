@@ -6,12 +6,38 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MCP_SCRIPT = ROOT / "scripts" / "pmgo_mcp_server.py"
+ENV_EXAMPLE = ROOT / "shared" / "mcp.env.example"
+
+# Fallback if shared/mcp.env.example is missing (keep in sync with that file).
+_FALLBACK_ENV_KEYS = (
+  "PMGO_WORKSPACE",
+  "PMGO_DEFAULT_PROJECT_ID",
+  "PMGO_DEFAULT_LOCALE",
+  "PMGO_MEMORY_DB",
+  "GITHUB_TOKEN",
+  "GITHUB_REPO",
+  "LINEAR_API_KEY",
+  "JIRA_BASE_URL",
+  "JIRA_EMAIL",
+  "JIRA_API_TOKEN",
+  "JIRA_PROJECT",
+  "FEISHU_APP_ID",
+  "FEISHU_APP_SECRET",
+  "FEISHU_TASKLIST_GUID",
+  "NOTION_TOKEN",
+  "NOTION_DATABASE_ID",
+  "DINGTALK_APP_KEY",
+  "DINGTALK_APP_SECRET",
+)
+
+_ENV_KEY_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 
 
 def _repo_root() -> Path:
@@ -25,20 +51,40 @@ def _python_cmd() -> str:
   return shutil.which("python3") or "python3"
 
 
+def mcp_env_keys(example_path: Path | None = None) -> list[str]:
+  """
+  Keys accepted in the MCP `env` block.
+
+  Source of truth: shared/mcp.env.example (active or commented KEY= lines).
+  """
+  path = example_path or ENV_EXAMPLE
+  if not path.is_file():
+    return list(_FALLBACK_ENV_KEYS)
+
+  keys: list[str] = []
+  seen: set[str] = set()
+  for raw in path.read_text(encoding="utf-8").splitlines():
+    line = raw.strip()
+    if not line:
+      continue
+    if line.startswith("#"):
+      line = line[1:].strip()
+    if not line or "=" not in line:
+      continue
+    key = line.split("=", 1)[0].strip()
+    if not _ENV_KEY_RE.match(key) or key in seen:
+      continue
+    seen.add(key)
+    keys.append(key)
+  return keys or list(_FALLBACK_ENV_KEYS)
+
+
 def _mcp_env(root: Path) -> dict[str, str]:
+  """Pass through non-empty process env for keys listed in mcp.env.example."""
   env: dict[str, str] = {"PMGO_WORKSPACE": str(root)}
-  for key in (
-    "PMGO_DEFAULT_PROJECT_ID",
-    "PMGO_DEFAULT_LOCALE",
-    "PMGO_MEMORY_DB",
-    "GITHUB_TOKEN",
-    "GITHUB_REPO",
-    "LINEAR_API_KEY",
-    "JIRA_BASE_URL",
-    "JIRA_EMAIL",
-    "JIRA_API_TOKEN",
-    "JIRA_PROJECT",
-  ):
+  for key in mcp_env_keys():
+    if key == "PMGO_WORKSPACE":
+      continue
     val = os.environ.get(key, "").strip()
     if val:
       env[key] = val
@@ -53,6 +99,7 @@ def render_openclaw(root: Path) -> str:
   }
   lines = [
     "# OpenClaw: register pmgo MCP server",
+    f"# Env keys from shared/mcp.env.example (export them before running this).",
     f"export PMGO_ROOT={root}",
     f'openclaw mcp set pmgo {json.dumps(payload)}',
     "openclaw mcp show pmgo --json",
@@ -74,6 +121,7 @@ def render_hermes(root: Path) -> str:
   }
   lines = [
     "# Hermes: merge into ~/.hermes/config.yaml",
+    "# Env keys from shared/mcp.env.example (export them before generating).",
     "# Restart gateway or start a new session after editing.",
     yaml.dump(snippet, default_flow_style=False, sort_keys=False),
   ]

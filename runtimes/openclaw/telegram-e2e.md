@@ -76,5 +76,6 @@ Record pass/fail for steps B1–B3 in the PR or release notes when claiming M1 I
 
 ## Out of scope
 
-- Feishu channel setup (same MCP tools; different OpenClaw channel plugin)
+- Hermes Feishu E2E — see [../hermes/feishu-e2e.md](../hermes/feishu-e2e.md) (same MCP tools; Hermes channel)
+- OpenClaw Feishu channel — use `@openclaw/feishu`; acceptance steps mirror section B/C here
 - Bidirectional task sync from Telegram messages into SQLite without agent tools

@@ -45,7 +45,7 @@ Use **one** `memory/pmgo.db` and **one** MCP server registration per machine unl
 
 4. **Follow the runtime guide**:
    - OpenClaw: [openclaw/README.md](./openclaw/README.md) · [GTD quickstart](./openclaw/gtd-quickstart.md) · [Telegram E2E](./openclaw/telegram-e2e.md)
-   - Hermes: [hermes/README.md](./hermes/README.md) · [GTD quickstart](./hermes/gtd-quickstart.md)
+   - Hermes: [hermes/README.md](./hermes/README.md) · [GTD quickstart](./hermes/gtd-quickstart.md) · [Feishu E2E](./hermes/feishu-e2e.md)
    - Multi-agent snippets: [openclaw/multi-agent.snippet.md](./openclaw/multi-agent.snippet.md) · [hermes/multi-agent.snippet.yaml](./hermes/multi-agent.snippet.yaml)
 
 ## Shared assets

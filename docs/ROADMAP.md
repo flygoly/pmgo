@@ -8,9 +8,10 @@ Phased rollout for pmgo. Details stay aligned with root `README.md`.
 - Native skills: `project-core`, `daily-standup`, `weekly-report`
 - GitHub Issues connector
 - One IM channel E2E (Telegram via OpenClaw) — see `runtimes/openclaw/telegram-e2e.md`
+- Hermes Feishu / Lark E2E checklist — see `runtimes/hermes/feishu-e2e.md`
 - Personal GTD path: bootstrap → first daily report
 
-**Status:** Core skills and GitHub are in tree; IM E2E docs + onboarding polish are the remaining closure items.
+**Status:** Core skills and GitHub are in tree; IM E2E checklists exist for OpenClaw Telegram and Hermes Feishu.
 
 ## M2 — Beta
 

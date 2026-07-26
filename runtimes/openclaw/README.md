@@ -43,6 +43,8 @@ openclaw mcp show pmgo --json
 ```
 
 Add optional integration keys to the `env` object — see [shared/mcp.env.example](../../shared/mcp.env.example).
+Export them in your shell before `npm run runtime:config`; the generator copies
+non-empty `FEISHU_*` / `NOTION_*` / `DINGTALK_*` (and GitHub/Linear/Jira) into the MCP `env` block.
 
 **Policy:** writes require `confirmed: true` when `policy/pmgo.policy.yaml` sets `require_confirm: true`.
 

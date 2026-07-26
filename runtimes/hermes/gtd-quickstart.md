@@ -54,13 +54,16 @@ npm run risk-radar -- report
 
 ---
 
-## 5) Feishu cron (optional)
+## 5) Feishu channel + cron (optional)
+
+Full IM acceptance checklist: [feishu-e2e.md](./feishu-e2e.md).
 
 ```bash
 hermes gateway setup   # Feishu + websocket
+npm run cron:config -- --runtime hermes
 ```
 
-Use messages from [shared/cron-messages.md](../../shared/cron-messages.md) with `hermes cron create` — see [cron.examples.sh](./cron.examples.sh).
+Shared messages: [shared/cron-messages.md](../../shared/cron-messages.md) · [cron.examples.sh](./cron.examples.sh).
 
 ---
 
@@ -68,5 +71,5 @@ Use messages from [shared/cron-messages.md](../../shared/cron-messages.md) with 
 
 ```bash
 npm run validate
-# In Hermes chat: ask to run pmgo_project_list
+# In Feishu / Hermes chat: ask to run pmgo_project_list
 ```

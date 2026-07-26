@@ -59,4 +59,4 @@ Then in chat: ask pmgo to call `pmgo_daily_report`.
 | Runtime | Guide |
 | --- | --- |
 | OpenClaw | [runtimes/openclaw/telegram-e2e.md](../runtimes/openclaw/telegram-e2e.md) |
-| Hermes | Feishu / messaging setup in [runtimes/hermes/README.md](../runtimes/hermes/README.md) |
+| Hermes | [runtimes/hermes/feishu-e2e.md](../runtimes/hermes/feishu-e2e.md) |

@@ -58,7 +58,7 @@ Copy from [`.env.example`](../.env.example) and [`shared/mcp.env.example`](../sh
    - Hermes: `npm run cron:config -- --runtime hermes` (see `runtimes/hermes/cron.examples.sh`)
 3. IM channel E2E:
    - OpenClaw Telegram: [runtimes/openclaw/telegram-e2e.md](../runtimes/openclaw/telegram-e2e.md)
-   - Hermes Feishu / messaging: [runtimes/hermes/README.md](../runtimes/hermes/README.md)
+   - Hermes Feishu / Lark: [runtimes/hermes/feishu-e2e.md](../runtimes/hermes/feishu-e2e.md)
 4. Review `policy/pmgo.policy.yaml` before enabling write-heavy tools.
 5. Rollback: remove MCP registration / cron jobs; SQLite + Markdown remain on disk.
 
