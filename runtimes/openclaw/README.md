@@ -92,7 +92,19 @@ Heartbeat for main-session polling: [Gateway heartbeat](https://docs.openclaw.ai
 
 ---
 
-## 6) Verify
+## 6) Live Canvas (Gantt + burndown)
+
+```bash
+npm run canvas:render -- --from-first-project
+# → reports/canvas/pmgo/{index.html,data.json}
+```
+
+Set `canvasHost.root` to that output dir, then present `/__openclaw__/canvas/index.html`.  
+Details: [canvas/README.md](./canvas/README.md) · [docs/LIVE_CANVAS.md](../../docs/LIVE_CANVAS.md).
+
+---
+
+## 7) Verify
 
 ```bash
 openclaw mcp list          # should include pmgo
@@ -102,7 +114,7 @@ npm run validate
 
 ---
 
-## 7) Troubleshooting
+## 8) Troubleshooting
 
 - **MCP import errors:** `pip install mcp pyyaml` in the Python used by the server command.
 - **Policy / confirmed:** re-invoke with `confirmed=true` after user approval.

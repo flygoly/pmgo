@@ -1,6 +1,6 @@
 # From zero to first daily report
 
-Shortest path on a developer machine. Uses **CLI** first (no gateway required), then optional OpenClaw registration.
+Shortest path on a developer machine. Uses **CLI** first (no gateway required), then optional OpenClaw **or** Hermes registration.
 
 ## 1. Clone and deps
 
@@ -32,7 +32,11 @@ npm run daily-standup -- report
 
 You should see Markdown with today / blockers sections filled from SQLite.
 
-## 4. (Optional) Wire OpenClaw MCP
+## 4. (Optional) Wire a gateway MCP
+
+Pick **one** runtime — same MCP server, same SQLite.
+
+**OpenClaw**
 
 ```bash
 npm run runtime:config -- --runtime openclaw
@@ -40,8 +44,19 @@ npm run runtime:config -- --runtime openclaw
 openclaw agent add ./agent
 ```
 
+**Hermes**
+
+```bash
+npm run runtime:config -- --runtime hermes
+# Merge the printed YAML into ~/.hermes/config.yaml
+# Load persona from ./agent (or hermes claw migrate) — see runtimes/hermes/README.md
+```
+
 Then in chat: ask pmgo to call `pmgo_daily_report`.
 
-## 5. (Optional) Telegram delivery
+## 5. (Optional) Channel delivery
 
-Follow [runtimes/openclaw/telegram-e2e.md](../runtimes/openclaw/telegram-e2e.md).
+| Runtime | Guide |
+| --- | --- |
+| OpenClaw | [runtimes/openclaw/telegram-e2e.md](../runtimes/openclaw/telegram-e2e.md) |
+| Hermes | Feishu / messaging setup in [runtimes/hermes/README.md](../runtimes/hermes/README.md) |

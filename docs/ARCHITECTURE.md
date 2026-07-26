@@ -51,7 +51,7 @@ Roles (`pmgo`, `planner`, `tracker`, `risker`, `reporter`) are defined in `agent
 `cron/jobs.yaml` is **intent**, not executed by gateways. Generate CLI commands with:
 
 ```bash
-npm run cron:config -- --runtime openclaw
+npm run cron:config -- --runtime openclaw   # or: hermes
 ```
 
 Message bodies live in `shared/cron-messages.md`.

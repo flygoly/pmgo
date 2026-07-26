@@ -99,10 +99,18 @@ Telegram, Discord, Slack, WhatsApp, and Signal are also supported.
 
 ## 5) Cron
 
-Use **`hermes cron create`** (not `cron/jobs.yaml` in this repo).
+`cron/jobs.yaml` is intent only. Generate pasteable CLI:
 
-Shared agent messages: [shared/cron-messages.md](../../shared/cron-messages.md)  
-Shell examples: [cron.examples.sh](./cron.examples.sh)
+```bash
+npm run cron:config -- --runtime hermes
+# optional: export HERMES_CRON_DELIVER=telegram
+# optional: export HERMES_TIMEZONE=Asia/Shanghai   # gateway-global tz
+```
+
+Upstream shape: `hermes cron create SCHEDULE [PROMPT] [--name ...] [--deliver ...]`  
+(schedule + prompt are positional — see [cron.examples.sh](./cron.examples.sh)).
+
+Shared agent messages: [shared/cron-messages.md](../../shared/cron-messages.md).
 
 For Feishu delivery, set `FEISHU_HOME_CHANNEL` or use `/set-home` in chat.
 

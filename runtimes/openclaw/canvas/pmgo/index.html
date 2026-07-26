@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>pmgo · Live Canvas</title>
+  <style>
+    :root {
+      --bg0: #0f1419;
+      --bg1: #172028;
+      --bg2: #1f2a33;
+      --line: #2c3a45;
+      --text: #e7eef3;
+      --muted: #8fa3b0;
+      --accent: #3db8a0;
+      --warn: #d4a017;
+      --danger: #d96b6b;
+      --done: #5aae7a;
+      --todo: #6b8a9a;
+      --doing: #4aa3d9;
+      --blocked: #d96b6b;
+      --ideal: #7a8f9c;
+      --font: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(900px 420px at 10% -10%, rgba(61, 184, 160, 0.14), transparent 55%),
+        radial-gradient(700px 380px at 100% 0%, rgba(74, 163, 217, 0.1), transparent 50%),
+        var(--bg0);
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 20px 24px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand {
+      font-size: 1.35rem;
+      letter-spacing: 0.04em;
+      font-weight: 650;
+    }
+    .brand span { color: var(--accent); }
+    .meta { color: var(--muted); font-size: 0.9rem; font-family: var(--mono); }
+    main {
+      display: grid;
+      gap: 20px;
+      padding: 20px 24px 32px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 980px) {
+      main { grid-template-columns: 1.2fr 1fr; }
+      .panel.full { grid-column: 1 / -1; }
+    }
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent), var(--bg1);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 16px 18px;
+      min-height: 280px;
+    }
+    .panel h2 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .panel .sub {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: var(--bg2);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .chip b { color: var(--text); font-weight: 600; }
+    .gantt { display: grid; gap: 8px; }
+    .row {
+      display: grid;
+      grid-template-columns: minmax(120px, 28%) 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .label {
+      font-size: 0.82rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .label small { display: block; color: var(--muted); font-size: 0.72rem; }
+    .track {
+      position: relative;
+      height: 22px;
+      border-radius: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--bg2),
+        var(--bg2) 24%,
+        rgba(255,255,255,0.02) 24%,
+        rgba(255,255,255,0.02) 25%
+      );
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .bar {
+      position: absolute;
+      top: 3px;
+      bottom: 3px;
+      border-radius: 4px;
+      min-width: 8px;
+      opacity: 0.92;
+    }
+    .bar.todo { background: var(--todo); }
+    .bar.doing { background: var(--doing); }
+    .bar.blocked { background: var(--blocked); }
+    .bar.done { background: var(--done); }
+    .bar.cancelled { background: #555; }
+    .bar.milestone {
+      background: linear-gradient(90deg, var(--accent), #2f8f7d);
+      box-shadow: 0 0 0 1px rgba(61,184,160,0.35);
+    }
+    .axis {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-family: var(--mono);
+    }
+    svg.chart { width: 100%; height: 220px; display: block; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    .swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+    .empty, .error {
+      color: var(--muted);
+      padding: 28px 8px;
+      text-align: center;
+      font-size: 0.92rem;
+    }
+    .error { color: var(--danger); }
+    footer {
+      padding: 0 24px 20px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    code { font-family: var(--mono); color: #c9d7e0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">pmgo <span>Canvas</span></div>
+    <div class="meta" id="meta">Loading…</div>
+  </header>
+  <main>
+    <section class="panel full" id="gantt-panel">
+      <h2>Gantt</h2>
+      <p class="sub">Milestones and tasks by due date</p>
+      <div class="stats" id="gantt-stats"></div>
+      <div class="gantt" id="gantt"></div>
+      <div class="axis" id="gantt-axis"></div>
+      <div class="legend" id="gantt-legend"></div>
+    </section>
+    <section class="panel" id="burndown-panel">
+      <h2>Burndown</h2>
+      <p class="sub">UTC week remaining work</p>
+      <div class="stats" id="burn-stats"></div>
+      <svg class="chart" id="burn-svg" viewBox="0 0 640 220" preserveAspectRatio="none"></svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--ideal)"></i>Ideal</span>
+        <span><i class="swatch" style="background:var(--accent)"></i>Actual</span>
+      </div>
+    </section>
+    <section class="panel" id="status-panel">
+      <h2>Status mix</h2>
+      <p class="sub">Task counts this snapshot</p>
+      <div class="stats" id="status-stats"></div>
+      <div id="status-bars" class="gantt"></div>
+    </section>
+  </main>
+  <footer>
+    Schema <code>pmgo.canvas.snapshot/v1</code> · OpenClaw Live Canvas template ·
+    Refresh by re-running <code>npm run canvas:render</code>
+  </footer>
+  <script>
+    /* __PMGO_DATA_START__ */
+    window.__PMGO_DATA__ = null;
+    /* __PMGO_DATA_END__ */
+  </script>
+  <script>
+    (function () {
+      const STATUS_ORDER = ["todo", "doing", "blocked", "done", "cancelled"];
+
+      function el(id) { return document.getElementById(id); }
+
+      function parseDay(raw) {
+        if (!raw) return null;
+        const d = new Date(String(raw).replace(" ", "T"));
+        return Number.isNaN(d.getTime()) ? null : d;
+      }
+
+      function dayKey(d) {
+        return d.toISOString().slice(0, 10);
+      }
+
+      function collectRange(gantt) {
+        const dates = [];
+        for (const m of gantt.milestones || []) {
+          const d = parseDay(m.due_at);
+          if (d) dates.push(d);
+        }
+        for (const t of gantt.tasks || []) {
+          const d = parseDay(t.due_at);
+          if (d) dates.push(d);
+        }
+        const now = new Date();
+        if (!dates.length) {
+          const start = new Date(now); start.setUTCDate(start.getUTCDate() - 3);
+          const end = new Date(now); end.setUTCDate(end.getUTCDate() + 10);
+          return { start, end };
+        }
+        dates.sort((a, b) => a - b);
+        const start = new Date(dates[0]); start.setUTCDate(start.getUTCDate() - 1);
+        const end = new Date(dates[dates.length - 1]); end.setUTCDate(end.getUTCDate() + 2);
+        if (end <= start) end.setUTCDate(start.getUTCDate() + 7);
+        return { start, end };
+      }
+
+      function pct(date, start, end) {
+        const t0 = start.getTime();
+        const t1 = end.getTime();
+        const x = (date.getTime() - t0) / Math.max(1, t1 - t0);
+        return Math.max(0, Math.min(1, x)) * 100;
+      }
+
+      function renderGantt(gantt) {
+        const host = el("gantt");
+        const stats = el("gantt-stats");
+        const axis = el("gantt-axis");
+        const legend = el("gantt-legend");
+        host.innerHTML = "";
+        stats.innerHTML = "";
+        const tasks = gantt.tasks || [];
+        const milestones = gantt.milestones || [];
+        if (!tasks.length && !milestones.length) {
+          host.innerHTML = '<div class="empty">No milestones or tasks with dates yet.</div>';
+          return;
+        }
+        const { start, end } = collectRange(gantt);
+        stats.innerHTML =
+          '<span class="chip">Milestones <b>' + milestones.length + "</b></span>" +
+          '<span class="chip">Tasks <b>' + tasks.length + "</b></span>";
+        axis.innerHTML =
+          "<span>" + dayKey(start) + "</span><span>" + dayKey(end) + "</span>";
+        legend.innerHTML = STATUS_ORDER.map(function (s) {
+          return '<span><i class="swatch" style="background:var(--' + s + ')"></i>' + s + "</span>";
+        }).join("") +
+          '<span><i class="swatch" style="background:var(--accent)"></i>milestone</span>';
+
+        function addRow(title, sub, status, due, isMilestone) {
+          const d = parseDay(due) || end;
+          const left = pct(d, start, end);
+          const width = isMilestone ? 2.2 : Math.max(8, 100 - left);
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML =
+            '<div class="label">' + escapeHtml(title) +
+            (sub ? "<small>" + escapeHtml(sub) + "</small>" : "") +
+            '</div><div class="track"><div class="bar ' +
+            (isMilestone ? "milestone" : escapeHtml(status || "todo")) +
+            '" style="left:' + left + "%;width:" + width + '%"></div></div>';
+          host.appendChild(row);
+        }
+
+        milestones.forEach(function (m) {
+          addRow(m.title || "Milestone", "milestone · " + (m.status || ""), m.status, m.due_at, true);
+        });
+        tasks.slice(0, 40).forEach(function (t) {
+          addRow(
+            t.title || "Task",
+            (t.status || "todo") + (t.assignee ? " · " + t.assignee : ""),
+            t.status,
+            t.due_at,
+            false
+          );
+        });
+      }
+
+      function renderBurndown(burn) {
+        const svg = el("burn-svg");
+        const stats = el("burn-stats");
+        const points = burn.points || [];
+        const summary = burn.summary || {};
+        stats.innerHTML =
+          '<span class="chip">Remaining <b>' + (summary.remaining ?? "—") + "</b></span>" +
+          '<span class="chip">Done week <b>' + (summary.done_this_week ?? "—") + "</b></span>" +
+          '<span class="chip">' + escapeHtml(burn.week_start || "") + " → " +
+          escapeHtml(burn.week_end || "") + "</span>";
+        if (!points.length) {
+          svg.innerHTML = "";
+          return;
+        }
+        const W = 640, H = 220, pad = 28;
+        const ideals = points.map(function (p) { return Number(p.ideal_remaining) || 0; });
+        const actuals = points
+          .map(function (p) { return p.actual_remaining; })
+          .filter(function (v) { return v !== null && v !== undefined; })
+          .map(Number);
+        const maxY = Math.max(1, ...ideals, ...actuals);
+        function x(i) {
+          return pad + (i / Math.max(1, points.length - 1)) * (W - pad * 2);
+        }
+        function y(v) {
+          return pad + (1 - v / maxY) * (H - pad * 2);
+        }
+        function path(vals, useNull) {
+          let d = "";
+          vals.forEach(function (v, i) {
+            if (useNull && (v === null || v === undefined)) return;
+            const num = Number(v);
+            d += (d ? " L " : "M ") + x(i).toFixed(1) + " " + y(num).toFixed(1);
+          });
+          return d;
+        }
+        const idealPath = path(ideals, false);
+        const actualPath = path(points.map(function (p) { return p.actual_remaining; }), true);
+        let grid = "";
+        for (let g = 0; g <= 4; g++) {
+          const gy = pad + (g / 4) * (H - pad * 2);
+          grid += '<line x1="' + pad + '" y1="' + gy + '" x2="' + (W - pad) +
+            '" y2="' + gy + '" stroke="#2c3a45" stroke-width="1" />';
+        }
+        svg.innerHTML =
+          grid +
+          '<path d="' + idealPath + '" fill="none" stroke="#7a8f9c" stroke-width="2" stroke-dasharray="5 4" />' +
+          '<path d="' + actualPath + '" fill="none" stroke="#3db8a0" stroke-width="2.5" />';
+      }
+
+      function renderStatus(burn) {
+        const by = (burn.summary && burn.summary.by_status) || {};
+        const stats = el("status-stats");
+        const host = el("status-bars");
+        host.innerHTML = "";
+        const total = STATUS_ORDER.reduce(function (n, k) { return n + (by[k] || 0); }, 0) || 1;
+        stats.innerHTML = '<span class="chip">Total <b>' + total + "</b></span>";
+        STATUS_ORDER.forEach(function (k) {
+          const n = by[k] || 0;
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML =
+            '<div class="label">' + k + "<small>" + n + "</small></div>" +
+            '<div class="track"><div class="bar ' + k + '" style="left:0;width:' +
+            ((n / total) * 100).toFixed(1) + '%"></div></div>';
+          host.appendChild(row);
+        });
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function render(data) {
+        if (!data || !data.gantt || !data.burndown) {
+          el("meta").textContent = "No snapshot data";
+          el("gantt").innerHTML = '<div class="error">Missing pmgo.canvas.snapshot/v1 payload. Run npm run canvas:render</div>';
+          return;
+        }
+        const name = (data.gantt.project && data.gantt.project.name) || "project";
+        const when = (data.burndown.generated_at || "").replace("T", " ").slice(0, 19);
+        el("meta").textContent = name + (when ? " · " + when + " UTC" : "");
+        document.title = "pmgo · " + name;
+        renderGantt(data.gantt);
+        renderBurndown(data.burndown);
+        renderStatus(data.burndown);
+      }
+
+      async function boot() {
+        if (window.__PMGO_DATA__) {
+          render(window.__PMGO_DATA__);
+          return;
+        }
+        try {
+          const res = await fetch("./data.json", { cache: "no-store" });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          render(await res.json());
+        } catch (e) {
+          el("meta").textContent = "Waiting for data.json";
+          el("gantt").innerHTML =
+            '<div class="empty">Place a snapshot at <code>data.json</code> next to this file, or run <code>npm run canvas:render</code>.</div>';
+        }
+      }
+
+      boot();
+    })();
+  </script>
+</body>
+</html>

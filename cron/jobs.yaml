@@ -5,6 +5,7 @@
 
 - name: morning-briefing
   cron: "0 9 * * 1-5"
+  tz: Asia/Shanghai
   agent: pmgo-reporter
   action: summarize_today_and_blockers
 
@@ -16,5 +17,6 @@
 
 - name: weekly-report
   cron: "0 17 * * 5"
+  tz: UTC
   agent: pmgo-reporter
   action: generate_weekly_report

@@ -104,9 +104,10 @@ def main() -> None:
     f"export PMGO_DEFAULT_LOCALE={args.locale}\n"
     "\n# First daily report (no gateway required)\n"
     "npm run daily-standup -- report\n"
-    "\n# Register MCP (PMGO_WORKSPACE defaults to this repo)\n"
-    "npm run runtime:config -- --runtime openclaw\n"
-    "\n# Docs: docs/FIRST_DAILY_REPORT.md · runtimes/README.md\n",
+    "\n# Register MCP (pick one runtime; PMGO_WORKSPACE defaults to this repo)\n"
+    "npm run runtime:config -- --runtime openclaw   # or: hermes\n"
+    "\n# Docs: docs/FIRST_DAILY_REPORT.md · runtimes/README.md\n"
+    "# OpenClaw: runtimes/openclaw/README.md · Hermes: runtimes/hermes/README.md\n",
     file=sys.stderr,
   )
 

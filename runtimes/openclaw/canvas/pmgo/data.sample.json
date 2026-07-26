@@ -1,0 +1,68 @@
+{
+  "schema": "pmgo.canvas.snapshot/v1",
+  "gantt": {
+    "schema": "pmgo.canvas.gantt/v1",
+    "project": { "id": "sample", "name": "Sample GTD", "slug": "sample-gtd" },
+    "milestones": [
+      {
+        "id": "m1",
+        "title": "MVP freeze",
+        "status": "doing",
+        "due_at": "2026-07-22T00:00:00+00:00",
+        "owner": "pmgo"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "t1",
+        "title": "Wire MCP canvas tools",
+        "status": "done",
+        "due_at": "2026-07-14T00:00:00+00:00",
+        "assignee": "dev",
+        "milestone_id": "m1",
+        "priority": "high"
+      },
+      {
+        "id": "t2",
+        "title": "Ship Live Canvas HTML",
+        "status": "doing",
+        "due_at": "2026-07-18T00:00:00+00:00",
+        "assignee": "dev",
+        "milestone_id": "m1",
+        "priority": "high"
+      },
+      {
+        "id": "t3",
+        "title": "Telegram announce",
+        "status": "todo",
+        "due_at": "2026-07-20T00:00:00+00:00",
+        "assignee": null,
+        "milestone_id": "m1",
+        "priority": "medium"
+      }
+    ]
+  },
+  "burndown": {
+    "schema": "pmgo.canvas.burndown/v1",
+    "project": { "id": "sample", "name": "Sample GTD", "slug": "sample-gtd" },
+    "week_start": "2026-07-13",
+    "week_end": "2026-07-19",
+    "generated_at": "2026-07-15T09:00:00+00:00",
+    "summary": {
+      "remaining": 2,
+      "done_total": 1,
+      "done_this_week": 1,
+      "by_status": { "todo": 1, "doing": 1, "done": 1 }
+    },
+    "points": [
+      { "date": "2026-07-13", "ideal_remaining": 3, "actual_remaining": 3 },
+      { "date": "2026-07-14", "ideal_remaining": 2.57, "actual_remaining": 2 },
+      { "date": "2026-07-15", "ideal_remaining": 2.14, "actual_remaining": 2 },
+      { "date": "2026-07-16", "ideal_remaining": 1.71, "actual_remaining": null },
+      { "date": "2026-07-17", "ideal_remaining": 1.29, "actual_remaining": null },
+      { "date": "2026-07-18", "ideal_remaining": 0.86, "actual_remaining": null },
+      { "date": "2026-07-19", "ideal_remaining": 0.43, "actual_remaining": null },
+      { "date": "2026-07-20", "ideal_remaining": 0, "actual_remaining": null }
+    ]
+  }
+}

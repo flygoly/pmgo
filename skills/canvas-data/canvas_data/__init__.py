@@ -1,1 +1,1 @@
-"""Build Live Canvas JSON snapshots from pmgo SQLite."""
+"""Build Live Canvas JSON snapshots and OpenClaw HTML renders from pmgo SQLite."""

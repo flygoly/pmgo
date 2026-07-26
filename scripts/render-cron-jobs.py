@@ -69,12 +69,13 @@ def render_openclaw(jobs: list[dict[str, str]], messages: dict[str, str]) -> str
     msg = messages.get(name, "You are pmgo. Run the appropriate MCP report tools.")
     cron = job.get("cron")
     heartbeat = job.get("heartbeat")
+    tz = job.get("tz") or "Asia/Shanghai"
     if cron:
       lines.append(
         "openclaw cron add "
         f"--name {shlex.quote('pmgo-' + name)} "
         f"--cron {shlex.quote(cron)} "
-        "--tz Asia/Shanghai "
+        f"--tz {shlex.quote(tz)} "
         "--session isolated "
         f"--agent {shlex.quote(agent)} "
         f"--message {shlex.quote(msg)} "
@@ -91,24 +92,65 @@ def render_openclaw(jobs: list[dict[str, str]], messages: dict[str, str]) -> str
 
 
 def render_hermes(jobs: list[dict[str, str]], messages: dict[str, str]) -> str:
+  """
+  Hermes CLI shape (upstream hermes_cli/subcommands/cron.py):
+
+    hermes cron create SCHEDULE [PROMPT] [--name ...] [--deliver ...]
+
+  Schedule and prompt are positional. There is no --cron / --schedule / --message /
+  --timezone on create; timezone is global (HERMES_TIMEZONE or config.yaml).
+  """
+  deliver = os.environ.get("HERMES_CRON_DELIVER", "").strip()
+  workdir = os.environ.get("PMGO_WORKSPACE", "").strip()
+  cron_jobs = [j for j in jobs if j.get("cron")]
+  tz_values = sorted({j.get("tz") or "local" for j in cron_jobs if j.get("cron")})
+
   lines = [
-    "# Generated from cron/jobs.yaml — adapt channel flags to your Hermes setup.",
-    "# See runtimes/hermes/cron.examples.sh",
-    "",
+    "# Generated from cron/jobs.yaml — review before running.",
+    "# Hermes CLI: hermes cron create SCHEDULE [PROMPT] [--name ...] [--deliver ...]",
+    "# Timezone is gateway-global (HERMES_TIMEZONE or config.yaml timezone), not per-job.",
   ]
+  if len(tz_values) > 1:
+    lines.append(
+      f"# NOTE: jobs.yaml lists multiple tz values ({', '.join(tz_values)}). "
+      "Pick one HERMES_TIMEZONE and adjust cron exprs if needed."
+    )
+  elif tz_values:
+    lines.append(f"# Suggested HERMES_TIMEZONE / config timezone: {tz_values[0]}")
+  if deliver:
+    lines.append(f"# HERMES_CRON_DELIVER={shlex.quote(deliver)}")
+  else:
+    lines.append(
+      "# Optional delivery: export HERMES_CRON_DELIVER=telegram  "
+      "# (or discord / feishu chat id — see hermes cron create --help)"
+    )
+  if workdir:
+    lines.append(f"# PMGO_WORKSPACE={shlex.quote(workdir)} (passed as --workdir)")
+  lines.append("# See runtimes/hermes/cron.examples.sh")
+  lines.append("")
+
   for job in jobs:
     name = job.get("name", "job")
     msg = messages.get(name, "You are pmgo. Run the appropriate MCP report tools.")
     cron = job.get("cron")
     if not cron:
       lines.append(f"# Skip non-cron job: {name}")
+      lines.append("")
       continue
-    lines.append(
+    tz = job.get("tz")
+    if tz:
+      lines.append(f"# Intent tz from jobs.yaml: {tz}")
+    cmd = (
       "hermes cron create "
-      f"--name {shlex.quote('pmgo-' + name)} "
-      f"--cron {shlex.quote(cron)} "
-      f"--message {shlex.quote(msg)}"
+      f"{shlex.quote(cron)} "
+      f"{shlex.quote(msg)} "
+      f"--name {shlex.quote('pmgo-' + name)}"
     )
+    if deliver:
+      cmd += f" --deliver {shlex.quote(deliver)}"
+    if workdir:
+      cmd += f" --workdir {shlex.quote(workdir)}"
+    lines.append(cmd)
     lines.append("")
   return "\n".join(lines).rstrip() + "\n"
 
