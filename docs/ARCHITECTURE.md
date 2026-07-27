@@ -35,6 +35,16 @@ memory/pmgo.db (SQLite)  +  memory/projects/<slug>/*.md
 | Memory | `memory/schema.sql`, migrations | Structured entities + Markdown notes |
 | Runtimes | `runtimes/{openclaw,hermes}/` | Registration, cron, IM E2E guides |
 
+### Internal module boundaries
+
+- `scripts/pmgo_mcp_server.py` is the stable stdio entry point. Tool
+  implementations are grouped by domain under `scripts/pmgo_mcp_tools/` and
+  register on one shared `FastMCP` instance.
+- `project_core.store` is a compatibility facade. Store implementations are
+  split into work tracking (`store_work`), governance (`store_governance`),
+  collaboration (`store_collaboration`), and shared SQLite helpers
+  (`store_base`).
+
 ## Memory model
 
 - **Long-term structured:** SQLite tables (`projects`, `tasks`, `milestones`, `risks`, `decisions`, `audit_logs`, …).

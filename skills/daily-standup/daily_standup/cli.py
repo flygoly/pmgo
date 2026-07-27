@@ -38,6 +38,17 @@ def build_parser() -> argparse.ArgumentParser:
     action="store_true",
     help="Use the first project in the DB; if none, print a short message and exit 0 (smoke test).",
   )
+  r.add_argument(
+    "--template",
+    default="daily-report",
+    choices=list(buildmod.ALLOWED_TEMPLATES),
+    help="Markdown template basename under memory/templates/ (default: daily-report).",
+  )
+  r.add_argument(
+    "--save",
+    action="store_true",
+    help="Also write to memory/projects/<slug>/daily-reports/YYYY-MM-DD.md",
+  )
   r.set_defaults(_fn=cmd_report)
   return p
 
@@ -61,11 +72,22 @@ def cmd_report(args: Any) -> int:
     return 1
   locale = args.locale or pmgo_common.default_locale()
   try:
-    text = buildmod.build_daily_markdown(project_id=pid, locale=locale)
-  except (KeyError, FileNotFoundError) as e:
+    text = buildmod.build_daily_markdown(
+      project_id=pid,
+      locale=locale,
+      template=args.template,
+    )
+  except (KeyError, FileNotFoundError, ValueError) as e:
     print(str(e), file=sys.stderr)
     return 1
   print(text, end="")
+  if args.save:
+    try:
+      path = buildmod.save_daily_markdown(text, project_id=pid)
+    except (KeyError, OSError) as e:
+      print(str(e), file=sys.stderr)
+      return 1
+    print(f"\n# saved: {path}", file=sys.stderr)
   return 0
 
 

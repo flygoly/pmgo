@@ -17,6 +17,7 @@ REQUIRED_TEMPLATE_BASENAMES = {
   "decision-log",
   "weekly-report",
   "daily-standup",
+  "daily-report",
 }
 REQUIRED_LOCALES = {"en", "zh-CN", "zh-TW"}
 REQUIRED_SCRIPT_FILES = {

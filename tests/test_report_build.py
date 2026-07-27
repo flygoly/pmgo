@@ -52,6 +52,7 @@ class TestReportBuild(unittest.TestCase):
       project_id=self.project_id,
       locale="en",
       now=now,
+      template="daily-standup",
     )
     self.assertIn("# Daily — Report Demo", text)
     self.assertIn("In progress item", text)

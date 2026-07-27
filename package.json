@@ -14,6 +14,8 @@
     "project-core": "python3 scripts/project-core.py",
     "daily-standup:smoke": "python3 scripts/daily-standup.py report --from-first-project",
     "daily-standup": "python3 scripts/daily-standup.py",
+    "daily-report": "python3 scripts/daily-standup.py report --template daily-report",
+    "daily-report:smoke": "python3 scripts/daily-standup.py report --template daily-report --from-first-project",
     "weekly-report:smoke": "python3 scripts/weekly-report.py report --from-first-project",
     "weekly-report": "python3 scripts/weekly-report.py",
     "risk-radar:smoke": "python3 scripts/risk-radar.py report --from-first-project",
