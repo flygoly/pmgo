@@ -157,7 +157,7 @@ pmgo supports English, Simplified Chinese, and Traditional Chinese.
 ## Documentation
 
 - Update `README.md` (English canonical) for significant changes.
-  Mirror into `README.zh-CN.md` and `README.zh-TW.md` in the same PR when
+  Mirror into `README.zh-Hans.md` and `README.zh-Hant.md` in the same PR when
   practical, or note `i18n-followup` in the PR description.
 - Architecture / deploy: `docs/ARCHITECTURE.md`, `docs/DEPLOY.md`.
 - Local untracked drafts may go under `docs/plan/` (see

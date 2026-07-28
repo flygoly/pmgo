@@ -2,7 +2,7 @@
 
 > An AI Project Manager for [OpenClaw](https://github.com/openclaw/openclaw) and [Hermes Agent](https://github.com/NousResearch/hermes-agent).
 
-**Languages**: **English** · [简体中文](./README.zh-CN.md) · [繁體中文](./README.zh-TW.md)
+**Languages**: **English** · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
 [![CI](https://github.com/flygoly/pmgo/actions/workflows/ci.yml/badge.svg)](https://github.com/flygoly/pmgo/actions/workflows/ci.yml)
@@ -212,7 +212,7 @@ See [docs/ROADMAP.md](./docs/ROADMAP.md).
 ## Internationalisation
 
 - **Code, identifiers, commit messages, and inline comments**: English only.
-- **README**: English is canonical; `README.zh-CN.md` and `README.zh-TW.md` mirror it.
+- **README**: English is canonical; `README.zh-Hans.md` and `README.zh-Hant.md` mirror it.
 - **User-facing strings** (agent replies, report templates, error messages, UI labels) are loaded from `locales/{en,zh-CN,zh-TW}.json` and selected per-session based on the user's locale (fallback: `en`).
 - **Agent persona files**: `agent/*.md` are English canonical; localised overlays live under `agent/locales/{zh-CN,zh-TW}/*.md`.
 - **Contributions**: please write new strings in English first, then add translations for `zh-CN` and `zh-TW` in the same PR.

@@ -2,9 +2,10 @@
 
 > 面向 [OpenClaw](https://github.com/openclaw/openclaw) 與 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 的 AI 專案經理。
 
-**語言**：[English](./README.md) · [简体中文](./README.zh-CN.md) · **繁體中文**
+**語言**：[English](./README.md) · [简体中文](./README.zh-Hans.md) · **繁體中文**
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](./LICENSE)
+[![CI](https://github.com/flygoly/pmgo/actions/workflows/ci.yml/badge.svg)](https://github.com/flygoly/pmgo/actions/workflows/ci.yml)
 [![Status: early development](https://img.shields.io/badge/status-early--development-orange.svg)](#藍圖)
 
 ---
@@ -39,19 +40,49 @@
 最短路徑（零到第一條日報）：[docs/FIRST_DAILY_REPORT.md](./docs/FIRST_DAILY_REPORT.md)。閘道步驟見 [runtimes/](./runtimes/)。
 
 ```bash
+# 1）初始化本機記憶與關聯專案（會輸出可複製執行的 export 指令）
 npm run gtd:bootstrap -- --name "My GTD" --locale zh-TW
 # 複製命令輸出的 export 區塊，或：
 export PMGO_WORKSPACE="$(pwd)"
-export PMGO_DEFAULT_PROJECT_ID="<uuid>"
+export PMGO_DEFAULT_PROJECT_ID="<輸出中的 uuid>"
+
+# 2）無需閘道，先產生第一份日報
 npm run daily-standup -- report
-npm run runtime:config -- --runtime openclaw   # 或 hermes
+
+# 3）一條指令完成執行時安裝（依賴、MCP、人格/Agent）
+npm run setup -- --runtime openclaw   # 或 hermes
+
+# 4）診斷並啟動執行時 Dashboard
+npm run doctor -- --runtime openclaw  # 或 hermes
+npm run start -- --runtime openclaw   # 或 hermes
+
+# 安全解除安裝（保留 pmgo 專案資料與 OpenClaw Workspace）
+npm run uninstall -- --runtime openclaw  # 或 hermes
 ```
+
+使用 `--dry-run` 可預覽安裝動作而不修改執行時設定。如需手動設定，仍可使用
+`npm run runtime:config -- --runtime ...`。Setup 會建立或重用專用的
+`.pmgo-venv`，並確保 MCP 註冊使用同一個 Python 直譯器。
 
 - OpenClaw：[runtimes/openclaw/README.md](./runtimes/openclaw/README.md)
 - Hermes：[runtimes/hermes/README.md](./runtimes/hermes/README.md)
 - Telegram E2E：[runtimes/openclaw/telegram-e2e.md](./runtimes/openclaw/telegram-e2e.md)
 - 飛書 E2E：[runtimes/hermes/feishu-e2e.md](./runtimes/hermes/feishu-e2e.md)
 - 架構：[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
+
+## 倉庫結構
+
+- `agent/` — 人格套件（`SOUL.md`、`IDENTITY.md`、`USER.md`、`TOOLS.md`、`AGENTS.md`）
+- `runtimes/` — OpenClaw 與 Hermes 整合指南
+- `shared/` — 共用 MCP 環境變數與排程訊息範本
+- `skills/` — MCP 技能定義與實作
+- `locales/` — 執行時國際化字典（`en`、`zh-CN`、`zh-TW`）
+- `policy/pmgo.policy.yaml` — 白名單與確認策略
+- `cron/jobs.yaml` — 排程意圖（透過 `npm run cron:config` 產生 CLI 指令）
+- `docs/` — 架構、部署、首份報告、Live Canvas 與發佈文件
+- `memory/templates/` — 多語言報告範本
+- `memory/schema.sql` — 標準 SQLite Schema 快照
+- `memory/migrations/` — 僅追加的資料庫遷移歷史
 
 ## 長期記憶儲存
 
@@ -184,7 +215,7 @@ npm run cron:config -- --runtime openclaw   # 或 hermes
 ## 國際化約定
 
 - **程式碼、識別字、commit message、行內註解**：只用英文。
-- **README**：以英文為準；`README.zh-CN.md` 與 `README.zh-TW.md` 為鏡像翻譯。
+- **README**：以英文為準；`README.zh-Hans.md` 與 `README.zh-Hant.md` 為鏡像翻譯。
 - **使用者可見文案**（Agent 回覆、報告模板、錯誤提示、介面標籤）從 `locales/{en,zh-CN,zh-TW}.json` 載入，依會話使用者的 locale 選擇（回退到 `en`）。
 - **Agent 人格檔**：`agent/*.md` 以英文為準；本地化覆蓋版本放在 `agent/locales/{zh-CN,zh-TW}/*.md`。
 - **貢獻要求**：新文案先寫英文，再在同一個 PR 裡補上 `zh-CN` 與 `zh-TW` 的翻譯。
