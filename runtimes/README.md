@@ -30,12 +30,20 @@ Use **one** `memory/pmgo.db` and **one** MCP server registration per machine unl
    # Copy the printed export block (includes PMGO_WORKSPACE)
    ```
 
-2. **Render MCP config** for your gateway:
+2. **Install pmgo into your gateway** (idempotent; backs up changed Hermes files):
 
    ```bash
-   npm run runtime:config -- --runtime openclaw
-   npm run runtime:config -- --runtime hermes
+   npm run setup -- --runtime openclaw   # or: hermes
+   npm run doctor -- --runtime openclaw  # or: hermes
+   npm run start -- --runtime openclaw   # or: hermes
+   npm run uninstall -- --runtime openclaw  # or: hermes
    ```
+
+   Use `--dry-run` on `setup` to preview changes. For manual registration, keep
+   using `npm run runtime:config -- --runtime openclaw|hermes`.
+
+   `uninstall` removes the managed MCP/persona registration but preserves pmgo
+   project data. For safety, OpenClaw Agent/workspace deletion remains manual.
 
 3. **Optional cron commands** from `cron/jobs.yaml`:
 
@@ -58,9 +66,9 @@ Use **one** `memory/pmgo.db` and **one** MCP server registration per machine unl
 
 | Feature | OpenClaw | Hermes |
 | --- | --- | --- |
-| Live Canvas / Gantt (M3) | Planned | N/A |
+| Live Canvas / Gantt (M3) | Available | N/A |
 | GEPA self-improving skills | N/A | Built-in |
-| `openclaw agent add ./agent` | Yes | Use profile + `hermes claw migrate` |
+| `openclaw agents add pmgo --workspace ./agent` | Yes | Use profile + `hermes claw migrate` |
 | `hermes claw migrate` | N/A | Imports OpenClaw MCP + memory |
 
 ## Legacy path

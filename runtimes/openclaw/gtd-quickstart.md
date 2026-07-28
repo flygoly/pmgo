@@ -19,26 +19,18 @@ export PMGO_WORKSPACE="/absolute/path/to/pmgo"
 
 ---
 
-## 2) Register MCP
+## 2) Install pmgo into OpenClaw
 
 ```bash
-pip install -e ".[mcp]"
-npm run runtime:config -- --runtime openclaw
-# Copy the printed `openclaw mcp set` command and run it
+npm run setup -- --runtime openclaw
+npm run doctor -- --runtime openclaw
 ```
+
+This registers both the MCP server and the `pmgo` Agent workspace.
 
 ---
 
-## 3) Import agent
-
-```bash
-cd /absolute/path/to/pmgo
-openclaw agent add ./agent
-```
-
----
-
-## 4) Local GTD loop (no Gateway)
+## 3) Local GTD loop (no Gateway)
 
 ```bash
 npm run project-core -- task-create --project-id "$PMGO_DEFAULT_PROJECT_ID" --title "Review inbox"
@@ -49,13 +41,13 @@ npm run risk-radar -- report
 
 ---
 
-## 5) Telegram cron (optional)
+## 4) Telegram cron (optional)
 
 See [cron.examples.sh](./cron.examples.sh) and [shared/cron-messages.md](../../shared/cron-messages.md).
 
 ---
 
-## 6) Verify
+## 5) Verify
 
 ```bash
 npm run validate

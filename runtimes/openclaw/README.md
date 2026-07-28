@@ -8,6 +8,35 @@ Dual-runtime overview: [../README.md](../README.md) · Hermes guide: [../hermes/
 
 ---
 
+## Recommended: one-command setup
+
+From the pmgo repository root, export any optional MCP environment variables
+first, then run:
+
+```bash
+npm run setup -- --runtime openclaw
+npm run doctor -- --runtime openclaw
+npm run start -- --runtime openclaw
+```
+
+The setup command creates/reuses the project `.pmgo-venv`, installs missing MCP dependencies, registers the pmgo MCP
+server, and creates the `pmgo` OpenClaw Agent with `agent/` as its workspace.
+It is safe to repeat. Use `--dry-run` to preview the commands.
+
+Remove the MCP registration while preserving the pmgo Agent and repository:
+
+```bash
+npm run uninstall -- --runtime openclaw --dry-run
+npm run uninstall -- --runtime openclaw
+```
+
+Agent deletion stays manual because `openclaw agents delete` can move workspace
+files to Trash.
+
+The sections below document the equivalent manual process.
+
+---
+
 ## 1) Install MCP dependencies
 
 From the pmgo repository root:
@@ -57,7 +86,7 @@ GTD walkthrough: [gtd-quickstart.md](./gtd-quickstart.md)
 ## 3) Import the pmgo agent
 
 ```bash
-openclaw agent add ./agent
+openclaw agents add pmgo --workspace ./agent
 ```
 
 Persona: `agent/SOUL.md`, `AGENTS.md`, `USER.md`, plus `agent/locales/{zh-CN,zh-TW}/` overlays.

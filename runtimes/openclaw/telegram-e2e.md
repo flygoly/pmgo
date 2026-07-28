@@ -20,10 +20,8 @@ cd /absolute/path/to/pmgo
 npm run gtd:bootstrap -- --name "Telegram E2E" --locale en
 # eval printed exports (PMGO_WORKSPACE, PMGO_DEFAULT_PROJECT_ID, …)
 
-npm run runtime:config -- --runtime openclaw
-# run the printed: openclaw mcp set pmgo …
-
-openclaw agent add ./agent
+npm run setup -- --runtime openclaw
+npm run doctor -- --runtime openclaw
 openclaw mcp show pmgo --json   # confirm env has PMGO_WORKSPACE
 ```
 

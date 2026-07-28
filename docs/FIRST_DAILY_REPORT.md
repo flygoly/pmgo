@@ -32,25 +32,29 @@ npm run daily-standup -- report
 
 You should see Markdown with today / blockers sections filled from SQLite.
 
-## 4. (Optional) Wire a gateway MCP
+## 4. (Optional) Wire a gateway
 
 Pick **one** runtime — same MCP server, same SQLite.
 
 **OpenClaw**
 
 ```bash
-npm run runtime:config -- --runtime openclaw
-# Run the printed openclaw mcp set … command
-openclaw agent add ./agent
+npm run setup -- --runtime openclaw
+npm run doctor -- --runtime openclaw
+npm run start -- --runtime openclaw
 ```
 
 **Hermes**
 
 ```bash
-npm run runtime:config -- --runtime hermes
-# Merge the printed YAML into ~/.hermes/config.yaml
-# Load persona from ./agent (or hermes claw migrate) — see runtimes/hermes/README.md
+npm run setup -- --runtime hermes
+npm run doctor -- --runtime hermes
+npm run start -- --runtime hermes
 ```
+
+`setup` installs missing MCP dependencies, applies the runtime registration, and
+installs the pmgo persona/agent. It is safe to repeat. Preview it with `--dry-run`.
+For manual configuration, use `npm run runtime:config -- --runtime ...`.
 
 Then in chat: ask pmgo to call `pmgo_daily_report`.
 

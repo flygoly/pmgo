@@ -49,12 +49,21 @@ export PMGO_DEFAULT_PROJECT_ID="<uuid-from-output>"
 # 2) First report without a gateway
 npm run daily-standup -- report
 
-# 3) Register MCP (defaults PMGO_WORKSPACE to this repo’s absolute path)
-npm run runtime:config -- --runtime openclaw   # or: hermes
+# 3) One-command runtime setup (installs missing MCP deps, registers MCP + persona/agent)
+npm run setup -- --runtime openclaw   # or: hermes
 
-# 4) OpenClaw: openclaw agent add ./agent
-#    Hermes:   merge MCP YAML + persona — see runtimes/hermes/README.md
+# 4) Diagnose, then launch the runtime dashboard
+npm run doctor -- --runtime openclaw  # or: hermes
+npm run start -- --runtime openclaw   # or: hermes
+
+# Safe removal (keeps pmgo project data and the OpenClaw workspace)
+npm run uninstall -- --runtime openclaw  # or: hermes
 ```
+
+Preview setup without changing runtime configuration with `--dry-run`. The older
+`npm run runtime:config -- --runtime ...` command remains available when you want
+to apply the generated configuration manually. Setup creates/reuses the dedicated
+`.pmgo-venv` and makes the MCP registration use that exact Python interpreter.
 
 Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) · [Feishu E2E](./runtimes/hermes/feishu-e2e.md) · [Architecture](./docs/ARCHITECTURE.md)
 

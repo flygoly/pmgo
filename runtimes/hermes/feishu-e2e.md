@@ -30,19 +30,12 @@ npm run gtd:bootstrap -- --name "Feishu E2E" --locale zh-CN
 # Optional: also export skill keys if you will test pmgo_feishu_* later
 # export FEISHU_APP_ID=cli_xxx FEISHU_APP_SECRET=xxx FEISHU_TASKLIST_GUID=…
 
-npm run runtime:config -- --runtime hermes
-# merge printed mcp_servers.pmgo into ~/.hermes/config.yaml
+npm run setup -- --runtime hermes
+npm run doctor -- --runtime hermes
 ```
 
-Load persona (fresh install):
-
-| pmgo file | Hermes destination |
-| --- | --- |
-| `agent/SOUL.md` (+ bits of `IDENTITY.md`) | `~/.hermes/SOUL.md` |
-| `agent/AGENTS.md` | workspace `AGENTS.md` |
-| `agent/USER.md` | `~/.hermes/memories/USER.md` |
-
-Or: `hermes claw migrate` if you already run OpenClaw.
+The setup command registers MCP and installs the pmgo persona. Alternatively,
+use `hermes claw migrate` if you already run OpenClaw.
 
 Restart the gateway / open a **new session** so MCP tools are discovered.
 

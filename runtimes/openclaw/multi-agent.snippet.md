@@ -25,16 +25,14 @@ Pasteable topology matching `agent/AGENTS.md`. Exact CLI flags vary by OpenClaw 
 ## Wiring sketch
 
 ```bash
-# Register one MCP server shared by all agents
-npm run runtime:config -- --runtime openclaw
+# Register one MCP server and the lead agent
+npm run setup -- --runtime openclaw
 
 # Create/import agents (illustrative — adjust to your OpenClaw version)
-openclaw agent add ./agent --id pmgo
+openclaw agents add pmgo-reporter --workspace ./agent
 # Duplicate or overlay specialists with the hints above, e.g.:
-# openclaw agent add ./agent --id pmgo-reporter --system-append "$(cat <<'EOF'
+# openclaw agents add pmgo-planner --workspace ./agent
 # You are pmgo-reporter. ...
-# EOF
-# )"
 ```
 
 Lead `pmgo` should route per `agent/AGENTS.md` before answering the user.

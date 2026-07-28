@@ -19,18 +19,19 @@ export PMGO_WORKSPACE="/absolute/path/to/pmgo"
 
 ---
 
-## 2) Register MCP in Hermes
+## 2) Install pmgo into Hermes
 
 ```bash
-pip install -e ".[mcp]"
-npm run runtime:config -- --runtime hermes
+npm run setup -- --runtime hermes
+npm run doctor -- --runtime hermes
 ```
 
-Merge the printed YAML into `~/.hermes/config.yaml` under `mcp_servers.pmgo`, then restart the gateway or open a new session.
+This registers MCP and merges a managed pmgo persona block into Hermes. Existing
+Hermes configuration and persona files are backed up before they change.
 
 ---
 
-## 3) Load persona
+## 3) Alternative migration from OpenClaw
 
 **From OpenClaw:**
 
@@ -39,7 +40,8 @@ hermes claw migrate --dry-run
 hermes claw migrate
 ```
 
-**Fresh install:** copy `agent/SOUL.md` → `~/.hermes/SOUL.md`, `agent/AGENTS.md` → workspace `AGENTS.md`, `agent/USER.md` → `~/.hermes/memories/USER.md`.
+Fresh Hermes installations do not need this step; the setup command above installs
+the pmgo persona. Use `--no-persona` if you intentionally want MCP tools only.
 
 ---
 

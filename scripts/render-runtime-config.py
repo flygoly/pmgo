@@ -7,9 +7,14 @@ import argparse
 import json
 import os
 import re
-import shutil
 import sys
 from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+  sys.path.insert(0, str(SCRIPT_DIR))
+
+from runtime_manager import compatible_python, runtime_python
 
 ROOT = Path(__file__).resolve().parent.parent
 MCP_SCRIPT = ROOT / "scripts" / "pmgo_mcp_server.py"
@@ -47,8 +52,8 @@ def _repo_root() -> Path:
   return ROOT
 
 
-def _python_cmd() -> str:
-  return shutil.which("python3") or "python3"
+def _python_cmd(root: Path | None = None) -> str:
+  return runtime_python(root or _repo_root())
 
 
 def mcp_env_keys(example_path: Path | None = None) -> list[str]:
@@ -93,7 +98,7 @@ def _mcp_env(root: Path) -> dict[str, str]:
 
 def render_openclaw(root: Path) -> str:
   payload = {
-    "command": _python_cmd(),
+    "command": _python_cmd(root),
     "args": [str(MCP_SCRIPT)],
     "env": _mcp_env(root),
   }
@@ -113,7 +118,7 @@ def render_hermes(root: Path) -> str:
   snippet = {
     "mcp_servers": {
       "pmgo": {
-        "command": _python_cmd(),
+        "command": _python_cmd(root),
         "args": [str(MCP_SCRIPT)],
         "env": _mcp_env(root),
       }
@@ -129,6 +134,14 @@ def render_hermes(root: Path) -> str:
 
 
 def main() -> int:
+  if sys.version_info < (3, 11):
+    try:
+      python = compatible_python()
+    except RuntimeError as exc:
+      print(f"ERROR: {exc}", file=sys.stderr)
+      return 1
+    print(f"# Re-running with supported interpreter: {python}", file=sys.stderr, flush=True)
+    os.execv(python, [python, str(Path(__file__).resolve()), *sys.argv[1:]])
   parser = argparse.ArgumentParser(
     description="Print MCP registration snippets for OpenClaw or Hermes.",
   )

@@ -8,6 +8,33 @@ Dual-runtime overview: [../README.md](../README.md) · OpenClaw guide: [../openc
 
 ---
 
+## Recommended: one-command setup
+
+From the pmgo repository root, export any optional MCP environment variables
+first, then run:
+
+```bash
+npm run setup -- --runtime hermes
+npm run doctor -- --runtime hermes
+npm run start -- --runtime hermes
+```
+
+The setup command creates/reuses the project `.pmgo-venv`, installs missing MCP dependencies, safely merges
+`mcp_servers.pmgo` into `~/.hermes/config.yaml`, and adds an idempotent pmgo
+managed block to `~/.hermes/SOUL.md`. Existing files are backed up before a
+change. Use `--dry-run` to preview or `--no-persona` to register MCP only.
+
+Remove only the managed pmgo MCP/persona blocks while preserving project data:
+
+```bash
+npm run uninstall -- --runtime hermes --dry-run
+npm run uninstall -- --runtime hermes
+```
+
+The sections below document the equivalent manual process.
+
+---
+
 ## 1) Install dependencies
 
 ```bash

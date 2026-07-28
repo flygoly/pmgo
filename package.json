@@ -47,6 +47,10 @@
     "memory:scaffold": "python3 scripts/scaffold-memory.py",
     "memory:verify": "python3 scripts/verify-memory-db.py",
     "gtd:bootstrap": "python3 scripts/gtd-bootstrap.py",
+    "setup": "python3 scripts/runtime_manager.py setup",
+    "doctor": "python3 scripts/runtime_manager.py doctor",
+    "start": "python3 scripts/runtime_manager.py start",
+    "uninstall": "python3 scripts/runtime_manager.py uninstall",
     "runtime:config": "python3 scripts/render-runtime-config.py",
     "test": "python3 -m unittest discover -s tests -p \"test_*.py\" -v",
     "test:coverage": "python3 -m coverage run -m unittest discover -s tests -p \"test_*.py\" -v && python3 -m coverage report --fail-under=40"

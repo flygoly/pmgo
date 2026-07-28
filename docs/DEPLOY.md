@@ -21,8 +21,9 @@ pip install '.[mcp]'   # mcp + pyyaml
 npm run gtd:bootstrap -- --name "My GTD" --locale en
 # Copy the printed export block into your shell or MCP env
 
-# Register MCP with absolute PMGO_WORKSPACE
-npm run runtime:config -- --runtime openclaw   # or hermes
+# Register MCP + pmgo persona/agent, then verify
+npm run setup -- --runtime openclaw   # or hermes
+npm run doctor -- --runtime openclaw  # or hermes
 ```
 
 Full path to first daily report: [FIRST_DAILY_REPORT.md](./FIRST_DAILY_REPORT.md).
@@ -47,8 +48,8 @@ Copy from [`.env.example`](../.env.example) and [`shared/mcp.env.example`](../sh
 
 | Runtime | Steps |
 | --- | --- |
-| OpenClaw | [runtimes/openclaw/README.md](../runtimes/openclaw/README.md) — MCP + `openclaw agent add ./agent` |
-| Hermes | [runtimes/hermes/README.md](../runtimes/hermes/README.md) — merge MCP YAML + persona |
+| OpenClaw | [runtimes/openclaw/README.md](../runtimes/openclaw/README.md) — one-command setup or manual MCP + Agent registration |
+| Hermes | [runtimes/hermes/README.md](../runtimes/hermes/README.md) — one-command setup or manual YAML + persona merge |
 
 ## Cron / production checklist
 
@@ -61,6 +62,12 @@ Copy from [`.env.example`](../.env.example) and [`shared/mcp.env.example`](../sh
    - Hermes Feishu / Lark: [runtimes/hermes/feishu-e2e.md](../runtimes/hermes/feishu-e2e.md)
 4. Review `policy/pmgo.policy.yaml` before enabling write-heavy tools.
 5. Rollback: remove MCP registration / cron jobs; SQLite + Markdown remain on disk.
+
+Safe runtime rollback:
+
+```bash
+npm run uninstall -- --runtime openclaw   # or hermes
+```
 
 ## Automation status
 
