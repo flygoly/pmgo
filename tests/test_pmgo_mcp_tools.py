@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 _ROOT = Path(__file__).resolve().parent.parent
 _SCRIPTS = _ROOT / "scripts"
 for p in (
@@ -52,8 +53,13 @@ class TestPmgoMcpTools(unittest.TestCase):
     import pmgo_mcp_server as server  # noqa: WPS433
 
     self.server = server
+    # MCP functional tests are deterministic; quiet-hour rules have dedicated
+    # tests with fixed timestamps in test_pmgo_policy.py.
+    self._quiet_hours = mock.patch("pmgo_policy.quiet_hours_block", return_value=None)
+    self._quiet_hours.start()
 
   def tearDown(self) -> None:
+    self._quiet_hours.stop()
     for k, v in self._old.items():
       if v is None:
         os.environ.pop(k, None)
@@ -107,4 +113,3 @@ class TestPmgoMcpTools(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
-

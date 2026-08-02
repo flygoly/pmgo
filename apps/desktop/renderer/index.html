@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'" />
+    <title>pmgo</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">P</span><span>pmgo</span></div>
+      <nav aria-label="主导航">
+        <button class="nav-item active" data-view="today">今日聚焦</button>
+        <button class="nav-item" data-view="board">任务看板</button>
+        <button class="nav-item" data-view="notes">项目笔记</button>
+        <button class="nav-item" data-view="assistant">AI 助手</button>
+        <button class="nav-item" data-view="settings">设置</button>
+      </nav>
+      <div class="privacy"><span class="pulse"></span><div><strong>本地模式</strong><small>数据保留在此设备</small></div></div>
+    </aside>
+
+    <main>
+      <header>
+        <div><p class="eyebrow">PERSONAL PROJECT OS</p><h1>今天，从重要的事开始。</h1></div>
+        <div class="header-actions">
+          <label class="project-picker"><span>当前项目</span><select id="project-select" aria-label="当前项目"></select></label>
+          <button id="add-project" class="secondary">＋ 项目</button>
+          <button id="add-task" class="primary">＋ 新建任务</button>
+        </div>
+      </header>
+
+      <section id="today" class="view active-view">
+        <div class="metrics">
+          <article><span>待处理</span><strong id="count-todo">0</strong><small>需要安排</small></article>
+          <article><span>进行中</span><strong id="count-doing">0</strong><small>保持专注</small></article>
+          <article><span>受阻</span><strong id="count-blocked">0</strong><small>需要行动</small></article>
+          <article class="accent"><span>已完成</span><strong id="count-done">0</strong><small>持续积累</small></article>
+        </div>
+        <div class="columns">
+          <section class="panel focus"><div class="panel-title"><h2>下一步行动</h2><button id="refresh">刷新</button></div><div id="focus-list" class="task-list"></div></section>
+          <section class="panel risk"><div class="panel-title"><h2>风险雷达</h2><span>当前项目</span></div><div id="risk-list" class="risk-list"></div></section>
+        </div>
+      </section>
+
+      <section id="board" class="view"><div class="panel board-panel"><div class="panel-title"><div><p class="eyebrow">DRAG TO MOVE</p><h2>任务看板</h2></div><span>点击卡片编辑 · 拖拽改变状态</span></div><div id="kanban" class="kanban"></div></div></section>
+
+      <section id="notes" class="view">
+        <div class="notes-layout panel">
+          <aside class="note-tabs" aria-label="笔记类型">
+            <button class="note-tab active" data-note="overview">项目概览</button>
+            <button class="note-tab" data-note="meetings">会议记录</button>
+            <button class="note-tab" data-note="decisions">决策日志</button>
+            <button class="note-tab" data-note="weekly">周报</button>
+          </aside>
+          <div class="note-editor"><div class="panel-title"><div><p class="eyebrow">LOCAL MARKDOWN</p><h2 id="note-title">项目概览</h2></div><span id="note-status">自动保存在本地</span></div><textarea id="note-content" spellcheck="false" aria-label="Markdown 笔记"></textarea><div class="note-actions"><button id="save-note" class="primary">保存笔记</button></div></div>
+        </div>
+      </section>
+
+      <section id="assistant" class="view">
+        <div class="assistant-grid">
+          <div class="panel"><p class="eyebrow">AI PROJECT PARTNER</p><h2>让模型理解你的本地项目上下文</h2><textarea id="prompt" placeholder="例如：结合当前任务、风险和项目笔记，帮我规划今天最重要的三件事"></textarea><div class="assistant-actions"><button id="ask" class="primary">发送给模型</button><span id="assistant-status"></span></div><pre id="answer">模型响应将显示在这里。</pre></div>
+          <div class="panel context-card"><h2>本次上下文</h2><label class="check"><input id="include-context" type="checkbox" checked />包含任务和风险</label><label class="check"><input id="include-notes" type="checkbox" checked />包含本地 Markdown 笔记</label><div id="context-preview" class="context-preview">正在准备预览…</div><p>只有勾选并发送后，所选内容才会交给模型。</p><div class="local-badge">SQLite + Markdown · Local first</div></div>
+        </div>
+      </section>
+
+      <section id="settings" class="view"><div class="panel settings"><p class="eyebrow">MODEL PROVIDER</p><h2>连接你选择的大模型</h2><label>Provider<select id="provider"></select></label><label>模型<input id="model" value="gpt-4.1-mini" /></label><label>API 地址<input id="base-url" value="https://api.openai.com/v1" /></label><label>API Key<input id="api-key" type="password" placeholder="由系统安全存储加密保存" /></label><div class="settings-actions"><button id="save-settings" class="primary">保存设置</button><span id="save-status"></span></div><p class="path">本地数据目录：<code id="data-dir"></code></p></div></section>
+    </main>
+
+    <dialog id="task-dialog"><form method="dialog"><div class="dialog-title"><h2 id="task-dialog-title">新建任务</h2><button value="cancel" aria-label="关闭">×</button></div><input id="task-id" type="hidden" /><label>任务标题<input id="task-title" required autofocus /></label><label>任务说明<textarea id="task-detail" rows="4"></textarea></label><div class="form-grid"><label>状态<select id="task-status"><option value="todo">待处理</option><option value="doing">进行中</option><option value="blocked">受阻</option><option value="done">已完成</option><option value="cancelled">已取消</option></select></label><label>优先级<select id="task-priority"><option value="medium">中</option><option value="high">高</option><option value="critical">紧急</option><option value="low">低</option></select></label></div><label>截止日期<input id="task-due" type="date" /></label><div class="dialog-actions"><button id="delete-task" class="danger" type="button" hidden>删除</button><span class="spacer"></span><button value="cancel">取消</button><button id="save-task" value="default" class="primary">保存</button></div></form></dialog>
+
+    <dialog id="project-dialog"><form method="dialog"><div class="dialog-title"><h2>创建个人项目</h2><button value="cancel" aria-label="关闭">×</button></div><label>项目名称<input id="project-name" required autofocus placeholder="例如：新产品上线" /></label><label>项目说明<textarea id="project-description" rows="4" placeholder="目标、范围或完成标准"></textarea></label><div class="dialog-actions"><button value="cancel">取消</button><button id="create-project" value="default" class="primary">创建项目</button></div></form></dialog>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="platform.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

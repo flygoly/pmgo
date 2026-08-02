@@ -1,6 +1,6 @@
 # pmgo
 
-> 面向 [OpenClaw](https://github.com/openclaw/openclaw) 与 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 的 AI 项目经理。
+> 面向 Windows、macOS、Linux 的本地优先 AI 项目经理；OpenClaw 与 Hermes 是可选连接器。
 
 **语言**：[English](./README.md) · **简体中文** · [繁體中文](./README.zh-Hant.md)
 
@@ -16,7 +16,7 @@
 
 ## pmgo 是什么？
 
-`pmgo` 是一个**运行时无关的 Agent 人格 + MCP 技能包**，可把 OpenClaw 或 Hermes 网关变成数字项目经理。一套代码覆盖四类场景：
+`pmgo` 正在成为一个**独立、本地优先的桌面项目经理**。SQLite、Markdown 和附件留在你的设备上；模型能力通过可替换 Provider 接入。OpenClaw 与 Hermes 保留为消息渠道和自动化连接器，但不再是安装与启动前提。
 
 - 个人 GTD / OKR
 - 团队敏捷（Jira、Linear、GitHub Issues）
@@ -27,7 +27,10 @@
 
 ## 核心亮点
 
-- **双运行时** — 同时支持 [OpenClaw](https://openclaw.ai) 与 [Hermes](https://github.com/NousResearch/hermes-agent)，见 [runtimes/README.md](./runtimes/README.md)。
+- **原生桌面端**：一套产品覆盖 Windows、macOS 与 Linux，由 Electron 桌面壳和内置 Python 核心组成。
+- **本地优先**：SQLite 与 Markdown 保存在系统应用数据目录，无需云端服务。
+- **模型可选**：首批支持 OpenAI 兼容接口与本地 Ollama；密钥由操作系统安全存储保管。
+- **可选运行时**：仍可把同一套技能连接到 [OpenClaw](https://openclaw.ai) 与 [Hermes](https://github.com/NousResearch/hermes-agent)。
 - **多渠道接入**：通过网关（OpenClaw 或 Hermes）在 Telegram、飞书、Slack、Discord、WhatsApp 等渠道与 pmgo 对话。
 - **永久在线**：Heartbeat 驱动晨间简报、阻塞巡查、周五周报，无需手动触发。
 - **持久化记忆**：SQLite + 人类可读的 Markdown，保存在 `memory/projects/<slug>/` 下。
@@ -37,7 +40,17 @@
 
 ## 快速开始
 
-最短路径（零到第一条日报）：[docs/FIRST_DAILY_REPORT.md](./docs/FIRST_DAILY_REPORT.md)。网关步骤见 [runtimes/](./runtimes/)。
+桌面开发预览：
+
+```bash
+npm install
+npm run pmgo -- onboard --name "我的工作" --locale zh-Hans
+npm run desktop:dev
+```
+
+桌面端首次启动会自动创建本地数据，不需要安装 OpenClaw 或 Hermes。三个系统的安装包通过[桌面构建工作流](./.github/workflows/desktop-release.yml)分别原生构建，详见[桌面架构](./docs/DESKTOP.md)。
+
+可选的无界面/运行时流程：
 
 ```bash
 # 1）初始化本地记忆与关联项目（会输出可复制执行的 export 命令）
@@ -60,6 +73,17 @@ npm run start -- --runtime openclaw   # 或 hermes
 npm run uninstall -- --runtime openclaw  # 或 hermes
 ```
 
+安装免费的 CLI 后，可以直接使用 `pmgo`：
+
+```bash
+python3.11 -m pip install -e .
+pmgo project list
+pmgo task add "准备周复盘" --priority high
+pmgo context --json
+```
+
+完整命令参考：[docs/CLI.md](./docs/CLI.md)。
+
 使用 `--dry-run` 可以预览安装动作而不修改运行时配置。如需手动配置，仍可使用
 `npm run runtime:config -- --runtime ...`。Setup 会创建或复用专用的
 `.pmgo-venv`，并确保 MCP 注册使用同一个 Python 解释器。
@@ -72,6 +96,8 @@ npm run uninstall -- --runtime openclaw  # 或 hermes
 
 ## 仓库结构
 
+- `apps/desktop/` — 跨平台桌面壳与本地 UI
+- `pmgo_app/` — 与 Agent 运行时无关的 SQLite 核心、本地 API 与模型 Provider
 - `agent/` — 人格包（`SOUL.md`、`IDENTITY.md`、`USER.md`、`TOOLS.md`、`AGENTS.md`）
 - `runtimes/` — OpenClaw 与 Hermes 集成指南
 - `shared/` — 共用 MCP 环境变量和定时任务消息模板

@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 _ROOT = Path(__file__).resolve().parent.parent
 _SCRIPTS = _ROOT / "scripts"
@@ -31,6 +32,15 @@ class TestRepoLayout(unittest.TestCase):
 
 @unittest.skipIf(yaml is None, "PyYAML not installed (pip install pyyaml)")
 class TestPmgoPolicyGate(unittest.TestCase):
+  def setUp(self) -> None:
+    # Gate behavior tests must not depend on the wall clock. Quiet-hour behavior
+    # is covered separately below with explicit datetimes.
+    self._quiet_hours = mock.patch("pmgo_policy.quiet_hours_block", return_value=None)
+    self._quiet_hours.start()
+
+  def tearDown(self) -> None:
+    self._quiet_hours.stop()
+
   def test_read_allows_without_confirm(self) -> None:
     self.assertIsNone(gate("project_core.read", confirmed=False))
     self.assertIsNone(gate("github.issue.read", confirmed=False))

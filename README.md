@@ -1,6 +1,6 @@
 # pmgo
 
-> An AI Project Manager for [OpenClaw](https://github.com/openclaw/openclaw) and [Hermes Agent](https://github.com/NousResearch/hermes-agent).
+> A local-first AI project manager for Windows, macOS, and Linux. OpenClaw and Hermes are optional connectors.
 
 **Languages**: **English** · [简体中文](./README.zh-Hans.md) · [繁體中文](./README.zh-Hant.md)
 
@@ -16,7 +16,7 @@
 
 ## What is pmgo?
 
-`pmgo` is a **runtime-neutral Agent persona + MCP Skills Pack** that turns your OpenClaw or Hermes gateway into a digital project manager. It covers four scenarios with one codebase:
+`pmgo` is becoming a **standalone, local-first desktop project manager**. SQLite, Markdown, and attachments stay on your device; model access is provided through replaceable providers. OpenClaw and Hermes remain optional connectors for channels and automation, not prerequisites.
 
 - Personal GTD / OKR
 - Agile team workflows (Jira, Linear, GitHub Issues)
@@ -27,7 +27,10 @@ It ships as a **skills pack, not a fork** — one MCP server and one memory stor
 
 ## Highlights
 
-- **Dual runtime** — same skills on [OpenClaw](https://openclaw.ai) and [Hermes](https://github.com/NousResearch/hermes-agent); see [runtimes/README.md](./runtimes/README.md).
+- **Native desktop** — one product for Windows, macOS, and Linux, with an Electron shell and bundled Python core.
+- **Local first** — SQLite and Markdown use the OS application-data directory; project data does not require a cloud service.
+- **Model choice** — OpenAI-compatible endpoints and local Ollama are the first providers; keys are held by OS secure storage.
+- **Optional runtimes** — the same skills can still connect to [OpenClaw](https://openclaw.ai) and [Hermes](https://github.com/NousResearch/hermes-agent).
 - **Multi-channel** — Telegram, Feishu, Slack, Discord, WhatsApp, and more via your gateway.
 - **Always-on** — heartbeats drive morning briefings, blocker scans, and Friday reports without you asking.
 - **Persistent memory** — SQLite + human-readable Markdown under `memory/projects/<slug>/`.
@@ -37,10 +40,20 @@ It ships as a **skills pack, not a fork** — one MCP server and one memory stor
 
 ## Quick start
 
-Shortest path to a rendered daily report: [docs/FIRST_DAILY_REPORT.md](./docs/FIRST_DAILY_REPORT.md). Gateway steps: [runtimes/](./runtimes/).
+Desktop development preview:
 
 ```bash
-# 1) Bootstrap local memory + linked project (prints copy-paste export block)
+npm install
+npm run pmgo -- onboard --name "My Work" --locale en
+npm run desktop:dev
+```
+
+The desktop client creates its data on first launch and needs neither OpenClaw nor Hermes. Release builds are produced natively for each OS through [the desktop workflow](./.github/workflows/desktop-release.yml). See [desktop architecture](./docs/DESKTOP.md).
+
+Optional headless/runtime workflow:
+
+```bash
+# 1) Bootstrap repository memory + linked project
 npm run gtd:bootstrap -- --name "My GTD" --locale zh-CN
 # eval the printed exports, or:
 export PMGO_WORKSPACE="$(pwd)"
@@ -60,6 +73,17 @@ npm run start -- --runtime openclaw   # or: hermes
 npm run uninstall -- --runtime openclaw  # or: hermes
 ```
 
+Install the free CLI for direct `pmgo` commands:
+
+```bash
+python3.11 -m pip install -e .
+pmgo project list
+pmgo task add "Prepare weekly review" --priority high
+pmgo context --json
+```
+
+CLI reference: [docs/CLI.md](./docs/CLI.md).
+
 Preview setup without changing runtime configuration with `--dry-run`. The older
 `npm run runtime:config -- --runtime ...` command remains available when you want
 to apply the generated configuration manually. Setup creates/reuses the dedicated
@@ -69,6 +93,8 @@ Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/
 
 ## Repository layout
 
+- `apps/desktop/` — cross-platform desktop shell and local UI
+- `pmgo_app/` — runtime-independent SQLite core, loopback API, and model providers
 - `agent/` — persona package (`SOUL.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md`, `AGENTS.md`)
 - `runtimes/` — OpenClaw and Hermes integration guides
 - `shared/` — shared MCP env and cron message templates

@@ -9,11 +9,18 @@ dependencies = []
 [project.optional-dependencies]
 # Used by `scripts/pmgo_mcp_server.py` (stdio MCP for OpenClaw / Hermes).
 mcp = ["mcp", "pyyaml"]
-dev = ["coverage>=7.0"]
+dev = ["coverage>=7.0", "pyinstaller>=6.0"]
+
+[project.scripts]
+pmgo = "pmgo_app.cli:main"
+pmgo-api = "pmgo_app.api:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools]
-packages = []
+[tool.setuptools.packages.find]
+include = ["pmgo_app*"]
+
+[tool.setuptools.package-data]
+pmgo_app = ["schema.sql"]

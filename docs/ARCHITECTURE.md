@@ -1,33 +1,27 @@
 # Architecture
 
-`pmgo` is a **runtime-neutral agent persona + MCP skills pack**. Gateways (OpenClaw or Hermes) own channels, cron, and the LLM session; pmgo owns the PM persona, policy-gated tools, and hybrid memory.
+`pmgo` is a **local-first desktop application with a runtime-neutral core**. The desktop client owns the primary experience and local model session. Gateways (OpenClaw or Hermes) are optional adapters for channels and cron.
 
 ## End-to-end flow
 
 ```
-IM channels (Telegram, Feishu, Slack, …)
+pmgo Desktop (Windows / macOS / Linux)
+        │ isolated IPC
+        ▼
+local Python sidecar ── model Provider (cloud or local)
         │
         ▼
-Gateway (OpenClaw OR Hermes)
-        │  persona: agent/*.md
-        │  schedules: gateway cron (generated from cron/jobs.yaml)
-        ▼
-pmgo Agent (lead; specialists = routing guidance + optional multi-agent snippets)
-        │
-        ▼
-stdio MCP: scripts/pmgo_mcp_server.py
-   │  policy gate ← policy/pmgo.policy.yaml
-   ▼
-skills/* Python packages
-        │
-        ▼
-memory/pmgo.db (SQLite)  +  memory/projects/<slug>/*.md
+OS userData/pmgo.db + projects/<slug>/*.md
+
+Optional: OpenClaw / Hermes → stdio MCP → existing skills and policy gate
 ```
 
 ## Components
 
 | Layer | Path | Role |
 | --- | --- | --- |
+| Desktop | `apps/desktop/` | Electron shell, isolated preload, local UI, OS secret storage |
+| App core | `pmgo_app/` | SQLite service, loopback API, model provider boundary |
 | Persona | `agent/` | SOUL, TOOLS, AGENTS, locale overlays |
 | MCP hub | `scripts/pmgo_mcp_server.py` | FastMCP stdio tools; every call runs `gate()` |
 | Policy | `policy/pmgo.policy.yaml`, `scripts/pmgo_policy.py` | Allow-list, `require_confirm`, quiet hours |

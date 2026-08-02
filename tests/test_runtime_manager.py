@@ -43,6 +43,19 @@ class TestRuntimeManager(unittest.TestCase):
     self.assertEqual(payload["args"], [str(_ROOT / "scripts" / "pmgo_mcp_server.py")])
     self.assertEqual(payload["command"], "/test/python3.12")
 
+  def test_cli_configured_env_points_runtime_to_shared_database(self) -> None:
+    cli_path = _ROOT / "scripts" / "pmgo_cli.py"
+    spec = importlib.util.spec_from_file_location("pmgo_cli_test", cli_path)
+    assert spec and spec.loader
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    configured = cli._configured_env(
+      {"data_dir": "/tmp/pmgo-memory", "default_project_id": "project-1", "locale": "zh-Hans"},
+      Path("/tmp/pmgo-config.toml"),
+    )
+    self.assertEqual(configured["PMGO_MEMORY_DB"], "/tmp/pmgo-memory/pmgo.db")
+    self.assertEqual(configured["PMGO_DEFAULT_LOCALE"], "zh-CN")
+
   def test_persona_merge_is_idempotent_and_preserves_existing_text(self) -> None:
     with tempfile.TemporaryDirectory() as tmp:
       home = Path(tmp)

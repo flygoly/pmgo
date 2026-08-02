@@ -2,6 +2,22 @@
 
 Phased rollout for pmgo. Details stay aligned with root `README.md`.
 
+## Desktop foundation — in progress
+
+- Cross-platform Electron shell and local Python sidecar: **scaffold shipped**
+- Runtime-independent local SQLite + Markdown initialization: **shipped**
+- Task dashboard, board, risk view, AI assistant, provider settings: **MVP shipped**
+- OpenAI-compatible and local Ollama provider boundary: **shipped**
+- Native DMG/ZIP, NSIS/portable, AppImage/DEB build workflow: **shipped; release artifacts pending CI validation**
+- Next: Obsidian vault picker, attachment index, Anthropic/Gemini adapters, auto-update/signing
+
+## Mobile expansion — after desktop stability
+
+- Reuse the responsive client through a platform bridge on Android and iOS
+- Add a HarmonyOS shell with the same project contract
+- Prioritize capture, review, notifications, and offline reading on mobile
+- Design optional end-to-end encrypted sync separately from the local-first core
+
 ## M1 — MVP
 
 - Repo scaffold, agent persona, memory bootstrap
