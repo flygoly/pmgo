@@ -92,6 +92,7 @@ pmgo context --json
 - Hermes：[runtimes/hermes/README.md](./runtimes/hermes/README.md)
 - Telegram E2E：[runtimes/openclaw/telegram-e2e.md](./runtimes/openclaw/telegram-e2e.md)
 - 飛書 E2E：[runtimes/hermes/feishu-e2e.md](./runtimes/hermes/feishu-e2e.md)
+- 產品需求文件：[docs/PRD.md](./docs/PRD.md)
 - 架構：[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ## 倉庫結構

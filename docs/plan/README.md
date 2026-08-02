@@ -4,6 +4,7 @@ This directory may hold untracked working notes (gitignored via `docs/plan/**` e
 
 Tracked product docs live one level up:
 
+- [PRD.md](../PRD.md)
 - [ARCHITECTURE.md](../ARCHITECTURE.md)
 - [DEPLOY.md](../DEPLOY.md)
 - [ROADMAP.md](../ROADMAP.md)

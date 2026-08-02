@@ -89,7 +89,7 @@ Preview setup without changing runtime configuration with `--dry-run`. The older
 to apply the generated configuration manually. Setup creates/reuses the dedicated
 `.pmgo-venv` and makes the MCP registration use that exact Python interpreter.
 
-Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) · [Feishu E2E](./runtimes/hermes/feishu-e2e.md) · [Architecture](./docs/ARCHITECTURE.md)
+Guides: [OpenClaw](./runtimes/openclaw/README.md) · [Hermes](./runtimes/hermes/README.md) · [Telegram E2E](./runtimes/openclaw/telegram-e2e.md) · [Feishu E2E](./runtimes/hermes/feishu-e2e.md) · [PRD](./docs/PRD.md) · [Architecture](./docs/ARCHITECTURE.md)
 
 ## Repository layout
 

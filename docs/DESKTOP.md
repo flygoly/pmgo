@@ -1,5 +1,10 @@
 # pmgo Desktop Architecture
 
+The product requirements and binding desktop technology decision are maintained
+in [PRD.md](./PRD.md). The first commercial Windows, macOS, and Linux releases
+continue with Electron; Tauri is a measured future optimization, not a current
+migration target.
+
 The desktop client is the primary product surface. OpenClaw and Hermes are
 optional adapters for channels and unattended automation.
 
@@ -11,7 +16,7 @@ can later be embedded in Android, iOS, and HarmonyOS shells. See
 
 ```text
 Electron desktop shell
-  ├─ renderer: focus, board, risks, assistant, settings
+  ├─ renderer: React + TypeScript target (focus, board, risks, assistant, settings)
   ├─ OS secure storage: model API key
   └─ native Python sidecar (127.0.0.1 + random bearer token)
        ├─ LocalCore
@@ -25,6 +30,11 @@ The renderer has no Node access and cannot call the network directly. Electron's
 isolated preload exposes a narrow request bridge. The Python API binds only to
 loopback and requires a random per-process bearer token. API keys are injected
 into model calls for that request and are never written to SQLite.
+
+The current loopback protocol is the MVP boundary. The hardening target is a
+versioned Core contract transported over Unix domain sockets on macOS/Linux and
+named pipes on Windows. Desktop, CLI, and MCP should converge on that same Core
+instead of implementing domain rules independently.
 
 ## Provider contract
 
