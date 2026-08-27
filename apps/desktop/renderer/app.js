@@ -187,4 +187,12 @@ $('#ask').addEventListener('click', async () => {
   } catch (error) { $('#answer').textContent = `请求失败：${error.message}`; $('#assistant-status').textContent = ''; }
 });
 
+platform.onCoreStatus?.((status) => {
+  if (status.state === 'restarting') toast(`本地核心意外退出，正在自动恢复（第 ${status.attempt}/${status.max} 次）`);
+  else if (status.state === 'ready') {
+    toast('本地核心已恢复');
+    loadDashboard().catch(() => {});
+  } else if (status.state === 'failed') toast('本地核心自动恢复失败，请重启应用');
+});
+
 Promise.all([loadDashboard(), loadProviders()]).catch((error) => { $('#focus-list').innerHTML = `<p class="empty">启动失败：${escapeHtml(error.message)}</p>`; });

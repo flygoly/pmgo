@@ -4,5 +4,6 @@ window.pmgoPlatform = Object.freeze({
   saveProviderKey: (value) => window.pmgo.saveProviderKey(value),
   hasProviderKey: () => window.pmgo.hasProviderKey(),
   dataDir: () => window.pmgo.dataDir(),
+  onCoreStatus: (callback) => window.pmgo.onCoreStatus(callback),
   kind: 'desktop',
 });

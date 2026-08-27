@@ -9,6 +9,10 @@ future Android, iOS, and HarmonyOS shells can implement without changing product
 screens. The current desktop scope includes multiple projects, task lifecycle,
 local Markdown notes, and consent-based AI project context.
 
+The main process validates the sender of every IPC call and restarts the sidecar
+with exponential backoff if it crashes after startup, broadcasting `pmgo:core-status`
+events (`restarting` / `ready` / `failed`) to the renderer.
+
 Development:
 
 ```bash

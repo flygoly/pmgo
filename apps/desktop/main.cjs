@@ -8,6 +8,11 @@ const path = require('node:path');
 let coreProcess;
 let apiBase;
 let coreReady = false;
+let coreReadySince = 0;
+let shuttingDown = false;
+let restartAttempts = 0;
+const RESTART_DELAYS = [1000, 5000, 30000];
+const RESTART_STABLE_MS = 60000;
 const apiToken = crypto.randomBytes(32).toString('hex');
 
 function localDataDir() {
@@ -58,6 +63,7 @@ function startCore() {
         clearTimeout(timer);
         apiBase = `http://127.0.0.1:${match[1]}`;
         coreReady = true;
+        coreReadySince = Date.now();
         resolve();
       }
     });
@@ -68,11 +74,47 @@ function startCore() {
     });
     coreProcess.on('exit', (code) => {
       clearTimeout(timer);
-      if (!coreReady) reject(new Error(`The local pmgo core exited during startup (${code}).`));
+      const crashedAfterReady = coreReady;
       coreReady = false;
       apiBase = undefined;
+      if (!crashedAfterReady) {
+        reject(new Error(`The local pmgo core exited during startup (${code}).`));
+        return;
+      }
+      scheduleCoreRestart(code);
     });
   });
+}
+
+function broadcastCoreStatus(status) {
+  for (const window of BrowserWindow.getAllWindows()) {
+    if (!window.isDestroyed()) window.webContents.send('pmgo:core-status', status);
+  }
+}
+
+function scheduleCoreRestart(exitCode) {
+  if (shuttingDown) return;
+  // A core that stayed healthy past the stability window earns a fresh backoff budget.
+  if (coreReadySince && Date.now() - coreReadySince > RESTART_STABLE_MS) restartAttempts = 0;
+  if (restartAttempts >= RESTART_DELAYS.length) {
+    console.error('[pmgo-core] giving up: restart budget exhausted.');
+    broadcastCoreStatus({ state: 'failed', exitCode });
+    return;
+  }
+  const attempt = restartAttempts + 1;
+  const delay = RESTART_DELAYS[restartAttempts];
+  restartAttempts = attempt;
+  console.error(`[pmgo-core] exited (${exitCode}); restarting in ${delay}ms (attempt ${attempt}/${RESTART_DELAYS.length})`);
+  broadcastCoreStatus({ state: 'restarting', attempt, max: RESTART_DELAYS.length, exitCode });
+  setTimeout(() => {
+    if (shuttingDown) return;
+    startCore()
+      .then(() => broadcastCoreStatus({ state: 'ready', attempt }))
+      .catch((error) => {
+        console.error(`[pmgo-core] restart attempt ${attempt} failed:`, error);
+        scheduleCoreRestart(exitCode);
+      });
+  }, delay);
 }
 
 function secretPath() {
@@ -166,6 +208,7 @@ app.whenReady().then(async () => {
 });
 
 app.on('before-quit', () => {
+  shuttingDown = true;
   if (coreProcess && !coreProcess.killed) coreProcess.kill();
 });
 

@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('pmgo', {
   saveProviderKey: (value) => ipcRenderer.invoke('pmgo:save-provider-key', value),
   hasProviderKey: () => ipcRenderer.invoke('pmgo:has-provider-key'),
   dataDir: () => ipcRenderer.invoke('pmgo:data-dir'),
+  onCoreStatus: (callback) => ipcRenderer.on('pmgo:core-status', (_event, status) => callback(status)),
 });
