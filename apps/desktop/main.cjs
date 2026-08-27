@@ -21,6 +21,20 @@ function sourceRoot() {
   return path.resolve(__dirname, '..', '..');
 }
 
+function isTrustedSender(event) {
+  try {
+    const frame = event.senderFrame;
+    if (!frame || frame.parent !== null) return false;
+    return new URL(frame.url).protocol === 'file:';
+  } catch {
+    return false;
+  }
+}
+
+function requireTrustedSender(event) {
+  if (!isTrustedSender(event)) throw new Error('Untrusted IPC source.');
+}
+
 function startCore() {
   return new Promise((resolve, reject) => {
     const packaged = app.isPackaged;
@@ -82,7 +96,8 @@ function loadSecret() {
   return safeStorage.decryptString(fs.readFileSync(file));
 }
 
-async function apiRequest(_event, { route, method = 'GET', body }) {
+async function apiRequest(event, { route, method = 'GET', body }) {
+  requireTrustedSender(event);
   if (!apiBase) throw new Error('Local core is not ready.');
   const normalizedMethod = String(method).toUpperCase();
   const allowed = [
@@ -126,9 +141,18 @@ function createWindow() {
 }
 
 ipcMain.handle('pmgo:request', apiRequest);
-ipcMain.handle('pmgo:save-provider-key', (_event, value) => saveSecret(String(value || '')));
-ipcMain.handle('pmgo:has-provider-key', () => fs.existsSync(secretPath()));
-ipcMain.handle('pmgo:data-dir', () => localDataDir());
+ipcMain.handle('pmgo:save-provider-key', (event, value) => {
+  requireTrustedSender(event);
+  return saveSecret(String(value || ''));
+});
+ipcMain.handle('pmgo:has-provider-key', (event) => {
+  requireTrustedSender(event);
+  return fs.existsSync(secretPath());
+});
+ipcMain.handle('pmgo:data-dir', (event) => {
+  requireTrustedSender(event);
+  return localDataDir();
+});
 
 app.whenReady().then(async () => {
   await startCore();
